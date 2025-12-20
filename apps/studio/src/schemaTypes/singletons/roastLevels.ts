@@ -7,7 +7,7 @@ export const roastLevels = defineType({
   type: 'document',
   icon: Flame,
   __experimental_omnisearch_visibility: false,
-  liveEdit: true,
+  // liveEdit: true,
   fields: [
     defineField({
       name: 'roastTypes',

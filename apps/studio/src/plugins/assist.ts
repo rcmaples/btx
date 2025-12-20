@@ -1,10 +1,12 @@
 /**
  * Sets up the AI Assist plugin with preset prompts for content creation
+ * including image generation for products with Batch Theory brand guidelines
  */
 
 import {assist} from '@sanity/assist'
 
 import {articleSchmea} from '../schemaTypes/documents/article'
+import {productSchema} from '../schemaTypes/documents/product'
 
 export const assistWithPresets = () =>
   assist({
@@ -254,6 +256,450 @@ export const assistWithPresets = () =>
                     _type: 'block',
                     style: 'normal',
                     _key: '392c618784b0',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+
+      /**
+       * Product image generation presets
+       * Follows Batch Theory brand guidelines for consistent visual identity
+       */
+      [productSchema.name]: {
+        fields: [
+          {
+            /**
+             * Generate product images with brand-consistent prompts
+             */
+            path: 'images',
+            instructions: [
+              /**
+               * Product Shot - Light Background
+               * Bone/off-white background, flat diffused lighting
+               */
+              {
+                _key: 'product-image-light',
+                title: 'Product Shot - Light Background',
+                icon: 'image',
+                prompt: [
+                  {
+                    _key: 'product-light-block-1',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pl-span-1',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Generate a product photograph of a specialty coffee bag.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-light-block-2',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pl-span-2',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Product: ',
+                      },
+                      {
+                        _key: 'pl-field-name',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'name',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-light-block-3',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pl-span-3',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Origin: ',
+                      },
+                      {
+                        _key: 'pl-field-origin',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'origin',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-light-block-4',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pl-span-4',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Roast Level: ',
+                      },
+                      {
+                        _key: 'pl-field-roast',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'roastLevel',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-light-block-5',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pl-span-5',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Photography specifications: Bone/off-white background. Flat, diffused lighting from one side. Straight-on or hard 45° angle. High detail on bag texture and roast variation. No props unless functional. Should look handled and real, not staged or overly polished. Visible texture on packaging material.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-light-block-6',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pl-span-6',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Style: Minimal, intentional, premium small-batch coffee aesthetic. Nothing looks accidental. Nothing looks rushed.',
+                      },
+                    ],
+                  },
+                ],
+              },
+
+              /**
+               * Product Shot - Dark Background
+               * Near-black background, flat diffused lighting
+               */
+              {
+                _key: 'product-image-dark',
+                title: 'Product Shot - Dark Background',
+                icon: 'image',
+                prompt: [
+                  {
+                    _key: 'product-dark-block-1',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pd-span-1',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Generate a product photograph of a specialty coffee bag.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-dark-block-2',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pd-span-2',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Product: ',
+                      },
+                      {
+                        _key: 'pd-field-name',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'name',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-dark-block-3',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pd-span-3',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Origin: ',
+                      },
+                      {
+                        _key: 'pd-field-origin',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'origin',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-dark-block-4',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pd-span-4',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Roast Level: ',
+                      },
+                      {
+                        _key: 'pd-field-roast',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'roastLevel',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-dark-block-5',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pd-span-5',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Photography specifications: Near-black background. Flat, diffused lighting from one side. Straight-on or hard 45° angle. High detail on bag texture and roast variation. No props unless functional. Should look handled and real, not staged or overly polished. Visible texture on packaging material.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'product-dark-block-6',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'pd-span-6',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Style: Minimal, intentional, premium small-batch coffee aesthetic. Nothing looks accidental. Nothing looks rushed.',
+                      },
+                    ],
+                  },
+                ],
+              },
+
+              /**
+               * Lifestyle Shot - Black & White
+               * Brutalist composition, high contrast, visible grain
+               */
+              {
+                _key: 'lifestyle-image-bw',
+                title: 'Lifestyle Shot - B&W',
+                icon: 'image',
+                prompt: [
+                  {
+                    _key: 'lifestyle-bw-block-1',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lbw-span-1',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Generate a lifestyle photograph for specialty coffee.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-bw-block-2',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lbw-span-2',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Product context: ',
+                      },
+                      {
+                        _key: 'lbw-field-name',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'name',
+                      },
+                      {
+                        _key: 'lbw-span-3',
+                        _type: 'span',
+                        marks: [],
+                        text: ' - ',
+                      },
+                      {
+                        _key: 'lbw-field-flavor',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'flavorProfile',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-bw-block-3',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lbw-span-4',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Best for: ',
+                      },
+                      {
+                        _key: 'lbw-field-bestfor',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'bestFor',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-bw-block-4',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lbw-span-5',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Photography specifications: Black and white or heavily desaturated. High contrast with visible grain. Brutalist composition with negative space and intentional awkward crops. Subject options: roasting equipment, hands working, machinery close-ups, tools on surfaces. No smiling people, no staged lifestyle scenes.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-bw-block-5',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lbw-span-6',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Style: Documentary, honest, observational. Precision and craft, not lifestyle aspiration.',
+                      },
+                    ],
+                  },
+                ],
+              },
+
+              /**
+               * Lifestyle Shot - Color Variant
+               * Desaturated color palette, muted tones
+               */
+              {
+                _key: 'lifestyle-image-color',
+                title: 'Lifestyle Shot - Color',
+                icon: 'image',
+                prompt: [
+                  {
+                    _key: 'lifestyle-color-block-1',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lc-span-1',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Generate a lifestyle photograph for specialty coffee.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-color-block-2',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lc-span-2',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Product context: ',
+                      },
+                      {
+                        _key: 'lc-field-name',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'name',
+                      },
+                      {
+                        _key: 'lc-span-3',
+                        _type: 'span',
+                        marks: [],
+                        text: ' - ',
+                      },
+                      {
+                        _key: 'lc-field-flavor',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'flavorProfile',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-color-block-3',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lc-span-4',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Best for: ',
+                      },
+                      {
+                        _key: 'lc-field-bestfor',
+                        _type: 'sanity.assist.instruction.fieldRef',
+                        path: 'bestFor',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-color-block-4',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lc-span-5',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Photography specifications: Desaturated color palette, muted tones. High contrast with visible grain. Brutalist composition with negative space and intentional awkward crops. Subject options: roasting equipment, hands working, machinery close-ups, tools on surfaces. No smiling people, no staged lifestyle scenes. Warm undertones acceptable for coffee context.',
+                      },
+                    ],
+                  },
+                  {
+                    _key: 'lifestyle-color-block-5',
+                    _type: 'block',
+                    style: 'normal',
+                    markDefs: [],
+                    children: [
+                      {
+                        _key: 'lc-span-6',
+                        _type: 'span',
+                        marks: [],
+                        text: 'Style: Documentary, honest, observational. Precision and craft, not lifestyle aspiration.',
+                      },
+                    ],
                   },
                 ],
               },

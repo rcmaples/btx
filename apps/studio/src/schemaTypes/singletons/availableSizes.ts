@@ -7,7 +7,7 @@ export const availableSizes = defineType({
   type: 'document',
   icon: WeightTilde,
   __experimental_omnisearch_visibility: false,
-  liveEdit: true,
+  // liveEdit: true,
   fields: [
     defineField({
       name: 'sizeTypes',

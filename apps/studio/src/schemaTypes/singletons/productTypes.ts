@@ -8,7 +8,7 @@ export const productTypes = defineType({
   type: 'document',
   icon: Flower,
   __experimental_omnisearch_visibility: false,
-  liveEdit: true,
+  // liveEdit: true,
   fields: [
     defineField({
       name: 'types',

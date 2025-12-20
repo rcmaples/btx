@@ -8,7 +8,7 @@ export const productSchema = defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
-  liveEdit: true,
+  // liveEdit: true,
   fieldsets: [
     {
       name: 'coffeeDetails',
@@ -175,8 +175,18 @@ export const productSchema = defineType({
           type: 'image',
           options: {
             hotspot: true,
+            aiAssist: {
+              imageInstructionField: 'instruction',
+            },
           },
           fields: [
+            {
+              name: 'instruction',
+              title: 'Image Prompt',
+              type: 'text',
+              description: 'AI-generated image prompt. Edit this to regenerate the image.',
+              rows: 3,
+            },
             {
               name: 'imageType',
               title: 'Image Type',
@@ -189,7 +199,6 @@ export const productSchema = defineType({
                 ],
                 layout: 'radio',
               },
-              validation: (Rule) => Rule.required(),
             },
             {
               name: 'alt',

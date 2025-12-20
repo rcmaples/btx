@@ -2,6 +2,7 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
+import {assistWithPresets} from './src/plugins/assist'
 import {schemaTypes} from './src/schemaTypes'
 import {structure} from './src/structure'
 
@@ -20,6 +21,7 @@ export default defineConfig({
       structure,
     }),
     visionTool(),
+    assistWithPresets(),
   ],
 
   schema: {

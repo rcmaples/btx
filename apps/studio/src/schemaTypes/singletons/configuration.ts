@@ -7,7 +7,7 @@ export const configuration = defineType({
   type: 'document',
   icon: Settings,
   __experimental_omnisearch_visibility: false,
-  liveEdit: true,
+  // liveEdit: true,
   fieldsets: [
     {
       name: 'products',

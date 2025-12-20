@@ -4,7 +4,7 @@ export const bundleSchema = defineType({
   name: 'bundle',
   title: 'Bundle',
   type: 'document',
-  liveEdit: true,
+  // liveEdit: true,
   fields: [
     {
       name: 'name',
