@@ -4,12 +4,12 @@
 
 import {assist} from '@sanity/assist'
 
-import {postType} from '../schemaTypes/documents/post'
+import {articleSchmea} from '../schemaTypes/documents/article'
 
 export const assistWithPresets = () =>
   assist({
     __presets: {
-      [postType.name]: {
+      [articleSchmea.name]: {
         fields: [
           {
             /**

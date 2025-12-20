@@ -1,13 +1,14 @@
 import {type SchemaTypeDefinition} from 'sanity'
 
-import {authorType} from './documents/author'
-import {postType} from './documents/post'
-import {settings} from './singletons/settings'
+import {documentSchemaTypes} from './documents'
+import {bundleItemSchema} from './objects'
+import {singletonSchemaTypes} from './singletons'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Singletons
-  settings,
+  ...singletonSchemaTypes,
   // Documents
-  postType,
-  authorType,
+  ...documentSchemaTypes,
+  // Objects
+  bundleItemSchema,
 ]
