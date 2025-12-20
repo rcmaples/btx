@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Debug
+npm-debug.log*
+pnpm-debug.log*
+
+# Local env files
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# Turborepo
+.turbo
+
+# Sanity
+.sanity/
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+.Spotlight-V100
+.Trashes

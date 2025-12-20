@@ -1,0 +1,44 @@
+{
+  "name": "btx",
+  "version": "1.0.0",
+  "description": "rcmaples - A Turborepo starter with Next.js and Sanity CMS",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "format": "prettier --write .",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "sanity:deploy": "turbo run deploy --filter=studio",
+    "sanity:typegen": "turbo run typegen --filter=studio"
+  },
+  "keywords": [
+    "turborepo",
+    "nextjs",
+    "sanity",
+    "cms",
+    "typescript",
+    "starter"
+  ],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@10.26.1",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  },
+  "prettier": {
+    "semi": false,
+    "printWidth": 100,
+    "bracketSpacing": false,
+    "singleQuote": true
+  }
+}
