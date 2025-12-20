@@ -17,6 +17,7 @@ export const promotionSchema = defineType({
   name: 'promotion',
   title: 'Promotion',
   type: 'document',
+  liveEdit: true,
   fields: [
     {
       name: 'code',

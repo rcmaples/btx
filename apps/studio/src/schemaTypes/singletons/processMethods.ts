@@ -7,6 +7,7 @@ export const processMethods = defineType({
   type: 'document',
   icon: Droplet,
   __experimental_omnisearch_visibility: false,
+  liveEdit: true,
   fields: [
     defineField({
       name: 'methods',

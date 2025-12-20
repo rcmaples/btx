@@ -4,6 +4,7 @@ export const articleSchmea = defineType({
   name: 'article',
   title: 'Article',
   type: 'document',
+  liveEdit: true,
   fields: [
     {
       name: 'title',

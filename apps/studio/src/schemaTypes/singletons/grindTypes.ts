@@ -7,6 +7,7 @@ export const grindTypes = defineType({
   type: 'document',
   icon: Fan,
   __experimental_omnisearch_visibility: false,
+  liveEdit: true,
   fields: [
     defineField({
       name: 'grindOptions',

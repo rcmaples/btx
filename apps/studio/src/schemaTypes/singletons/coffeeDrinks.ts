@@ -7,6 +7,7 @@ export const coffeeDrinks = defineType({
   type: 'document',
   icon: Coffee,
   __experimental_omnisearch_visibility: false,
+  liveEdit: true,
   fields: [
     defineField({
       name: 'drinkTypes',

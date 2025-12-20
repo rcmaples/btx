@@ -8,6 +8,7 @@ export const productSchema = defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
+  liveEdit: true,
   fieldsets: [
     {
       name: 'coffeeDetails',
