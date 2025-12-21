@@ -67,25 +67,27 @@ export function AuthProvider({children}: {children: ReactNode}) {
     const pending = profileCache.getPending(userId)
     if (pending) return pending
 
-    // Create new request
-    const promise = Promise.resolve(
+    // Create the promise - wrap in Promise.resolve for proper type
+    const promise: Promise<Profile | null> = Promise.resolve(
       supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
-        .then(({data, error}) => {
-          if (error) {
-            console.error('Error fetching profile:', error)
-            return null
-          }
-          const profile = data as Profile
-          profileCache.set(userId, profile)
-          return profile
-        })
-    )
+    ).then(({data, error}) => {
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return null
+      }
+      const profile = data as Profile
+      profileCache.set(userId, profile)
+      return profile
+    })
 
+    // Set pending IMMEDIATELY (synchronously) before any await
+    // This prevents race conditions where multiple calls start before pending is set
     profileCache.setPending(userId, promise)
+
     return promise
   }
 

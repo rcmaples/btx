@@ -116,6 +116,12 @@ export async function getFilterOptions(): Promise<FilterOptions> {
   return sanityFetch<FilterOptions>(query, {}, { revalidate: 3600, tags: ['products'] });
 }
 
+// Lightweight query for generateStaticParams - only fetches slugs
+export async function getProductSlugs(): Promise<{ slug: string }[]> {
+  const query = `*[_type == "product"] { "slug": slug.current }`;
+  return sanityFetch<{ slug: string }[]>(query, {}, { revalidate: 3600, tags: ['products'] });
+}
+
 // ============================================================================
 // Client-Safe Product Queries (for use in client components/hooks)
 // ============================================================================
@@ -420,6 +426,12 @@ export async function getBundleBySlug(slug: string): Promise<SanityBundle | null
   }`;
 
   return sanityFetch<SanityBundle | null>(query, { slug }, { revalidate: 600, tags: ['bundles'] });
+}
+
+// Lightweight query for generateStaticParams - only fetches slugs
+export async function getBundleSlugs(): Promise<{ slug: string }[]> {
+  const query = `*[_type == "bundle" && isActive == true] { "slug": slug.current }`;
+  return sanityFetch<{ slug: string }[]>(query, {}, { revalidate: 3600, tags: ['bundles'] });
 }
 
 // ============================================================================

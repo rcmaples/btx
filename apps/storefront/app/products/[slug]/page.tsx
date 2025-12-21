@@ -1,7 +1,8 @@
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
+import {cache} from 'react'
 
-import {getProductBySlug, getProducts} from '@/lib/services/sanity/queries'
+import {getProductBySlug, getProductSlugs} from '@/lib/services/sanity/queries'
 
 import {ProductDetailClient} from './ProductDetailClient'
 
@@ -24,9 +25,12 @@ interface ProductPageProps {
   params: Promise<{slug: string}>
 }
 
+// Deduplicate requests between generateMetadata and page component
+const getCachedProduct = cache(getProductBySlug)
+
 export async function generateMetadata({params}: ProductPageProps): Promise<Metadata> {
   const {slug} = await params
-  const product = await getProductBySlug(slug)
+  const product = await getCachedProduct(slug)
 
   if (!product) {
     return {
@@ -45,16 +49,15 @@ export async function generateMetadata({params}: ProductPageProps): Promise<Meta
   }
 }
 
+// Use lightweight query - only fetch slugs, not full product data
 export async function generateStaticParams() {
-  const products = await getProducts()
-  return products.map((product) => ({
-    slug: product.slug,
-  }))
+  const slugs = await getProductSlugs()
+  return slugs.map(({slug}) => ({slug}))
 }
 
 export default async function ProductDetailPage({params}: ProductPageProps) {
   const {slug} = await params
-  const product = await getProductBySlug(slug)
+  const product = await getCachedProduct(slug)
 
   if (!product) {
     notFound()
