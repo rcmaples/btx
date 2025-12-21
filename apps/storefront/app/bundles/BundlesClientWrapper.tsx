@@ -1,0 +1,82 @@
+'use client'
+
+import {useMembership} from '@/lib/hooks/useMembership'
+import {useBundles} from '@/lib/hooks/useBundles'
+import {BundleCard} from '@/components/bundle/BundleCard'
+import type {SanityBundle} from '@/lib/types'
+
+interface BundlesClientWrapperProps {
+  initialBundles: SanityBundle[]
+}
+
+export function BundlesClientWrapper({initialBundles}: BundlesClientWrapperProps) {
+  const {isMember, mounted} = useMembership()
+
+  // Use custom hook for client-side data with membership status
+  const {data: bundles, isLoading, error} = useBundles(mounted ? isMember : false)
+
+  // Use server-side bundles until client data loads
+  const displayBundles = bundles ?? initialBundles
+
+  return (
+    <div>
+      <header className="mb-xl">
+        <h1 className="text-5xl font-black tracking-tighter mb-sm">Bundles</h1>
+        <p className="text-lg text-text-muted">
+          Curated coffee collections at special prices
+        </p>
+      </header>
+
+      <main>
+        {isLoading && !bundles && (
+          <div className="text-center py-xxl">
+            <div className="text-text-muted mb-lg">Loading bundles...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
+              {Array.from({length: 3}).map((_, i) => (
+                <div key={i} className="aspect-square bg-background-alt animate-pulse" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-xxl">
+            <h2 className="text-2xl font-bold mb-md">Failed to load bundles</h2>
+            <p className="text-text-muted mb-lg">
+              {error instanceof Error ? error.message : 'An error occurred'}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-primary text-background px-lg py-sm border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !error && displayBundles.length === 0 && (
+          <div className="text-center py-xxl">
+            <h2 className="text-2xl font-bold mb-md">No bundles available</h2>
+            <p className="text-text-muted">Check back soon for new bundle offerings.</p>
+          </div>
+        )}
+
+        {displayBundles.length > 0 && (
+          <>
+            <div className="mb-md">
+              <p className="text-sm text-text-muted">
+                {displayBundles.length} {displayBundles.length === 1 ? 'bundle' : 'bundles'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
+              {displayBundles.map((bundle) => (
+                <BundleCard key={bundle._id} bundle={bundle} />
+              ))}
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  )
+}
