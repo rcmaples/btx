@@ -17,11 +17,10 @@ export const structure: StructureResolver = (S) =>
 
       S.divider(),
 
-      S.divider(),
-
       // Regular documents
       S.documentTypeListItem('product').title('Products'),
       S.documentTypeListItem('bundle').title('Bundles'),
       S.documentTypeListItem('article').title('Articles'),
       S.documentTypeListItem('promotion').title('Promotions'),
+      S.documentTypeListItem('customer').title('Customers'),
     ])

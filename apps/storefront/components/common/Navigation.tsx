@@ -3,12 +3,10 @@
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import {useAuth} from '@/lib/providers/AuthProvider'
-
-// import {useCart} from '@/lib/hooks/useCart'
+import {useCart} from '@/lib/hooks/useCart'
 
 export const Navigation = () => {
-  //   const {itemCount} = useCart()
-  const itemCount = 2
+  const {itemCount} = useCart()
   const pathname = usePathname()
   const {user, isLoading} = useAuth()
 

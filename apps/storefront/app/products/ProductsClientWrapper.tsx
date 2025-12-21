@@ -7,30 +7,24 @@ import {ProductCard} from '@/components/product/ProductCard'
 import {ProductFilters} from '@/components/product/ProductFilters'
 import {useMembership} from '@/lib/hooks/useMembership'
 import {useProducts} from '@/lib/hooks/useProducts'
-import type {FilterOptions, Product, ProductFilters as Filters} from '@/lib/types'
+import type {ProductFilters as Filters} from '@/lib/types'
 
 interface ProductsClientWrapperProps {
-  initialProducts: Product[]
-  filterOptions: FilterOptions
   initialFilters: Filters
 }
 
-export function ProductsClientWrapper({
-  initialProducts,
-  filterOptions,
-  initialFilters,
-}: ProductsClientWrapperProps) {
+export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const {isMember, mounted} = useMembership()
 
   const [filters, setFilters] = useState<Filters>(initialFilters)
 
-  // Use React Query for client-side data with membership status
+  // Use React Query - will use hydrated data from server on initial load
   const {data: products, isLoading, error} = useProducts(filters, mounted ? isMember : false)
 
-  // Use server-side products until React Query loads
-  const displayProducts = products ?? initialProducts
+  // products comes from hydrated cache on initial load - no re-fetch needed
+  const displayProducts = products ?? []
 
   // Sync filters to URL
   useEffect(() => {

@@ -146,6 +146,32 @@ export type Slug = {
   source?: string
 }
 
+export type Customer = {
+  _id: string
+  _type: 'customer'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  supabaseId?: string
+  email?: string
+  phone?: string
+  address?: {
+    street?: string
+    street2?: string
+    city?: string
+    state?: string
+    postalCode?: string
+    country?: string
+  }
+  exchangeMembership?: {
+    isMember?: boolean
+    enrolledAt?: string
+    cancelledAt?: string
+  }
+  createdAt?: string
+  updatedAt?: string
+}
+
 export type Bundle = {
   _id: string
   _type: 'bundle'
@@ -612,6 +638,7 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | Slug
+  | Customer
   | Bundle
   | Article
   | ProductTypesReference

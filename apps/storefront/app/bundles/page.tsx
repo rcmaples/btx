@@ -1,4 +1,5 @@
 import {Metadata} from 'next'
+import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
 
 import {getBundles} from '@/lib/services/sanity/queries'
 
@@ -10,8 +11,17 @@ export const metadata: Metadata = {
 }
 
 export default async function BundlesPage() {
-  // Fetch bundles server-side (without membership for initial load)
-  const bundles = await getBundles({isMember: false})
+  const queryClient = new QueryClient()
 
-  return <BundlesClientWrapper initialBundles={bundles} />
+  // Prefetch bundles into query cache with same key that useBundles uses
+  await queryClient.prefetchQuery({
+    queryKey: ['bundles', 'list', {isMember: false}],
+    queryFn: () => getBundles({isMember: false}),
+  })
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <BundlesClientWrapper />
+    </HydrationBoundary>
+  )
 }

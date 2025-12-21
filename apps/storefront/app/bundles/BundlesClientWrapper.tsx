@@ -3,20 +3,16 @@
 import {useMembership} from '@/lib/hooks/useMembership'
 import {useBundles} from '@/lib/hooks/useBundles'
 import {BundleCard} from '@/components/bundle/BundleCard'
-import type {SanityBundle} from '@/lib/types'
 
-interface BundlesClientWrapperProps {
-  initialBundles: SanityBundle[]
-}
-
-export function BundlesClientWrapper({initialBundles}: BundlesClientWrapperProps) {
+export function BundlesClientWrapper() {
   const {isMember, mounted} = useMembership()
 
-  // Use custom hook for client-side data with membership status
+  // Use custom hook - will use hydrated data from server on initial load
+  // When mounted becomes true and isMember changes, it will fetch fresh data
   const {data: bundles, isLoading, error} = useBundles(mounted ? isMember : false)
 
-  // Use server-side bundles until client data loads
-  const displayBundles = bundles ?? initialBundles
+  // bundles comes from hydrated cache on initial load - no re-fetch needed
+  const displayBundles = bundles ?? []
 
   return (
     <div>

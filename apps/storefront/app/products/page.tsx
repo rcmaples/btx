@@ -1,6 +1,6 @@
 import {Metadata} from 'next'
+import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
 import {getProducts, getFilterOptions} from '@/lib/services/sanity/queries'
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
 import {ProductsClientWrapper} from './ProductsClientWrapper'
 
 export const metadata: Metadata = {
@@ -20,33 +20,31 @@ export default async function ProductsPage({
   }>
 }) {
   const params = await searchParams
+  const queryClient = new QueryClient()
 
-  // Fetch products and filter options server-side
-  const [products, filterOptions] = await Promise.all([
-    getProducts({
-      roastLevel: params.roastLevel,
-      origin: params.origin,
-      processMethod: params.processMethod,
-      bestFor: params.bestFor,
-      exclusiveOnly: params.exclusiveOnly === 'true',
-      isMember: false, // Client will re-fetch with membership status
+  const initialFilters = {
+    roastLevel: params.roastLevel as 'Light' | 'Medium' | 'Dark' | undefined,
+    origin: params.origin,
+    processMethod: params.processMethod as 'Washed' | 'Natural' | 'Honey' | undefined,
+    bestFor: params.bestFor,
+    exclusiveOnly: params.exclusiveOnly === 'true' || undefined,
+  }
+
+  // Prefetch products and filter options into query cache
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ['products', 'list', {filters: initialFilters, isMember: false}],
+      queryFn: () => getProducts({...initialFilters, isMember: false}),
     }),
-    getFilterOptions(),
+    queryClient.prefetchQuery({
+      queryKey: ['products', 'filterOptions'],
+      queryFn: getFilterOptions,
+    }),
   ])
 
   return (
-    <ClientAuthWrapper>
-      <ProductsClientWrapper
-        initialProducts={products}
-        filterOptions={filterOptions}
-        initialFilters={{
-          roastLevel: params.roastLevel as any,
-          origin: params.origin,
-          processMethod: params.processMethod as any,
-          bestFor: params.bestFor,
-          exclusiveOnly: params.exclusiveOnly === 'true' || undefined,
-        }}
-      />
-    </ClientAuthWrapper>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProductsClientWrapper initialFilters={initialFilters} />
+    </HydrationBoundary>
   )
 }

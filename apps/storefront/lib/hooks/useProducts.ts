@@ -19,6 +19,7 @@ export function useProducts(filters?: ProductFilters, isMember?: boolean) {
   return useQuery({
     queryKey: productKeys.list(filters, isMember),
     queryFn: () => productService.getProductsClient(filters, isMember),
+    staleTime: 5 * 60 * 1000, // 5 minutes - won't refetch if hydrated
   })
 }
 

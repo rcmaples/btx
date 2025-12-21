@@ -16,6 +16,7 @@ export function useBundles(isMember?: boolean) {
   return useQuery({
     queryKey: bundleKeys.list(isMember),
     queryFn: () => bundleService.getBundlesClient({isMember}),
+    staleTime: 5 * 60 * 1000, // 5 minutes - won't refetch if hydrated
   })
 }
 
