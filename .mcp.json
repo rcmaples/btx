@@ -2,31 +2,19 @@
   "mcpServers": {
     "Sanity": {
       "command": "npx",
-      "args": ["mcp-remote", "https://mcp.sanity.io", "--transport", "http-only"],
-      "alwaysAllow": [
-        "search_docs",
-        "read_docs",
-        "migration_guide",
-        "list_sanity_rules",
-        "get_sanity_rules"
-      ]
+      "args": ["mcp-remote", "https://mcp.sanity.io", "--transport", "http-only"]
     },
-    "next-devtools": {"command": "npx", "args": ["-y", "next-devtools-mcp@latest"]},
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=vmyrxxgpzjgcbrcmwoxq"
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/rc/github"],
-      "alwaysAllow": [
-        "read_file",
-        "read_text_file",
-        "read_media_file",
-        "read_multiple_files",
-        "list_directory",
-        "list_directory_with_sizes",
-        "directory_tree",
-        "search_files",
-        "get_file_info",
-        "list_allowed_directories"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/rc/github"]
     }
   }
 }
