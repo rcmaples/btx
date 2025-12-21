@@ -1,8 +1,11 @@
-import type {ArrayOfPrimitivesInputProps, StringInputProps} from 'sanity'
+import type {ArrayOfObjectsInputProps, ArrayOfPrimitivesInputProps, StringInputProps} from 'sanity'
 import {defineType} from 'sanity'
 
 import {DynamicArrayCheckboxInput} from '../../components/inputs/DynamicArrayCheckboxInput'
+import {DynamicPricingInput} from '../../components/inputs/DynamicPricingInput'
 import {DynamicRadioInput} from '../../components/inputs/DynamicRadioInput'
+import {GrindCheckboxInput} from '../../components/inputs/GrindCheckboxInput'
+import {SizeCheckboxInput} from '../../components/inputs/SizeCheckboxInput'
 
 export const productSchema = defineType({
   name: 'product',
@@ -15,6 +18,15 @@ export const productSchema = defineType({
       title: 'Coffee Details',
       options: {
         columns: 2,
+      },
+    },
+    {
+      name: 'purchaseOptions',
+      title: 'Purchase Options',
+      description: 'Configure available sizes, grinds, and pricing for this product',
+      options: {
+        collapsible: true,
+        collapsed: false,
       },
     },
   ],
@@ -252,6 +264,81 @@ export const productSchema = defineType({
       ],
       validation: (Rule) => Rule.max(3),
       description: 'Add up to 3 frequently asked questions',
+    },
+    // Purchase Options
+    {
+      name: 'availableSizes',
+      title: 'Available Sizes',
+      type: 'array',
+      of: [{type: 'string'}],
+      fieldset: 'purchaseOptions',
+      description: 'Select which sizes this coffee is available in',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) =>
+          SizeCheckboxInput({
+            ...props,
+            query: '*[_type == "availableSizes"][0].sizeTypes[]{_key, "title": name, "value": _key, grams}',
+          }),
+      },
+      validation: (Rule) => Rule.required().min(1).error('At least one size must be selected'),
+    },
+    {
+      name: 'availableGrinds',
+      title: 'Available Grind Types',
+      type: 'array',
+      of: [{type: 'string'}],
+      fieldset: 'purchaseOptions',
+      description: 'Select which grind options are available for this coffee',
+      components: {
+        input: (props: ArrayOfPrimitivesInputProps) =>
+          GrindCheckboxInput({
+            ...props,
+            query: '*[_type == "grindTypes"][0].grindOptions[]',
+          }),
+      },
+      validation: (Rule) => Rule.required().min(1).error('At least one grind type must be selected'),
+    },
+    {
+      name: 'pricing',
+      title: 'Pricing',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          name: 'priceEntry',
+          fields: [
+            {name: 'sizeKey', type: 'string', hidden: true},
+            {name: 'sizeName', type: 'string', hidden: true},
+            {name: 'grams', type: 'number', hidden: true},
+            {name: 'priceInCents', type: 'number', title: 'Price (cents)'},
+            {name: 'isBasePrice', type: 'boolean', hidden: true},
+          ],
+        },
+      ],
+      fieldset: 'purchaseOptions',
+      description: 'Set the base price (smallest size) and other sizes will auto-calculate proportionally',
+      components: {
+        input: (props: ArrayOfObjectsInputProps) => DynamicPricingInput(props),
+      },
+      validation: (Rule) =>
+        Rule.custom((pricing, context) => {
+          const sizes = (context.document as {availableSizes?: string[]})?.availableSizes || []
+          if (sizes.length === 0) return true
+
+          if (!pricing || !Array.isArray(pricing) || pricing.length !== sizes.length) {
+            return 'Prices must be set for all selected sizes'
+          }
+
+          const hasBasePrice = pricing.some(
+            (p: {isBasePrice?: boolean; priceInCents?: number}) =>
+              p.isBasePrice && p.priceInCents && p.priceInCents > 0,
+          )
+          if (!hasBasePrice) {
+            return 'Base price is required and must be greater than 0'
+          }
+
+          return true
+        }),
     },
   ],
   preview: {
