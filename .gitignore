@@ -7,6 +7,9 @@ out/
 build/
 dist/
 
+# Typescript
+*.tsbuildinfo
+
 # Debug
 npm-debug.log*
 pnpm-debug.log*
@@ -31,6 +34,9 @@ dist/
 # IDE
 .vscode/
 .idea/
+.kilocode/
+/plans/
+/content/
 
 # OS
 .DS_Store

@@ -1,32 +1,27 @@
+import {Settings} from 'lucide-react'
 import type {StructureResolver} from 'sanity/structure'
 
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
 
 export const structure: StructureResolver = (S) =>
-  S.list().title('Base').items(S.documentTypeListItems())
+  S.list()
+    .title('Content')
+    .items([
+      // Main Configuration Dashboard
+      S.listItem()
+        .title('Configuration')
+        .icon(Settings)
+        .child(
+          S.editor().id('configuration').schemaType('configuration').documentId('configuration'),
+        ),
 
-// export const structure: StructureResolver = (S) =>
-//   S.list()
-//     .title('Base')
-//     .items([
-//       S.listItem()
-//         .title('Settings')
-//         .child(S.editor().schemaType('settings').documentId('settings')),
-//       S.divider(),
-//       S.documentTypeListItem('post').title('All Posts'),
-//       S.documentTypeListItem('author').title('Authors'),
-//       S.divider(),
-//       S.listItem()
-//         .title('Posts by Author')
-//         .child(
-//           S.documentTypeList('author')
-//             .title('Select an Author')
-//             .initialValueTemplates([])
-//             .child((authorId) => {
-//               return S.documentList()
-//                 .title('Posts by Author')
-//                 .filter('_type == "post" && references($authorId)')
-//                 .params({ authorId });
-//             })
-//         ),
-//     ]);
+      S.divider(),
+
+      S.divider(),
+
+      // Regular documents
+      S.documentTypeListItem('product').title('Products'),
+      S.documentTypeListItem('bundle').title('Bundles'),
+      S.documentTypeListItem('article').title('Articles'),
+      S.documentTypeListItem('promotion').title('Promotions'),
+    ])
