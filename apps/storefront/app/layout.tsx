@@ -6,6 +6,9 @@ import type {ReactNode} from 'react'
 
 import {Footer} from '@/components/common/Footer'
 import {Navigation} from '@/components/common/Navigation'
+import {MigrationPromptWrapper} from '@/components/membership/MigrationPromptWrapper'
+import {QueryProvider} from '@/lib/providers/QueryProvider'
+import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -34,25 +37,35 @@ export default function RootLayout({children}: {children: ReactNode}) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col">
-        {/* Skip link for keyboard navigation */}
-        <a
-          href="#main-content"
-          className="absolute -top-full left-1/2 -translate-x-1/2 bg-primary text-background px-lg py-sm rounded z-[9999] transition-all duration-fast focus:top-md focus:outline focus:outline-2 focus:outline-focus focus:outline-offset-2"
-        >
-          Skip to main content
-        </a>
+        <QueryProvider>
+          {/* Skip link for keyboard navigation */}
+          <a
+            href="#main-content"
+            className="absolute -top-full left-1/2 -translate-x-1/2 bg-primary text-background px-lg py-sm rounded z-[9999] transition-all duration-fast focus:top-md focus:outline focus:outline-2 focus:outline-focus focus:outline-offset-2"
+          >
+            Skip to main content
+          </a>
 
-        <Navigation />
+          {/* Navigation needs auth context but loads non-blocking */}
+          <ClientAuthWrapper>
+            <Navigation />
+          </ClientAuthWrapper>
 
-        <main
-          id="main-content"
-          className="flex-1 max-w-[1400px] w-full mx-auto px-xl py-xxl"
-          role="main"
-        >
-          {children}
-        </main>
+          <main
+            id="main-content"
+            className="flex-1 max-w-[1400px] w-full mx-auto px-xl py-xxl"
+            role="main"
+          >
+            {children}
+          </main>
 
-        <Footer />
+          <Footer />
+
+          {/* Migration prompt for localStorage members who log in - wrapped in ClientAuthWrapper */}
+          <ClientAuthWrapper>
+            <MigrationPromptWrapper />
+          </ClientAuthWrapper>
+        </QueryProvider>
       </body>
     </html>
   )

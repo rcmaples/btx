@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
+import {useAuth} from '@/lib/providers/AuthProvider'
 
 // import {useCart} from '@/lib/hooks/useCart'
 
@@ -9,6 +10,7 @@ export const Navigation = () => {
   //   const {itemCount} = useCart()
   const itemCount = 2
   const pathname = usePathname()
+  const {user, isLoading} = useAuth()
 
   const navLinks = [
     {href: '/products', label: 'Products'},
@@ -58,6 +60,34 @@ export const Navigation = () => {
               </span>
             )}
           </Link>
+
+          {/* Render auth links immediately - show skeleton while loading */}
+          {isLoading ? (
+            <div
+              className="w-20 h-8 bg-border/30 animate-pulse rounded"
+              aria-label="Loading authentication state"
+            />
+          ) : user ? (
+            <Link
+              href="/profile"
+              className={`text-base font-medium no-underline text-text px-md py-sm border border-transparent transition-all duration-fast hover:border-b-border ${
+                pathname === '/profile' ? 'border-b-2 border-b-border' : ''
+              }`}
+            >
+              Profile
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className={`text-base font-medium no-underline text-text px-md py-sm border border-transparent transition-all duration-fast hover:border-b-border ${
+                pathname === '/login' || pathname === '/signup'
+                  ? 'border-b-2 border-b-border'
+                  : ''
+              }`}
+            >
+              Sign In
+            </Link>
+          )}
         </nav>
       </div>
     </header>

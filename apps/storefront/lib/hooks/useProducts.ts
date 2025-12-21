@@ -1,106 +1,39 @@
 'use client'
 
-import {useEffect, useMemo, useState} from 'react'
-
+import {useQuery} from '@tanstack/react-query'
 import {productService} from '@/lib/services/product/product-service'
 import type {FilterOptions, Product, ProductFilters} from '@/lib/types'
 
+// Query key factory for stable keys
+const productKeys = {
+  all: ['products'] as const,
+  lists: () => [...productKeys.all, 'list'] as const,
+  list: (filters?: ProductFilters, isMember?: boolean) =>
+    [...productKeys.lists(), {filters, isMember}] as const,
+  details: () => [...productKeys.all, 'detail'] as const,
+  detail: (slug: string) => [...productKeys.details(), slug] as const,
+  filterOptions: () => [...productKeys.all, 'filterOptions'] as const,
+}
+
 export function useProducts(filters?: ProductFilters, isMember?: boolean) {
-  const [data, setData] = useState<Product[] | undefined>()
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  // Serialize filters for stable dependency tracking
-  const filtersKey = useMemo(() => JSON.stringify(filters), [filters])
-
-  useEffect(() => {
-    let cancelled = false
-    setIsLoading(true)
-    setError(null)
-
-    productService
-      .getProductsClient(filters, isMember)
-      .then((products) => {
-        if (!cancelled) setData(products)
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err : new Error(String(err)))
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtersKey, isMember])
-
-  return {data, isLoading, error}
+  return useQuery({
+    queryKey: productKeys.list(filters, isMember),
+    queryFn: () => productService.getProductsClient(filters, isMember),
+  })
 }
 
 export function useProductBySlug(slug: string) {
-  const [data, setData] = useState<Product | null | undefined>()
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    if (!slug) {
-      setData(undefined)
-      setIsLoading(false)
-      return
-    }
-
-    let cancelled = false
-    setIsLoading(true)
-    setError(null)
-
-    productService
-      .getProductBySlugClient(slug)
-      .then((product) => {
-        if (!cancelled) setData(product)
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err : new Error(String(err)))
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [slug])
-
-  return {data, isLoading, error}
+  return useQuery({
+    queryKey: productKeys.detail(slug),
+    queryFn: () => productService.getProductBySlugClient(slug),
+    enabled: !!slug,
+  })
 }
 
 export function useFilterOptions() {
-  const [data, setData] = useState<FilterOptions | undefined>()
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    setIsLoading(true)
-    setError(null)
-
-    productService
-      .getFilterOptionsClient()
-      .then((options) => {
-        if (!cancelled) setData(options)
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err : new Error(String(err)))
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  return {data, isLoading, error}
+  return useQuery({
+    queryKey: productKeys.filterOptions(),
+    queryFn: () => productService.getFilterOptionsClient(),
+    staleTime: 10 * 60 * 1000, // Filter options change rarely
+  })
 }
