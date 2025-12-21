@@ -1,4 +1,4 @@
-import {type SchemaTypeDefinition} from 'sanity'
+import type {SchemaTypeDefinition} from 'sanity'
 
 import {documentSchemaTypes} from './documents'
 import {bundleItemSchema} from './objects'

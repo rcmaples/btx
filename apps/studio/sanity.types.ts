@@ -22,8 +22,8 @@ export type ProductReference = {
 
 export type BundleItem = {
   _type: 'bundleItem'
-  product: ProductReference
-  quantity: number
+  product?: ProductReference
+  quantity?: number
 }
 
 export type Promotion = {
@@ -33,10 +33,10 @@ export type Promotion = {
   _updatedAt: string
   _rev: string
   code?: string
-  name: string
-  type: 'manual' | 'auto'
-  discountType: 'percentage' | 'fixed_amount'
-  discountValue: number
+  name?: string
+  type?: 'manual' | 'auto'
+  discountType?: 'percentage' | 'fixed_amount'
+  discountValue?: number
   minimumPurchase?: number
   applicableProducts?: Array<
     {
@@ -66,11 +66,11 @@ export type Product = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  name: string
-  slug: Slug
+  name?: string
+  slug?: Slug
   isExclusiveDrop?: boolean
   featured?: boolean
-  description: Array<{
+  description?: Array<{
     children?: Array<{
       marks?: Array<string>
       text?: string
@@ -89,11 +89,11 @@ export type Product = {
     _key: string
   }>
   flavorProfile?: Array<string>
-  origin: string
-  processMethod: string
-  roastLevel: string
+  origin?: string
+  processMethod?: string
+  roastLevel?: string
   bestFor?: Array<string>
-  productType: string
+  productType?: string
   images?: Array<{
     asset?: SanityImageAssetReference
     media?: unknown
@@ -101,37 +101,48 @@ export type Product = {
     crop?: SanityImageCrop
     instruction?: string
     imageType?: 'product' | 'lifestyle'
-    alt: string
+    alt?: string
     caption?: string
     _type: 'image'
     _key: string
   }>
   faqs?: Array<{
-    question: string
-    answer: string
+    question?: string
+    answer?: string
+    _key: string
+  }>
+  availableSizes?: Array<string>
+  availableGrinds?: Array<string>
+  pricing?: Array<{
+    sizeKey?: string
+    sizeName?: string
+    grams?: number
+    priceInCents?: number
+    isBasePrice?: boolean
+    _type: 'priceEntry'
     _key: string
   }>
 }
 
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
+  top?: number
+  bottom?: number
+  left?: number
+  right?: number
 }
 
 export type SanityImageHotspot = {
   _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
+  x?: number
+  y?: number
+  height?: number
+  width?: number
 }
 
 export type Slug = {
   _type: 'slug'
-  current: string
+  current?: string
   source?: string
 }
 
@@ -141,15 +152,15 @@ export type Bundle = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  name: string
-  slug: Slug
-  description: string
-  items: Array<
+  name?: string
+  slug?: Slug
+  description?: string
+  items?: Array<
     {
       _key: string
     } & BundleItem
   >
-  price: number
+  price?: number
   savingsAmount?: number
   image?: {
     asset?: SanityImageAssetReference
@@ -169,12 +180,12 @@ export type Article = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title: string
-  slug: Slug
-  publishedAt: string
+  title?: string
+  slug?: Slug
+  publishedAt?: string
   author?: string
   excerpt?: string
-  body: Array<
+  body?: Array<
     | {
         children?: Array<{
           marks?: Array<string>
@@ -266,12 +277,12 @@ export type Configuration = {
   _createdAt: string
   _updatedAt: string
   _rev: string
-  productTypes: ProductTypesReference
-  processMethods: ProcessMethodsReference
-  roastLevels: RoastLevelsReference
-  coffeeDrinks: CoffeeDrinksReference
-  grindTypes: GrindTypesReference
-  availableSizes: AvailableSizesReference
+  productTypes?: ProductTypesReference
+  processMethods?: ProcessMethodsReference
+  roastLevels?: RoastLevelsReference
+  coffeeDrinks?: CoffeeDrinksReference
+  grindTypes?: GrindTypesReference
+  availableSizes?: AvailableSizesReference
 }
 
 export type AvailableSizes = {
@@ -282,9 +293,9 @@ export type AvailableSizes = {
   _rev: string
   sizeTypes?: Array<{
     name?: string
-    grams: number
-    ounces: number
-    pounds: number
+    grams?: number
+    ounces?: number
+    pounds?: number
     _type: 'size'
     _key: string
   }>
@@ -306,8 +317,8 @@ export type CoffeeDrinks = {
   _updatedAt: string
   _rev: string
   drinkTypes?: Array<{
-    title: string
-    value: string
+    title?: string
+    value?: string
     description?: string
     _type: 'drinkType'
     _key: string
@@ -321,8 +332,8 @@ export type RoastLevels = {
   _updatedAt: string
   _rev: string
   roastTypes?: Array<{
-    title: string
-    value: string
+    title?: string
+    value?: string
     description?: string
     _type: 'roastLevel'
     _key: string
@@ -336,8 +347,8 @@ export type ProcessMethods = {
   _updatedAt: string
   _rev: string
   methods?: Array<{
-    title: string
-    value: string
+    title?: string
+    value?: string
     description?: string
     _type: 'processMethod'
     _key: string
@@ -351,8 +362,8 @@ export type ProductTypes = {
   _updatedAt: string
   _rev: string
   types?: Array<{
-    title: string
-    value: string
+    title?: string
+    value?: string
     description?: string
     _type: 'productType'
     _key: string
@@ -406,7 +417,7 @@ export type AssistInstructionContextReference = {
 
 export type SanityAssistInstructionContext = {
   _type: 'sanity.assist.instruction.context'
-  reference: AssistInstructionContextReference
+  reference?: AssistInstructionContextReference
 }
 
 export type AssistInstructionContext = {
@@ -434,7 +445,7 @@ export type AssistInstructionContext = {
 
 export type SanityAssistInstructionUserInput = {
   _type: 'sanity.assist.instruction.userInput'
-  message: string
+  message?: string
   description?: string
 }
 
@@ -517,9 +528,9 @@ export type SanityImagePalette = {
 
 export type SanityImageDimensions = {
   _type: 'sanity.imageDimensions'
-  height: number
-  width: number
-  aspectRatio: number
+  height?: number
+  width?: number
+  aspectRatio?: number
 }
 
 export type SanityImageMetadata = {

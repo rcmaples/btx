@@ -48,14 +48,14 @@
             "type": "inline",
             "name": "product.reference"
           },
-          "optional": false
+          "optional": true
         },
         "quantity": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         }
       }
     }
@@ -107,7 +107,7 @@
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "type": {
         "type": "objectAttribute",
@@ -124,7 +124,7 @@
             }
           ]
         },
-        "optional": false
+        "optional": true
       },
       "discountType": {
         "type": "objectAttribute",
@@ -141,14 +141,14 @@
             }
           ]
         },
-        "optional": false
+        "optional": true
       },
       "discountValue": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
         },
-        "optional": false
+        "optional": true
       },
       "minimumPurchase": {
         "type": "objectAttribute",
@@ -294,7 +294,7 @@
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "slug": {
         "type": "objectAttribute",
@@ -302,7 +302,7 @@
           "type": "inline",
           "name": "slug"
         },
-        "optional": false
+        "optional": true
       },
       "isExclusiveDrop": {
         "type": "objectAttribute",
@@ -483,7 +483,7 @@
             }
           }
         },
-        "optional": false
+        "optional": true
       },
       "flavorProfile": {
         "type": "objectAttribute",
@@ -500,21 +500,21 @@
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "processMethod": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "roastLevel": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "bestFor": {
         "type": "objectAttribute",
@@ -531,7 +531,7 @@
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "images": {
         "type": "objectAttribute",
@@ -600,7 +600,7 @@
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "caption": {
                 "type": "objectAttribute",
@@ -644,14 +644,99 @@
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "answer": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
+              }
+            },
+            "rest": {
+              "type": "object",
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "optional": true
+      },
+      "availableSizes": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "availableGrinds": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
+      "pricing": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "object",
+            "attributes": {
+              "sizeKey": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "sizeName": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "grams": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "priceInCents": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "number"
+                },
+                "optional": true
+              },
+              "isBasePrice": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "boolean"
+                },
+                "optional": true
+              },
+              "_type": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                  "value": "priceEntry"
+                }
               }
             },
             "rest": {
@@ -689,28 +774,28 @@
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "bottom": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "left": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "right": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         }
       }
     }
@@ -733,28 +818,28 @@
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "y": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "height": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "width": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         }
       }
     }
@@ -777,7 +862,7 @@
           "value": {
             "type": "string"
           },
-          "optional": false
+          "optional": true
         },
         "source": {
           "type": "objectAttribute",
@@ -829,7 +914,7 @@
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "slug": {
         "type": "objectAttribute",
@@ -837,14 +922,14 @@
           "type": "inline",
           "name": "slug"
         },
-        "optional": false
+        "optional": true
       },
       "description": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "items": {
         "type": "objectAttribute",
@@ -866,14 +951,14 @@
             }
           }
         },
-        "optional": false
+        "optional": true
       },
       "price": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
         },
-        "optional": false
+        "optional": true
       },
       "savingsAmount": {
         "type": "objectAttribute",
@@ -992,7 +1077,7 @@
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "slug": {
         "type": "objectAttribute",
@@ -1000,14 +1085,14 @@
           "type": "inline",
           "name": "slug"
         },
-        "optional": false
+        "optional": true
       },
       "publishedAt": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
-        "optional": false
+        "optional": true
       },
       "author": {
         "type": "objectAttribute",
@@ -1261,7 +1346,7 @@
             ]
           }
         },
-        "optional": false
+        "optional": true
       },
       "featuredProducts": {
         "type": "objectAttribute",
@@ -1555,7 +1640,7 @@
           "type": "inline",
           "name": "productTypes.reference"
         },
-        "optional": false
+        "optional": true
       },
       "processMethods": {
         "type": "objectAttribute",
@@ -1563,7 +1648,7 @@
           "type": "inline",
           "name": "processMethods.reference"
         },
-        "optional": false
+        "optional": true
       },
       "roastLevels": {
         "type": "objectAttribute",
@@ -1571,7 +1656,7 @@
           "type": "inline",
           "name": "roastLevels.reference"
         },
-        "optional": false
+        "optional": true
       },
       "coffeeDrinks": {
         "type": "objectAttribute",
@@ -1579,7 +1664,7 @@
           "type": "inline",
           "name": "coffeeDrinks.reference"
         },
-        "optional": false
+        "optional": true
       },
       "grindTypes": {
         "type": "objectAttribute",
@@ -1587,7 +1672,7 @@
           "type": "inline",
           "name": "grindTypes.reference"
         },
-        "optional": false
+        "optional": true
       },
       "availableSizes": {
         "type": "objectAttribute",
@@ -1595,7 +1680,7 @@
           "type": "inline",
           "name": "availableSizes.reference"
         },
-        "optional": false
+        "optional": true
       }
     }
   },
@@ -1653,21 +1738,21 @@
                 "value": {
                   "type": "number"
                 },
-                "optional": false
+                "optional": true
               },
               "ounces": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "number"
                 },
-                "optional": false
+                "optional": true
               },
               "pounds": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "number"
                 },
-                "optional": false
+                "optional": true
               },
               "_type": {
                 "type": "objectAttribute",
@@ -1788,14 +1873,14 @@
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "value": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "description": {
                 "type": "objectAttribute",
@@ -1876,14 +1961,14 @@
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "value": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "description": {
                 "type": "objectAttribute",
@@ -1964,14 +2049,14 @@
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "value": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "description": {
                 "type": "objectAttribute",
@@ -2052,14 +2137,14 @@
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "value": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"
                 },
-                "optional": false
+                "optional": true
               },
               "description": {
                 "type": "objectAttribute",
@@ -2322,7 +2407,7 @@
             "type": "inline",
             "name": "assist.instruction.context.reference"
           },
-          "optional": false
+          "optional": true
         }
       }
     }
@@ -2501,7 +2586,7 @@
           "value": {
             "type": "string"
           },
-          "optional": false
+          "optional": true
         },
         "description": {
           "type": "objectAttribute",
@@ -2971,21 +3056,21 @@
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "width": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         },
         "aspectRatio": {
           "type": "objectAttribute",
           "value": {
             "type": "number"
           },
-          "optional": false
+          "optional": true
         }
       }
     }

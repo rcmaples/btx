@@ -11,7 +11,7 @@ const dataset = process.env.SANITY_STUDIO_DATASET!
 
 export default defineConfig({
   name: 'btx',
-  title: 'rcmaples',
+  title: 'Batch Theory',
 
   projectId,
   dataset,
