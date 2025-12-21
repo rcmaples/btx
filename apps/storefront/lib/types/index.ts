@@ -172,6 +172,7 @@ export interface OrderLineItem {
 export interface Membership {
   isMember: boolean;
   enrolledAt?: Date;
+  cancelledAt?: Date;
 }
 
 export interface Article {

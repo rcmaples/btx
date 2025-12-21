@@ -1,5 +1,6 @@
 import {Metadata} from 'next'
 import {getProducts, getFilterOptions} from '@/lib/services/sanity/queries'
+import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
 import {ProductsClientWrapper} from './ProductsClientWrapper'
 
 export const metadata: Metadata = {
@@ -34,16 +35,18 @@ export default async function ProductsPage({
   ])
 
   return (
-    <ProductsClientWrapper
-      initialProducts={products}
-      filterOptions={filterOptions}
-      initialFilters={{
-        roastLevel: params.roastLevel as any,
-        origin: params.origin,
-        processMethod: params.processMethod as any,
-        bestFor: params.bestFor,
-        exclusiveOnly: params.exclusiveOnly === 'true' || undefined,
-      }}
-    />
+    <ClientAuthWrapper>
+      <ProductsClientWrapper
+        initialProducts={products}
+        filterOptions={filterOptions}
+        initialFilters={{
+          roastLevel: params.roastLevel as any,
+          origin: params.origin,
+          processMethod: params.processMethod as any,
+          bestFor: params.bestFor,
+          exclusiveOnly: params.exclusiveOnly === 'true' || undefined,
+        }}
+      />
+    </ClientAuthWrapper>
   )
 }
