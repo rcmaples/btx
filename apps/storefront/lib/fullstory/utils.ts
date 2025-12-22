@@ -2,22 +2,22 @@ import {FullStory as FS} from '@fullstory/browser'
 
 // Type definitions
 export interface AddToCartEvent {
-  product_sku_str: string
-  product_name_str: string
-  quantity_int: number
-  price_real: number
-  size_str: string
-  grind_str: string
+  product_sku: string
+  product_name: string
+  quantity: number
+  price: number
+  size: string
+  grind: string
 }
 
 export interface CheckoutInitiatedEvent {
-  cart_value_real: number
-  item_count_int: number
-  has_promotion_bool: boolean
-  promotion_code_str?: string
+  cart_value: number
+  item_count: number
+  has_promotion: boolean
+  promotion_code?: string
 }
 
-// Helper to convert cents to dollars for _real fields
+// Helper to convert cents to dollars for  fields
 export function centsToReal(cents: number): number {
   return Number((cents / 100).toFixed(2))
 }

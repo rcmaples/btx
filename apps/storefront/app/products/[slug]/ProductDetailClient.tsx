@@ -35,12 +35,12 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
 
       // Track FS event AFTER successful add
       trackAddToCart({
-        product_sku_str: selectedPurchaseOption.productId,
-        product_name_str: selectedPurchaseOption.productName,
-        quantity_int: 1,
-        price_real: centsToReal(selectedPurchaseOption.priceInCents),
-        size_str: selectedPurchaseOption.sizeName,
-        grind_str: selectedPurchaseOption.grind,
+        product_sku: selectedPurchaseOption.productId,
+        product_name: selectedPurchaseOption.productName,
+        quantity: 1,
+        price: centsToReal(selectedPurchaseOption.priceInCents),
+        size: selectedPurchaseOption.sizeName,
+        grind: selectedPurchaseOption.grind,
       })
 
       setAddToCartSuccess(true)

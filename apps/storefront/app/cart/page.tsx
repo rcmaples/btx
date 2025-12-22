@@ -29,10 +29,10 @@ export default function CartPage() {
   const handleCheckout = () => {
     // Track before navigation
     trackCheckoutInitiated({
-      cart_value_real: centsToReal(cart.total),
-      item_count_int: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
-      has_promotion_bool: cart.appliedPromotion !== null,
-      promotion_code_str: cart.appliedPromotion?.code,
+      cart_value: centsToReal(cart.total),
+      item_count: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
+      has_promotion: cart.appliedPromotion !== null,
+      promotion_code: cart.appliedPromotion?.code,
     })
 
     router.push('/checkout')
