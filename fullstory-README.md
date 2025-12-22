@@ -2,6 +2,7 @@
 
 - Candidate: RC Maples
 - Date: 12/22/2025
+- FS Org Id: `o-248K4E-na1`
 - Repo: https://github.com/rcmaples/btx
 - Live site: https://batchtheory.exchange/
 
@@ -14,7 +15,7 @@ This application is instrumented to ensure Fullstory captures meaningful busines
 ## Application overview
 
 For speed I chose to build a next.js app for the frontend while leveraging [Sanity](https://sanity.io) to manage content—products, editorial articals, promos, etc...
-This app was build with the following toolds:
+This app was build with the following tools:
 
 - I scaffolded the app with a template generator I creadted previously (`npx create turbo-sanity` [[repo](https://github.com/rcmaples/create-turbo-sanity)])
 
