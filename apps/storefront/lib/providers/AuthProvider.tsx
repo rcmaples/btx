@@ -3,6 +3,7 @@
 import type {Session, User} from '@supabase/supabase-js'
 import {createContext, type ReactNode, useContext, useEffect, useState} from 'react'
 
+import {anonymizeUser, identifyUser} from '@/lib/fullstory/utils'
 import {createClient} from '@/lib/supabase/client'
 import {profileCache} from '@/lib/utils/profileCache'
 
@@ -114,6 +115,11 @@ export function AuthProvider({children}: {children: ReactNode}) {
       setUser(session?.user ?? null)
 
       if (session?.user) {
+        // Identify user in FullStory
+        if (session.user.email) {
+          identifyUser(session.user.id, session.user.email)
+        }
+
         // Only fetch if user changed or cache invalid
         if (newUserId !== prevUserId || !profileCache.isValid(newUserId!)) {
           // Fire and forget - don't await, profile loads in background
@@ -144,6 +150,9 @@ export function AuthProvider({children}: {children: ReactNode}) {
           if (cachedProfile) setProfile(cachedProfile)
         }
       } else {
+        // Anonymize FullStory session on logout
+        anonymizeUser()
+
         setProfile(null)
         if (prevUserId) {
           profileCache.invalidate(prevUserId)

@@ -260,13 +260,13 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
           <div className="space-y-lg">
             <div>
               <h2 className="font-bold mb-xs">Phone</h2>
-              <p className="text-text-secondary">{profile?.phone || 'Not provided'}</p>
+              <p className="text-text-secondary fs-mask">{profile?.phone || 'Not provided'}</p>
             </div>
 
             <div>
               <h2 className="font-bold mb-xs">Mailing Address</h2>
               {profile?.street_address ? (
-                <address className="not-italic text-text-secondary">
+                <address className="not-italic text-text-secondary fs-mask">
                   {profile.street_address}
                   {profile.street_address_2 && (
                     <>
