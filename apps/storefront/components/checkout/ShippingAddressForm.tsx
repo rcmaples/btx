@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import type { ShippingAddress } from '@/lib/types/checkout';
+import type {ShippingAddress} from '@/lib/types/checkout'
 
 interface ShippingAddressFormProps {
-  address: ShippingAddress;
-  guestEmail?: string;
-  isGuest: boolean;
-  errors: Record<string, string>;
-  onAddressChange: (field: keyof ShippingAddress, value: string) => void;
-  onEmailChange?: (email: string) => void;
+  address: ShippingAddress
+  guestEmail?: string
+  isGuest: boolean
+  errors: Record<string, string>
+  onAddressChange: (field: keyof ShippingAddress, value: string) => void
+  onEmailChange?: (email: string) => void
 }
 
 export function ShippingAddressForm({
@@ -38,9 +38,7 @@ export function ShippingAddressForm({
             placeholder="you@example.com"
             required
           />
-          {errors.guestEmail && (
-            <p className="text-sm text-error mt-xs">{errors.guestEmail}</p>
-          )}
+          {errors.guestEmail && <p className="text-sm text-error mt-xs">{errors.guestEmail}</p>}
         </div>
       )}
 
@@ -57,9 +55,7 @@ export function ShippingAddressForm({
           className="w-full px-md py-sm border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
           required
         />
-        {errors.streetAddress && (
-          <p className="text-sm text-error mt-xs">{errors.streetAddress}</p>
-        )}
+        {errors.streetAddress && <p className="text-sm text-error mt-xs">{errors.streetAddress}</p>}
       </div>
 
       {/* Apt/Suite/Unit */}
@@ -90,9 +86,7 @@ export function ShippingAddressForm({
             className="w-full px-md py-sm border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
             required
           />
-          {errors.city && (
-            <p className="text-sm text-error mt-xs">{errors.city}</p>
-          )}
+          {errors.city && <p className="text-sm text-error mt-xs">{errors.city}</p>}
         </div>
 
         <div>
@@ -108,9 +102,7 @@ export function ShippingAddressForm({
             placeholder="CA"
             required
           />
-          {errors.state && (
-            <p className="text-sm text-error mt-xs">{errors.state}</p>
-          )}
+          {errors.state && <p className="text-sm text-error mt-xs">{errors.state}</p>}
         </div>
       </div>
 
@@ -128,9 +120,7 @@ export function ShippingAddressForm({
             className="w-full px-md py-sm border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
             required
           />
-          {errors.postalCode && (
-            <p className="text-sm text-error mt-xs">{errors.postalCode}</p>
-          )}
+          {errors.postalCode && <p className="text-sm text-error mt-xs">{errors.postalCode}</p>}
         </div>
 
         <div>
@@ -150,5 +140,5 @@ export function ShippingAddressForm({
         </div>
       </div>
     </div>
-  );
+  )
 }

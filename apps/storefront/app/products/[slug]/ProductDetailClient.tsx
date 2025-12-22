@@ -1,12 +1,13 @@
 'use client'
 
-import {useState} from 'react'
 import Link from 'next/link'
-import {useCart} from '@/lib/hooks/useCart'
-import {ProductImage} from '@/components/product/ProductImage'
+import {useState} from 'react'
+
 import {ProductDescription} from '@/components/product/ProductDescription'
+import {ProductImage} from '@/components/product/ProductImage'
 import {PurchaseOptionSelector} from '@/components/product/PurchaseOptionSelector'
 import {SubscriptionConfigurator} from '@/components/subscription/SubscriptionConfigurator'
+import {useCart} from '@/lib/hooks/useCart'
 import type {Product, PurchaseSelection} from '@/lib/types'
 
 interface ProductDetailClientProps {
@@ -16,7 +17,9 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({product}: ProductDetailClientProps) {
   const {addToCart, isLoading: isAddingToCart} = useCart()
 
-  const [selectedPurchaseOption, setSelectedPurchaseOption] = useState<PurchaseSelection | null>(null)
+  const [selectedPurchaseOption, setSelectedPurchaseOption] = useState<PurchaseSelection | null>(
+    null,
+  )
   const [addToCartSuccess, setAddToCartSuccess] = useState(false)
 
   const handleAddToCart = async () => {
@@ -127,10 +130,7 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
 
           {product.pricing && product.pricing.length > 0 && (
             <div className="mb-lg">
-              <PurchaseOptionSelector
-                product={product}
-                onSelect={setSelectedPurchaseOption}
-              />
+              <PurchaseOptionSelector product={product} onSelect={setSelectedPurchaseOption} />
             </div>
           )}
 
@@ -158,7 +158,10 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
           )}
 
           {/* Subscription Option */}
-          <SubscriptionConfigurator product={product} selectedPurchaseOption={selectedPurchaseOption} />
+          <SubscriptionConfigurator
+            product={product}
+            selectedPurchaseOption={selectedPurchaseOption}
+          />
         </div>
       </div>
     </div>

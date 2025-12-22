@@ -1,16 +1,17 @@
 'use client'
 
-import {useState, useMemo, useEffect} from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
+import {useEffect, useMemo, useState} from 'react'
 
-import {useCart} from '@/lib/hooks/useCart'
-import {urlFor} from '@/lib/sanity/image'
-import type {SanityBundle} from '@/lib/types'
 import {
   BundleGrindSelector,
   computeGrindIntersection,
   DEFAULT_GRIND,
 } from '@/components/bundle/BundleGrindSelector'
+import {useCart} from '@/lib/hooks/useCart'
+import {urlFor} from '@/lib/sanity/image'
+import type {SanityBundle} from '@/lib/types'
 
 interface BundleDetailClientProps {
   bundle: SanityBundle
@@ -85,7 +86,14 @@ export function BundleDetailClient({bundle}: BundleDetailClientProps) {
         <div>
           <div className="relative aspect-square bg-background-alt overflow-hidden border-2 border-border">
             {imageUrl ? (
-              <img src={imageUrl} alt={bundle.name} className="w-full h-full object-cover" />
+              <Image
+                src={imageUrl}
+                alt={bundle.name}
+                width={800}
+                height={800}
+                className="w-full h-full object-cover"
+                unoptimized
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <span className="text-text-muted">No Image</span>
@@ -137,10 +145,13 @@ export function BundleDetailClient({bundle}: BundleDetailClientProps) {
                       className="flex items-center gap-md p-sm bg-background-alt border border-border-light hover:border-border transition-colors"
                     >
                       {productImage && (
-                        <img
+                        <Image
                           src={urlFor(productImage).width(60).height(60).format('webp').url()}
                           alt={product.name}
+                          width={60}
+                          height={60}
                           className="w-[60px] h-[60px] object-cover"
+                          unoptimized
                         />
                       )}
                       <div>

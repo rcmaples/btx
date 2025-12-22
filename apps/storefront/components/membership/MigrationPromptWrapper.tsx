@@ -1,6 +1,7 @@
 'use client'
 
 import {useAuth} from '@/lib/providers/AuthProvider'
+
 import {MembershipMigrationPrompt} from './MembershipMigrationPrompt'
 
 export function MigrationPromptWrapper() {
@@ -11,9 +12,6 @@ export function MigrationPromptWrapper() {
   }
 
   return (
-    <MembershipMigrationPrompt
-      onMigrate={migrateLocalMembership}
-      onDismiss={dismissMigration}
-    />
+    <MembershipMigrationPrompt onMigrate={migrateLocalMembership} onDismiss={dismissMigration} />
   )
 }

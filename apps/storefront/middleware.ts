@@ -1,5 +1,5 @@
 import {createServerClient} from '@supabase/ssr'
-import {NextResponse, type NextRequest} from 'next/server'
+import {type NextRequest, NextResponse} from 'next/server'
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -20,11 +20,11 @@ export async function middleware(request: NextRequest) {
             request,
           })
           cookiesToSet.forEach(({name, value, options}) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           )
         },
       },
-    }
+    },
   )
 
   // Define route types

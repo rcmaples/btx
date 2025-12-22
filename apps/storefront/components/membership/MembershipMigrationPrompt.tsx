@@ -7,10 +7,7 @@ interface MembershipMigrationPromptProps {
   onDismiss: () => void
 }
 
-export function MembershipMigrationPrompt({
-  onMigrate,
-  onDismiss,
-}: MembershipMigrationPromptProps) {
+export function MembershipMigrationPrompt({onMigrate, onDismiss}: MembershipMigrationPromptProps) {
   const [isMigrating, setIsMigrating] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -35,16 +32,12 @@ export function MembershipMigrationPrompt({
       <div className="bg-background border-2 border-primary p-xl max-w-md w-full">
         <h2 className="text-2xl font-bold mb-md">Link Your Membership</h2>
         <p className="text-text-secondary mb-lg">
-          We noticed you&apos;re an Exchange member! Would you like to link your
-          membership to your account? This will ensure you never lose access to
-          exclusive products.
+          We noticed you&apos;re an Exchange member! Would you like to link your membership to your
+          account? This will ensure you never lose access to exclusive products.
         </p>
 
         {error && (
-          <div
-            className="p-md bg-red-50 border border-error text-error mb-lg text-sm"
-            role="alert"
-          >
+          <div className="p-md bg-red-50 border border-error text-error mb-lg text-sm" role="alert">
             {error}
           </div>
         )}

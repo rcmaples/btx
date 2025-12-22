@@ -1,13 +1,14 @@
-'use client';
+'use client'
 
-import { useEffect, useRef } from 'react';
-import type { Cart } from '@/lib/types';
+import {useEffect, useRef} from 'react'
+
+import type {Cart} from '@/lib/types'
 
 interface CartSummaryProps {
-  cart: Cart;
-  onRemovePromotion?: () => void;
-  showCheckoutButton?: boolean;
-  onCheckout?: () => void;
+  cart: Cart
+  onRemovePromotion?: () => void
+  showCheckoutButton?: boolean
+  onCheckout?: () => void
 }
 
 export function CartSummary({
@@ -16,22 +17,22 @@ export function CartSummary({
   showCheckoutButton = false,
   onCheckout,
 }: CartSummaryProps) {
-  const formattedSubtotal = (cart.subtotal / 100).toFixed(2);
-  const formattedDiscount = (cart.discount / 100).toFixed(2);
-  const formattedTotal = (cart.total / 100).toFixed(2);
+  const formattedSubtotal = (cart.subtotal / 100).toFixed(2)
+  const formattedDiscount = (cart.discount / 100).toFixed(2)
+  const formattedTotal = (cart.total / 100).toFixed(2)
 
-  const hasPromotion = cart.appliedPromotion !== null;
-  const previousTotal = useRef(cart.total);
-  const announcementRef = useRef<HTMLDivElement>(null);
+  const hasPromotion = cart.appliedPromotion !== null
+  const previousTotal = useRef(cart.total)
+  const announcementRef = useRef<HTMLDivElement>(null)
 
   // Announce cart updates to screen readers
   useEffect(() => {
     if (previousTotal.current !== cart.total && announcementRef.current) {
-      const message = `Cart updated. Total: $${formattedTotal}`;
-      announcementRef.current.textContent = message;
+      const message = `Cart updated. Total: $${formattedTotal}`
+      announcementRef.current.textContent = message
     }
-    previousTotal.current = cart.total;
-  }, [cart.total, formattedTotal]);
+    previousTotal.current = cart.total
+  }, [cart.total, formattedTotal])
 
   return (
     <div
@@ -48,15 +49,11 @@ export function CartSummary({
         className="sr-only"
       />
 
-      <h2 className="text-xl font-bold mb-md pb-md border-b border-border">
-        Order Summary
-      </h2>
+      <h2 className="text-xl font-bold mb-md pb-md border-b border-border">Order Summary</h2>
 
       <div className="flex justify-between items-center py-sm">
         <span className="text-base text-text-secondary">Subtotal</span>
-        <span className="text-base font-medium font-mono">
-          ${formattedSubtotal}
-        </span>
+        <span className="text-base font-medium font-mono">${formattedSubtotal}</span>
       </div>
 
       {hasPromotion && (
@@ -105,5 +102,5 @@ export function CartSummary({
         Test mode: No real payment will be processed
       </p>
     </div>
-  );
+  )
 }

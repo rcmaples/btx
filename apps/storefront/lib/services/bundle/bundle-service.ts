@@ -3,61 +3,55 @@ import type {
   BundleProduct,
   BundleService,
   Cart,
-  SanityBundle,
   CartLineItem,
-} from '@/lib/types';
-import { generateCartItemId } from '@/lib/types';
-import { cartService } from '../cart/cart-service';
+  SanityBundle,
+} from '@/lib/types'
+
+import {cartService} from '../cart/cart-service'
 import {
-  getBundles,
   getBundleBySlug,
-  getBundlesClient,
   getBundleBySlugClient,
-} from '../sanity/queries';
+  getBundles,
+  getBundlesClient,
+} from '../sanity/queries'
 
 class BundleServiceImpl implements BundleService {
   // Server-side fetch methods (use sanityFetch with Next.js cache)
-  async getBundles(filters?: { isMember?: boolean }): Promise<SanityBundle[]> {
-    return getBundles(filters);
+  async getBundles(filters?: {isMember?: boolean}): Promise<SanityBundle[]> {
+    return getBundles(filters)
   }
 
   async getBundleBySlug(slug: string): Promise<SanityBundle | null> {
-    return getBundleBySlug(slug);
+    return getBundleBySlug(slug)
   }
 
   // Client-safe fetch methods (use clientFetch without Next.js cache)
-  async getBundlesClient(filters?: {
-    isMember?: boolean;
-  }): Promise<SanityBundle[]> {
-    return getBundlesClient(filters);
+  async getBundlesClient(filters?: {isMember?: boolean}): Promise<SanityBundle[]> {
+    return getBundlesClient(filters)
   }
 
   async getBundleBySlugClient(slug: string): Promise<SanityBundle | null> {
-    return getBundleBySlugClient(slug);
+    return getBundleBySlugClient(slug)
   }
 
   /**
    * Create new custom bundle
    * Note: Custom bundle creation is simplified - products are added at their base price
    */
-  createBundle(
-    name: string,
-    products: BundleProduct[],
-    bundlePrice?: number
-  ): Bundle {
+  createBundle(name: string, products: BundleProduct[], bundlePrice?: number): Bundle {
     if (!name || name.trim().length === 0) {
-      throw new Error('Bundle name is required');
+      throw new Error('Bundle name is required')
     }
 
     if (products.length < 2) {
-      throw new Error('Bundle must contain at least 2 products');
+      throw new Error('Bundle must contain at least 2 products')
     }
 
     // Generate unique bundle ID
-    const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const bundleId = `bundle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
     // Compute price if not explicitly set
-    const computedPrice = bundlePrice ?? 0;
+    const computedPrice = bundlePrice ?? 0
 
     const bundle: Bundle = {
       id: bundleId,
@@ -65,9 +59,9 @@ class BundleServiceImpl implements BundleService {
       products,
       bundlePrice,
       computedPrice,
-    };
+    }
 
-    return bundle;
+    return bundle
   }
 
   /**
@@ -77,21 +71,21 @@ class BundleServiceImpl implements BundleService {
   async addBundleToCart(bundle: Bundle): Promise<Cart> {
     // Validate bundle has minimum products
     if (bundle.products.length < 2) {
-      throw new Error('Bundle must contain at least 2 products');
+      throw new Error('Bundle must contain at least 2 products')
     }
 
     // Use bundle price or computed price
-    const finalPrice = bundle.bundlePrice ?? bundle.computedPrice;
+    const finalPrice = bundle.bundlePrice ?? bundle.computedPrice
 
     if (finalPrice <= 0) {
-      throw new Error('Bundle price must be greater than 0');
+      throw new Error('Bundle price must be greater than 0')
     }
 
     // Get current cart
-    const cart = cartService.getCart();
+    const cart = cartService.getCart()
 
     // Generate item ID
-    const itemId = `bundle-${bundle.id}`;
+    const itemId = `bundle-${bundle.id}`
 
     // Create bundle line item
     const bundleItem: CartLineItem = {
@@ -106,14 +100,12 @@ class BundleServiceImpl implements BundleService {
       pricePerUnit: finalPrice,
       lineTotal: finalPrice,
       itemType: 'bundle' as const,
-    };
+    }
 
     // Check if bundle already in cart
-    const existingIndex = cart.lineItems.findIndex(
-      (item) => item.id === itemId
-    );
+    const existingIndex = cart.lineItems.findIndex((item) => item.id === itemId)
 
-    let updatedLineItems;
+    let updatedLineItems
     if (existingIndex >= 0) {
       // Increment quantity
       updatedLineItems = cart.lineItems.map((item, index) =>
@@ -123,18 +115,15 @@ class BundleServiceImpl implements BundleService {
               quantity: item.quantity + 1,
               lineTotal: (item.quantity + 1) * item.pricePerUnit,
             }
-          : item
-      );
+          : item,
+      )
     } else {
-      updatedLineItems = [...cart.lineItems, bundleItem];
+      updatedLineItems = [...cart.lineItems, bundleItem]
     }
 
     // Recalculate totals
-    const subtotal = updatedLineItems.reduce(
-      (sum, item) => sum + item.lineTotal,
-      0
-    );
-    const total = Math.max(0, subtotal - cart.discount);
+    const subtotal = updatedLineItems.reduce((sum, item) => sum + item.lineTotal, 0)
+    const total = Math.max(0, subtotal - cart.discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -142,10 +131,10 @@ class BundleServiceImpl implements BundleService {
       subtotal,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    cartService.persistCart(updatedCart);
-    return updatedCart;
+    cartService.persistCart(updatedCart)
+    return updatedCart
   }
 
   /**
@@ -154,8 +143,8 @@ class BundleServiceImpl implements BundleService {
    */
   async removeUnavailableProducts(bundle: Bundle): Promise<Bundle> {
     // All products are considered available in the new model
-    return bundle;
+    return bundle
   }
 }
 
-export const bundleService = new BundleServiceImpl();
+export const bundleService = new BundleServiceImpl()

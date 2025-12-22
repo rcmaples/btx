@@ -1,22 +1,22 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import {useState} from 'react'
 
 export interface CheckoutFormData {
-  email: string;
-  fullName: string;
-  addressLine1: string;
-  city: string;
-  state: string;
-  zipCode: string;
+  email: string
+  fullName: string
+  addressLine1: string
+  city: string
+  state: string
+  zipCode: string
 }
 
 interface CheckoutFormProps {
-  onSubmit: (data: CheckoutFormData) => void;
-  isSubmitting: boolean;
+  onSubmit: (data: CheckoutFormData) => void
+  isSubmitting: boolean
 }
 
-export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
+export function CheckoutForm({onSubmit, isSubmitting}: CheckoutFormProps) {
   const [formData, setFormData] = useState<CheckoutFormData>({
     email: '',
     fullName: '',
@@ -24,72 +24,69 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
     city: '',
     state: '',
     zipCode: '',
-  });
+  })
 
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof CheckoutFormData, string>>
-  >({});
+  const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({})
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const {name, value} = e.target
+    setFormData((prev) => ({...prev, [name]: value}))
 
     // Clear error when user starts typing
     if (errors[name as keyof CheckoutFormData]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
+      setErrors((prev) => ({...prev, [name]: undefined}))
     }
-  };
+  }
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof CheckoutFormData, string>> = {};
+    const newErrors: Partial<Record<keyof CheckoutFormData, string>> = {}
 
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email is required'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
+      newErrors.email = 'Invalid email address'
     }
 
     if (!formData.fullName) {
-      newErrors.fullName = 'Full name is required';
+      newErrors.fullName = 'Full name is required'
     }
 
     if (!formData.addressLine1) {
-      newErrors.addressLine1 = 'Address is required';
+      newErrors.addressLine1 = 'Address is required'
     }
 
     if (!formData.city) {
-      newErrors.city = 'City is required';
+      newErrors.city = 'City is required'
     }
 
     if (!formData.state) {
-      newErrors.state = 'State is required';
+      newErrors.state = 'State is required'
     }
 
     if (!formData.zipCode) {
-      newErrors.zipCode = 'ZIP code is required';
+      newErrors.zipCode = 'ZIP code is required'
     } else if (!/^\d{5}(-\d{4})?$/.test(formData.zipCode)) {
-      newErrors.zipCode = 'Invalid ZIP code';
+      newErrors.zipCode = 'Invalid ZIP code'
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (validateForm()) {
-      onSubmit(formData);
+      onSubmit(formData)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-lg">
       <h2 className="text-2xl font-bold mb-lg">Shipping Information</h2>
 
       <p className="p-md bg-warning-light border border-warning text-sm">
-        <strong>Test Mode:</strong> Use any information. No real data will be
-        stored or transmitted.
+        <strong>Test Mode:</strong> Use any information. No real data will be stored or transmitted.
       </p>
 
       <div className="space-y-md">
@@ -106,9 +103,7 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
           disabled={isSubmitting}
           placeholder="you@example.com"
         />
-        {errors.email && (
-          <p className="text-sm text-danger mt-xs">{errors.email}</p>
-        )}
+        {errors.email && <p className="text-sm text-danger mt-xs">{errors.email}</p>}
       </div>
 
       <div className="space-y-md">
@@ -125,16 +120,11 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
           disabled={isSubmitting}
           placeholder="John Doe"
         />
-        {errors.fullName && (
-          <p className="text-sm text-danger mt-xs">{errors.fullName}</p>
-        )}
+        {errors.fullName && <p className="text-sm text-danger mt-xs">{errors.fullName}</p>}
       </div>
 
       <div className="space-y-md">
-        <label
-          htmlFor="addressLine1"
-          className="block text-sm font-medium mb-xs"
-        >
+        <label htmlFor="addressLine1" className="block text-sm font-medium mb-xs">
           Address <span className="text-danger">*</span>
         </label>
         <input
@@ -147,9 +137,7 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
           disabled={isSubmitting}
           placeholder="123 Main St"
         />
-        {errors.addressLine1 && (
-          <p className="text-sm text-danger mt-xs">{errors.addressLine1}</p>
-        )}
+        {errors.addressLine1 && <p className="text-sm text-danger mt-xs">{errors.addressLine1}</p>}
       </div>
 
       <div className="grid grid-cols-3 gap-md">
@@ -167,9 +155,7 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
             disabled={isSubmitting}
             placeholder="San Francisco"
           />
-          {errors.city && (
-            <p className="text-sm text-danger mt-xs">{errors.city}</p>
-          )}
+          {errors.city && <p className="text-sm text-danger mt-xs">{errors.city}</p>}
         </div>
 
         <div>
@@ -187,9 +173,7 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
             placeholder="CA"
             maxLength={2}
           />
-          {errors.state && (
-            <p className="text-sm text-danger mt-xs">{errors.state}</p>
-          )}
+          {errors.state && <p className="text-sm text-danger mt-xs">{errors.state}</p>}
         </div>
 
         <div>
@@ -206,9 +190,7 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
             disabled={isSubmitting}
             placeholder="94102"
           />
-          {errors.zipCode && (
-            <p className="text-sm text-danger mt-xs">{errors.zipCode}</p>
-          )}
+          {errors.zipCode && <p className="text-sm text-danger mt-xs">{errors.zipCode}</p>}
         </div>
       </div>
 
@@ -220,5 +202,5 @@ export function CheckoutForm({ onSubmit, isSubmitting }: CheckoutFormProps) {
         {isSubmitting ? 'Processing...' : 'Continue to Payment'}
       </button>
     </form>
-  );
+  )
 }

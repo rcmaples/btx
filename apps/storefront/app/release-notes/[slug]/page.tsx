@@ -1,9 +1,9 @@
 import type {Metadata} from 'next'
-import {notFound} from 'next/navigation'
 import Link from 'next/link'
+import {notFound} from 'next/navigation'
 
-import {getReleaseNotes, getReleaseNoteBySlug} from '@/lib/services/sanity/queries'
 import {ArticleBody} from '@/components/article/ArticleBody'
+import {getReleaseNoteBySlug, getReleaseNotes} from '@/lib/services/sanity/queries'
 import {formatDate} from '@/lib/utils/date'
 
 interface ReleaseNotePageProps {

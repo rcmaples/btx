@@ -1,8 +1,9 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import {urlFor} from '@/lib/sanity/image'
-import {formatDate} from '@/lib/utils/date'
 import type {Article} from '@/lib/types'
+import {formatDate} from '@/lib/utils/date'
 
 interface ArticleCardProps {
   article: Article
@@ -20,11 +21,13 @@ export function ArticleCard({article}: ArticleCardProps) {
     >
       {imageUrl && (
         <div className="shrink-0 w-[120px] h-[120px] bg-background-alt overflow-hidden">
-          <img
+          <Image
             src={imageUrl}
             alt={article.title}
+            width={120}
+            height={120}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow"
-            loading="lazy"
+            unoptimized
           />
         </div>
       )}

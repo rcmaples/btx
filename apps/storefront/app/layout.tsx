@@ -7,8 +7,8 @@ import type {ReactNode} from 'react'
 import {Footer} from '@/components/common/Footer'
 import {Navigation} from '@/components/common/Navigation'
 import {MigrationPromptWrapper} from '@/components/membership/MigrationPromptWrapper'
-import {QueryProvider} from '@/lib/providers/QueryProvider'
 import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
+import {QueryProvider} from '@/lib/providers/QueryProvider'
 
 const inter = Inter({
   subsets: ['latin'],

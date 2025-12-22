@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 export function PaymentForm() {
   return (
@@ -9,8 +9,8 @@ export function PaymentForm() {
       <div className="p-md bg-yellow-50 border-2 border-warning">
         <p className="font-bold text-warning mb-xs">Test Mode Payment</p>
         <p className="text-sm text-text-secondary">
-          This is a test transaction. No real payment will be processed. The
-          following test card details will be used automatically.
+          This is a test transaction. No real payment will be processed. The following test card
+          details will be used automatically.
         </p>
       </div>
 
@@ -21,9 +21,7 @@ export function PaymentForm() {
         <div className="space-y-md">
           {/* Card Number */}
           <div>
-            <label className="block text-sm font-bold mb-xs text-text-secondary">
-              Card Number
-            </label>
+            <label className="block text-sm font-bold mb-xs text-text-secondary">Card Number</label>
             <input
               type="text"
               value="4242 4242 4242 4242"
@@ -47,9 +45,7 @@ export function PaymentForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold mb-xs text-text-secondary">
-                CVV
-              </label>
+              <label className="block text-sm font-bold mb-xs text-text-secondary">CVV</label>
               <input
                 type="text"
                 value="555"
@@ -65,5 +61,5 @@ export function PaymentForm() {
         </p>
       </div>
     </div>
-  );
+  )
 }

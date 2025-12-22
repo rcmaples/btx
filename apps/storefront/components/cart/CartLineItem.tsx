@@ -1,43 +1,39 @@
-'use client';
+'use client'
 
-import type { CartLineItem as CartLineItemType } from '@/lib/types';
+import type {CartLineItem as CartLineItemType} from '@/lib/types'
 
 interface CartLineItemProps {
-  item: CartLineItemType;
-  onUpdateQuantity: (itemId: string, quantity: number) => void;
-  onRemove: (itemId: string) => void;
+  item: CartLineItemType
+  onUpdateQuantity: (itemId: string, quantity: number) => void
+  onRemove: (itemId: string) => void
 }
 
-export function CartLineItem({
-  item,
-  onUpdateQuantity,
-  onRemove,
-}: CartLineItemProps) {
+export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemProps) {
   const handleQuantityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newQuantity = parseInt(e.target.value, 10);
-    onUpdateQuantity(item.id, newQuantity);
-  };
+    const newQuantity = parseInt(e.target.value, 10)
+    onUpdateQuantity(item.id, newQuantity)
+  }
 
   const handleRemove = () => {
-    onRemove(item.id);
-  };
+    onRemove(item.id)
+  }
 
-  const formattedPrice = (item.pricePerUnit / 100).toFixed(2);
-  const formattedLineTotal = (item.lineTotal / 100).toFixed(2);
+  const formattedPrice = (item.pricePerUnit / 100).toFixed(2)
+  const formattedLineTotal = (item.lineTotal / 100).toFixed(2)
 
-  const isSubscription = item.itemType === 'subscription';
-  const isBundle = item.itemType === 'bundle';
+  const isSubscription = item.itemType === 'subscription'
+  const isBundle = item.itemType === 'bundle'
 
   const getCadenceLabel = (cadence: 'weekly' | 'bi-weekly' | 'monthly') => {
     switch (cadence) {
       case 'weekly':
-        return 'Delivered Weekly';
+        return 'Delivered Weekly'
       case 'bi-weekly':
-        return 'Delivered Bi-Weekly';
+        return 'Delivered Bi-Weekly'
       case 'monthly':
-        return 'Delivered Monthly';
+        return 'Delivered Monthly'
     }
-  };
+  }
 
   return (
     <div
@@ -70,8 +66,7 @@ export function CartLineItem({
               {getCadenceLabel(item.subscriptionDetails.cadence)}
             </span>
             <span className="text-xs text-text-secondary font-mono">
-              Recurring: $
-              {(item.subscriptionDetails.recurringPrice / 100).toFixed(2)}
+              Recurring: ${(item.subscriptionDetails.recurringPrice / 100).toFixed(2)}
             </span>
           </div>
         )}
@@ -80,10 +75,7 @@ export function CartLineItem({
       <div className="flex flex-col gap-md items-start md:flex-row md:items-center md:gap-lg">
         {!isSubscription && (
           <div className="flex items-center gap-sm">
-            <label
-              htmlFor={`quantity-${item.id}`}
-              className="text-sm font-medium"
-            >
+            <label htmlFor={`quantity-${item.id}`} className="text-sm font-medium">
               Qty:
             </label>
             <select
@@ -92,7 +84,7 @@ export function CartLineItem({
               onChange={handleQuantityChange}
               className="px-sm py-xs border border-border rounded-sm text-base bg-background cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
-              {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+              {Array.from({length: 10}, (_, i) => i + 1).map((num) => (
                 <option key={num} value={num}>
                   {num}
                 </option>
@@ -110,9 +102,7 @@ export function CartLineItem({
           <div className="text-sm text-text-secondary">
             ${formattedPrice} {isSubscription ? 'per delivery' : 'each'}
           </div>
-          <div className="text-lg font-semibold font-mono">
-            ${formattedLineTotal}
-          </div>
+          <div className="text-lg font-semibold font-mono">${formattedLineTotal}</div>
         </div>
 
         <button
@@ -124,5 +114,5 @@ export function CartLineItem({
         </button>
       </div>
     </div>
-  );
+  )
 }

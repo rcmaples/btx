@@ -47,8 +47,8 @@ export function MembershipClient() {
         <div className="w-full max-w-xl mx-auto p-xl bg-green-50 border-2 border-success">
           <h1 className="text-4xl font-black mb-md">You&apos;re an Exchange Member</h1>
           <p className="text-text-secondary mb-lg">
-            Thank you for being part of The Exchange. You now have access to all
-            member-exclusive products and drops.
+            Thank you for being part of The Exchange. You now have access to all member-exclusive
+            products and drops.
           </p>
           <button
             onClick={() => router.push('/exchange')}
@@ -62,10 +62,6 @@ export function MembershipClient() {
   }
 
   return (
-    <MembershipEnrollment
-      onEnroll={handleEnroll}
-      isEnrolling={isEnrolling}
-      isLoggedIn={!!user}
-    />
+    <MembershipEnrollment onEnroll={handleEnroll} isEnrolling={isEnrolling} isLoggedIn={!!user} />
   )
 }

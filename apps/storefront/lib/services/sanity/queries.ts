@@ -1,26 +1,28 @@
-import { sanityFetch, clientFetch, client } from './client';
 import type {
+  Article,
+  CartLineItem,
+  FilterOptions,
   Product,
   Promotion,
-  Article,
-  FilterOptions,
   SanityBundle,
-} from '@/lib/types';
+} from '@/lib/types'
+
+import {client, clientFetch, sanityFetch} from './client'
 
 // Re-export types that are used in return types for use in components
-export type { SanityBundle } from '@/lib/types';
+export type {SanityBundle} from '@/lib/types'
 
 // ============================================================================
 // Product Queries
 // ============================================================================
 
 export async function getProducts(filters?: {
-  roastLevel?: string;
-  origin?: string;
-  processMethod?: string;
-  bestFor?: string;
-  isMember?: boolean;
-  exclusiveOnly?: boolean;
+  roastLevel?: string
+  origin?: string
+  processMethod?: string
+  bestFor?: string
+  isMember?: boolean
+  exclusiveOnly?: boolean
 }): Promise<Product[]> {
   // Show exclusive products only to members, non-exclusive products to everyone
   // When exclusiveOnly is true (member filter), only show exclusive products
@@ -52,7 +54,7 @@ export async function getProducts(filters?: {
     image,
     productType,
     isExclusiveDrop
-  }`;
+  }`
 
   return sanityFetch<Product[]>(
     query,
@@ -64,8 +66,8 @@ export async function getProducts(filters?: {
       isMember: filters?.isMember || false,
       exclusiveOnly: filters?.exclusiveOnly || false,
     },
-    { revalidate: 600, tags: ['products'] }
-  );
+    {revalidate: 600, tags: ['products']},
+  )
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -100,9 +102,9 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       priceInCents,
       isBasePrice
     }
-  }`;
+  }`
 
-  return sanityFetch<Product | null>(query, { slug }, { revalidate: 600, tags: ['products'] });
+  return sanityFetch<Product | null>(query, {slug}, {revalidate: 600, tags: ['products']})
 }
 
 export async function getFilterOptions(): Promise<FilterOptions> {
@@ -111,15 +113,15 @@ export async function getFilterOptions(): Promise<FilterOptions> {
     "origins": array::unique(*[_type == "product"].origin) | order(@),
     "processMethods": array::unique(*[_type == "product"].processMethod),
     "bestFor": array::unique(*[_type == "product"].bestFor[])
-  }`;
+  }`
 
-  return sanityFetch<FilterOptions>(query, {}, { revalidate: 3600, tags: ['products'] });
+  return sanityFetch<FilterOptions>(query, {}, {revalidate: 3600, tags: ['products']})
 }
 
 // Lightweight query for generateStaticParams - only fetches slugs
-export async function getProductSlugs(): Promise<{ slug: string }[]> {
-  const query = `*[_type == "product"] { "slug": slug.current }`;
-  return sanityFetch<{ slug: string }[]>(query, {}, { revalidate: 3600, tags: ['products'] });
+export async function getProductSlugs(): Promise<{slug: string}[]> {
+  const query = `*[_type == "product"] { "slug": slug.current }`
+  return sanityFetch<{slug: string}[]>(query, {}, {revalidate: 3600, tags: ['products']})
 }
 
 // ============================================================================
@@ -127,12 +129,12 @@ export async function getProductSlugs(): Promise<{ slug: string }[]> {
 // ============================================================================
 
 export async function getProductsClient(filters?: {
-  roastLevel?: string;
-  origin?: string;
-  processMethod?: string;
-  bestFor?: string;
-  isMember?: boolean;
-  exclusiveOnly?: boolean;
+  roastLevel?: string
+  origin?: string
+  processMethod?: string
+  bestFor?: string
+  isMember?: boolean
+  exclusiveOnly?: boolean
 }): Promise<Product[]> {
   const query = `*[_type == "product"
     && (!defined(isExclusiveDrop) || isExclusiveDrop != true || $isMember == true)
@@ -162,7 +164,7 @@ export async function getProductsClient(filters?: {
     image,
     productType,
     isExclusiveDrop
-  }`;
+  }`
 
   return clientFetch<Product[]>(query, {
     roastLevel: filters?.roastLevel || null,
@@ -171,7 +173,7 @@ export async function getProductsClient(filters?: {
     bestFor: filters?.bestFor || null,
     isMember: filters?.isMember || false,
     exclusiveOnly: filters?.exclusiveOnly || false,
-  });
+  })
 }
 
 export async function getProductBySlugClient(slug: string): Promise<Product | null> {
@@ -206,9 +208,9 @@ export async function getProductBySlugClient(slug: string): Promise<Product | nu
       priceInCents,
       isBasePrice
     }
-  }`;
+  }`
 
-  return clientFetch<Product | null>(query, { slug });
+  return clientFetch<Product | null>(query, {slug})
 }
 
 export async function getFilterOptionsClient(): Promise<FilterOptions> {
@@ -217,9 +219,9 @@ export async function getFilterOptionsClient(): Promise<FilterOptions> {
     "origins": array::unique(*[_type == "product"].origin) | order(@),
     "processMethods": array::unique(*[_type == "product"].processMethod),
     "bestFor": array::unique(*[_type == "product"].bestFor[])
-  }`;
+  }`
 
-  return clientFetch<FilterOptions>(query, {});
+  return clientFetch<FilterOptions>(query, {})
 }
 
 // ============================================================================
@@ -238,13 +240,13 @@ export async function getPromotionByCode(code: string): Promise<Promotion | null
     validFrom,
     validUntil,
     isActive
-  }`;
+  }`
 
   return sanityFetch<Promotion | null>(
     query,
-    { code: code.toUpperCase() },
-    { revalidate: 300, tags: ['promotions'] }
-  );
+    {code: code.toUpperCase()},
+    {revalidate: 300, tags: ['promotions']},
+  )
 }
 
 export async function getAutoPromotions(): Promise<Promotion[]> {
@@ -258,9 +260,9 @@ export async function getAutoPromotions(): Promise<Promotion[]> {
     validFrom,
     validUntil,
     isActive
-  }`;
+  }`
 
-  return sanityFetch<Promotion[]>(query, {}, { revalidate: 300, tags: ['promotions'] });
+  return sanityFetch<Promotion[]>(query, {}, {revalidate: 300, tags: ['promotions']})
 }
 
 // ============================================================================
@@ -276,9 +278,9 @@ export async function getArticles(): Promise<Article[]> {
     author,
     excerpt,
     coverImage
-  }`;
+  }`
 
-  return sanityFetch<Article[]>(query, {}, { revalidate: 600, tags: ['articles'] });
+  return sanityFetch<Article[]>(query, {}, {revalidate: 600, tags: ['articles']})
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
@@ -300,9 +302,9 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
       roastLevel,
       image
     }
-  }`;
+  }`
 
-  return sanityFetch<Article | null>(query, { slug }, { revalidate: 600, tags: ['articles'] });
+  return sanityFetch<Article | null>(query, {slug}, {revalidate: 600, tags: ['articles']})
 }
 
 // ============================================================================
@@ -310,19 +312,19 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 // ============================================================================
 
 export async function createOrder(orderData: {
-  orderNumber: string;
-  lineItems: any[];
-  subtotal: number;
-  discount: number;
-  total: number;
-  appliedPromotion?: any;
+  orderNumber: string
+  lineItems: CartLineItem[]
+  subtotal: number
+  discount: number
+  total: number
+  appliedPromotion?: Promotion
 }) {
   return client.create({
     _type: 'order',
     ...orderData,
     createdAt: new Date().toISOString(),
     isTestOrder: true,
-  });
+  })
 }
 
 export async function getOrderByNumber(orderNumber: string) {
@@ -336,18 +338,16 @@ export async function getOrderByNumber(orderNumber: string) {
     appliedPromotion,
     createdAt,
     isTestOrder
-  }`;
+  }`
 
-  return sanityFetch(query, { orderNumber }, { revalidate: 0 });
+  return sanityFetch(query, {orderNumber}, {revalidate: 0})
 }
 
 // ============================================================================
 // Bundle Queries
 // ============================================================================
 
-export async function getBundles(filters?: {
-  isMember?: boolean;
-}): Promise<SanityBundle[]> {
+export async function getBundles(filters?: {isMember?: boolean}): Promise<SanityBundle[]> {
   // Show exclusive bundles only to members, non-exclusive bundles to everyone
   const query = `*[_type == "bundle"
     && isActive == true
@@ -381,13 +381,13 @@ export async function getBundles(filters?: {
     isExclusiveDrop,
     isActive,
     availableUntil
-  }`;
+  }`
 
   return sanityFetch<SanityBundle[]>(
     query,
-    { isMember: filters?.isMember || false },
-    { revalidate: 600, tags: ['bundles'] }
-  );
+    {isMember: filters?.isMember || false},
+    {revalidate: 600, tags: ['bundles']},
+  )
 }
 
 export async function getBundleBySlug(slug: string): Promise<SanityBundle | null> {
@@ -423,24 +423,22 @@ export async function getBundleBySlug(slug: string): Promise<SanityBundle | null
     isExclusiveDrop,
     isActive,
     availableUntil
-  }`;
+  }`
 
-  return sanityFetch<SanityBundle | null>(query, { slug }, { revalidate: 600, tags: ['bundles'] });
+  return sanityFetch<SanityBundle | null>(query, {slug}, {revalidate: 600, tags: ['bundles']})
 }
 
 // Lightweight query for generateStaticParams - only fetches slugs
-export async function getBundleSlugs(): Promise<{ slug: string }[]> {
-  const query = `*[_type == "bundle" && isActive == true] { "slug": slug.current }`;
-  return sanityFetch<{ slug: string }[]>(query, {}, { revalidate: 3600, tags: ['bundles'] });
+export async function getBundleSlugs(): Promise<{slug: string}[]> {
+  const query = `*[_type == "bundle" && isActive == true] { "slug": slug.current }`
+  return sanityFetch<{slug: string}[]>(query, {}, {revalidate: 3600, tags: ['bundles']})
 }
 
 // ============================================================================
 // Client-Safe Bundle Queries (for use in client components/hooks)
 // ============================================================================
 
-export async function getBundlesClient(filters?: {
-  isMember?: boolean
-}): Promise<SanityBundle[]> {
+export async function getBundlesClient(filters?: {isMember?: boolean}): Promise<SanityBundle[]> {
   const query = `*[_type == "bundle"
     && isActive == true
     && (!defined(isExclusiveDrop) || isExclusiveDrop != true || $isMember == true)
@@ -531,11 +529,11 @@ export async function getReleaseNotes(): Promise<Article[]> {
     author,
     excerpt,
     coverImage
-  }`;
+  }`
 
-  return sanityFetch<Article[]>(query, {}, { revalidate: 600, tags: ['articles'] });
+  return sanityFetch<Article[]>(query, {}, {revalidate: 600, tags: ['articles']})
 }
 
 export async function getReleaseNoteBySlug(slug: string): Promise<Article | null> {
-  return getArticleBySlug(slug);
+  return getArticleBySlug(slug)
 }

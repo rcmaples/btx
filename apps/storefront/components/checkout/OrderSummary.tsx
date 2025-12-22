@@ -1,21 +1,21 @@
-'use client';
+'use client'
 
-import type { Cart } from '@/lib/types';
+import type {Cart} from '@/lib/types'
 
 interface OrderSummaryProps {
-  cart: Cart;
-  shippingCost: number;
-  isMember: boolean;
+  cart: Cart
+  shippingCost: number
+  isMember: boolean
 }
 
-export function OrderSummary({ cart, shippingCost, isMember }: OrderSummaryProps) {
-  const formattedSubtotal = (cart.subtotal / 100).toFixed(2);
-  const formattedDiscount = (cart.discount / 100).toFixed(2);
-  const formattedShipping = (shippingCost / 100).toFixed(2);
-  const total = cart.total + shippingCost;
-  const formattedTotal = (total / 100).toFixed(2);
+export function OrderSummary({cart, shippingCost, isMember}: OrderSummaryProps) {
+  const formattedSubtotal = (cart.subtotal / 100).toFixed(2)
+  const formattedDiscount = (cart.discount / 100).toFixed(2)
+  const formattedShipping = (shippingCost / 100).toFixed(2)
+  const total = cart.total + shippingCost
+  const formattedTotal = (total / 100).toFixed(2)
 
-  const hasPromotion = cart.appliedPromotion !== null;
+  const hasPromotion = cart.appliedPromotion !== null
 
   return (
     <div
@@ -23,9 +23,7 @@ export function OrderSummary({ cart, shippingCost, isMember }: OrderSummaryProps
       role="region"
       aria-label="Order summary"
     >
-      <h2 className="text-xl font-bold mb-md pb-md border-b border-border">
-        Order Summary
-      </h2>
+      <h2 className="text-xl font-bold mb-md pb-md border-b border-border">Order Summary</h2>
 
       {/* Line Items */}
       <div className="space-y-sm mb-md pb-md border-b border-border">
@@ -34,9 +32,7 @@ export function OrderSummary({ cart, shippingCost, isMember }: OrderSummaryProps
             <span className="text-text-secondary">
               {item.productName} ({item.quantity}x)
             </span>
-            <span className="font-medium font-mono">
-              ${(item.lineTotal / 100).toFixed(2)}
-            </span>
+            <span className="font-medium font-mono">${(item.lineTotal / 100).toFixed(2)}</span>
           </div>
         ))}
       </div>
@@ -44,9 +40,7 @@ export function OrderSummary({ cart, shippingCost, isMember }: OrderSummaryProps
       {/* Subtotal */}
       <div className="flex justify-between items-center py-sm">
         <span className="text-base text-text-secondary">Subtotal</span>
-        <span className="text-base font-medium font-mono">
-          ${formattedSubtotal}
-        </span>
+        <span className="text-base font-medium font-mono">${formattedSubtotal}</span>
       </div>
 
       {/* Discount */}
@@ -73,9 +67,7 @@ export function OrderSummary({ cart, shippingCost, isMember }: OrderSummaryProps
         <div className="flex flex-col gap-xs">
           <span className="text-base text-text-secondary">Shipping</span>
           {isMember && shippingCost === 0 && (
-            <span className="text-xs text-success font-semibold">
-              FREE for Exchange Members
-            </span>
+            <span className="text-xs text-success font-semibold">FREE for Exchange Members</span>
           )}
         </div>
         <span className="text-base font-medium font-mono">
@@ -94,5 +86,5 @@ export function OrderSummary({ cart, shippingCost, isMember }: OrderSummaryProps
         Test mode: No real payment will be processed
       </p>
     </div>
-  );
+  )
 }

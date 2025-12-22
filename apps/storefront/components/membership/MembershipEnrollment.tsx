@@ -1,7 +1,7 @@
 'use client'
 
-import {useState} from 'react'
 import Link from 'next/link'
+import {useState} from 'react'
 
 interface MembershipEnrollmentProps {
   onEnroll: () => Promise<void>
@@ -34,9 +34,7 @@ export function MembershipEnrollment({
     <div className="w-full max-w-2xl mx-auto">
       <div className="text-center py-xl bg-background-alt border-b-4 border-primary mb-xl">
         <h1 className="text-5xl font-black tracking-tighter mb-sm">The Exchange</h1>
-        <p className="text-lg text-text-secondary">
-          Join our community of coffee enthusiasts
-        </p>
+        <p className="text-lg text-text-secondary">Join our community of coffee enthusiasts</p>
       </div>
 
       <div className="mb-xl">
@@ -45,8 +43,7 @@ export function MembershipEnrollment({
           <li className="p-md bg-background-secondary border-l-4 border-primary">
             <strong className="block font-bold mb-xs">Exclusive Access</strong>
             <p className="text-text-secondary text-sm">
-              First access to limited-edition single-origin drops and experimental
-              roasts
+              First access to limited-edition single-origin drops and experimental roasts
             </p>
           </li>
           <li className="p-md bg-background-secondary border-l-4 border-primary">
@@ -86,10 +83,7 @@ export function MembershipEnrollment({
         )}
 
         {error && (
-          <div
-            className="p-md bg-red-50 border border-error text-error mb-lg"
-            role="alert"
-          >
+          <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
             {error}
           </div>
         )}

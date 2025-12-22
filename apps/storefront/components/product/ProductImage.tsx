@@ -1,6 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import {useState} from 'react'
+
 import {urlFor} from '@/lib/sanity/image'
 import type {ProductImage as ProductImageType, SanityImage} from '@/lib/types'
 
@@ -48,7 +50,6 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
 
   const selectedImage = imageList[selectedIndex]
   const imageUrl = urlFor(selectedImage).width(800).height(800).format('webp').url()
-  const thumbnailUrl = urlFor(selectedImage).width(400).height(400).format('webp').url()
 
   // Get alt text: use image's alt if available (ProductImage type), otherwise use provided alt
   const imageAlt = hasAlt(selectedImage) ? selectedImage.alt : alt
@@ -57,13 +58,14 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
     <div>
       {/* Main Image */}
       <div className="aspect-square bg-background-alt border-2 border-border overflow-hidden mb-sm">
-        <img
+        <Image
           src={imageUrl}
-          srcSet={`${thumbnailUrl} 400w, ${imageUrl} 800w`}
-          sizes="(max-width: 768px) 100vw, 50vw"
           alt={imageAlt}
+          width={800}
+          height={800}
           className="w-full h-full object-cover"
-          loading="eager"
+          priority
+          unoptimized
         />
       </div>
 
@@ -86,11 +88,13 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
                 aria-label={`View image ${index + 1}`}
                 aria-current={selectedIndex === index ? 'true' : undefined}
               >
-                <img
+                <Image
                   src={thumbUrl}
                   alt={thumbAlt}
+                  width={100}
+                  height={100}
                   className="w-full h-full object-cover"
-                  loading="lazy"
+                  unoptimized
                 />
               </button>
             )

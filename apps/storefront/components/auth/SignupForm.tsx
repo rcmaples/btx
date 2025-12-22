@@ -1,8 +1,9 @@
 'use client'
 
-import {useState} from 'react'
-import {useRouter} from 'next/navigation'
 import Link from 'next/link'
+import {useRouter} from 'next/navigation'
+import {useState} from 'react'
+
 import {useAuth} from '@/lib/providers/AuthProvider'
 
 export function SignupForm() {
@@ -49,10 +50,7 @@ export function SignupForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-lg">
       {error && (
-        <div
-          className="p-md bg-red-50 border border-error text-error"
-          role="alert"
-        >
+        <div className="p-md bg-red-50 border border-error text-error" role="alert">
           {error}
         </div>
       )}

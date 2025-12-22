@@ -43,7 +43,7 @@ export function ExchangeClient() {
           <div className="p-lg bg-background-secondary border-2 border-border">
             <h3 className="text-lg font-bold mb-sm">Exclusive Access</h3>
             <p className="text-text-secondary">
-              Get first access to rare, limited-edition coffees before they're available to the
+              Get first access to rare, limited-edition coffees before they&apos;re available to the
               public
             </p>
           </div>
@@ -68,8 +68,8 @@ export function ExchangeClient() {
             <>
               <h2 className="text-2xl font-bold mb-sm">You&apos;re an Exchange Member</h2>
               <p className="text-text-secondary mb-lg">
-                Thank you for being part of The Exchange. You have access to all exclusive drops
-                and member-only products.
+                Thank you for being part of The Exchange. You have access to all exclusive drops and
+                member-only products.
               </p>
               <Link
                 href="/products"
@@ -95,7 +95,10 @@ export function ExchangeClient() {
               {!user && (
                 <p className="text-sm text-text-muted mt-md">
                   Don&apos;t have an account?{' '}
-                  <Link href="/signup?redirect=/members" className="text-primary underline hover:no-underline">
+                  <Link
+                    href="/signup?redirect=/members"
+                    className="text-primary underline hover:no-underline"
+                  >
                     Sign up
                   </Link>
                 </p>

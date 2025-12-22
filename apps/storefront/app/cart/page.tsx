@@ -1,14 +1,15 @@
-'use client';
+'use client'
 
-import { useCart } from '@/lib/hooks/useCart';
-import { useRouter } from 'next/navigation';
-import { CartLineItem } from '@/components/cart/CartLineItem';
-import { CartSummary } from '@/components/cart/CartSummary';
-import { PromoCodeInput } from '@/components/cart/PromoCodeInput';
-import { EmptyCart } from '@/components/cart/EmptyCart';
+import {useRouter} from 'next/navigation'
+
+import {CartLineItem} from '@/components/cart/CartLineItem'
+import {CartSummary} from '@/components/cart/CartSummary'
+import {EmptyCart} from '@/components/cart/EmptyCart'
+import {PromoCodeInput} from '@/components/cart/PromoCodeInput'
+import {useCart} from '@/lib/hooks/useCart'
 
 export default function CartPage() {
-  const router = useRouter();
+  const router = useRouter()
   const {
     cart,
     mounted,
@@ -18,11 +19,11 @@ export default function CartPage() {
     removePromotion,
     isLoading,
     error,
-  } = useCart();
+  } = useCart()
 
   const handleCheckout = () => {
-    router.push('/checkout');
-  };
+    router.push('/checkout')
+  }
 
   // Show empty cart if no items (after mount to prevent hydration mismatch)
   if (mounted && cart.lineItems.length === 0) {
@@ -31,7 +32,7 @@ export default function CartPage() {
         <h1 className="text-4xl font-black tracking-tighter mb-xl">Shopping Cart</h1>
         <EmptyCart />
       </div>
-    );
+    )
   }
 
   return (
@@ -39,10 +40,7 @@ export default function CartPage() {
       <h1 className="text-4xl font-black tracking-tighter mb-xl">Shopping Cart</h1>
 
       {error && (
-        <div
-          className="p-md bg-red-50 border border-error text-error mb-lg"
-          role="alert"
-        >
+        <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
           {error.message}
         </div>
       )}
@@ -63,7 +61,7 @@ export default function CartPage() {
           <div className="mt-lg pt-lg border-t-2 border-border">
             <PromoCodeInput
               onApply={async (code) => {
-                await applyPromoCode(code);
+                await applyPromoCode(code)
               }}
               appliedPromotion={cart.appliedPromotion}
               disabled={isLoading}
@@ -84,5 +82,5 @@ export default function CartPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

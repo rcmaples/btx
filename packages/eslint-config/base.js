@@ -24,13 +24,16 @@ export const baseConfig = [
         {
           cwd: '../../',
           allowList: [
+            'NODE_ENV',
             'NEXT_PUBLIC_SANITY_PROJECT_ID',
             'NEXT_PUBLIC_SANITY_DATASET',
             'NEXT_PUBLIC_SANITY_API_VERSION',
             'SANITY_API_READ_TOKEN',
+            'SANITY_API_WRITE_TOKEN',
             'SANITY_STUDIO_DATASET',
             'SANITY_STUDIO_HOST',
             'SANITY_STUDIO_PROJECT_ID',
+            'SUPABASE_WEBHOOK_SECRET',
             'VERCEL_ENV',
           ],
         },

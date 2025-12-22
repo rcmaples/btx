@@ -1,36 +1,32 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import {useState} from 'react'
 
 interface TestPaymentProps {
-  total: number;
-  onComplete: () => void;
-  isProcessing: boolean;
+  total: number
+  onComplete: () => void
+  isProcessing: boolean
 }
 
-export function TestPayment({
-  total,
-  onComplete,
-  isProcessing,
-}: TestPaymentProps) {
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+export function TestPayment({total, onComplete, isProcessing}: TestPaymentProps) {
+  const [cardNumber, setCardNumber] = useState('')
+  const [expiryDate, setExpiryDate] = useState('')
+  const [cvv, setCvv] = useState('')
 
-  const formattedTotal = (total / 100).toFixed(2);
+  const formattedTotal = (total / 100).toFixed(2)
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onComplete();
-  };
+    e.preventDefault()
+    onComplete()
+  }
 
   return (
     <div className="space-y-lg">
       <div className="p-md bg-warning-light border-2 border-warning">
         <h3 className="text-lg font-bold mb-sm">TEST MODE PAYMENT</h3>
         <p className="text-sm text-text-secondary">
-          This is a test payment interface. No real payment will be processed.
-          Use any card details - they will not be validated or stored.
+          This is a test payment interface. No real payment will be processed. Use any card details
+          - they will not be validated or stored.
         </p>
       </div>
 
@@ -43,10 +39,7 @@ export function TestPayment({
         </div>
 
         <div className="space-y-md">
-          <label
-            htmlFor="cardNumber"
-            className="block text-sm font-medium mb-xs"
-          >
+          <label htmlFor="cardNumber" className="block text-sm font-medium mb-xs">
             Card Number
           </label>
           <input
@@ -64,10 +57,7 @@ export function TestPayment({
 
         <div className="grid grid-cols-2 gap-md">
           <div>
-            <label
-              htmlFor="expiryDate"
-              className="block text-sm font-medium mb-xs"
-            >
+            <label htmlFor="expiryDate" className="block text-sm font-medium mb-xs">
               Expiry Date
             </label>
             <input
@@ -108,10 +98,10 @@ export function TestPayment({
         </button>
 
         <p className="text-xs text-text-muted text-center">
-          By completing this test checkout, you acknowledge that this is a
-          demonstration and no actual payment will be processed.
+          By completing this test checkout, you acknowledge that this is a demonstration and no
+          actual payment will be processed.
         </p>
       </form>
     </div>
-  );
+  )
 }

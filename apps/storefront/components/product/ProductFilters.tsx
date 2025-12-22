@@ -1,45 +1,36 @@
-'use client';
+'use client'
 
-import { useFilterOptions } from '@/lib/hooks/useProducts';
-import type { ProductFilters as Filters } from '@/lib/types';
+import {useFilterOptions} from '@/lib/hooks/useProducts'
+import type {ProductFilters as Filters} from '@/lib/types'
 
 interface ProductFiltersProps {
-  filters: Filters;
-  onChange: (filters: Filters) => void;
-  isMember?: boolean;
+  filters: Filters
+  onChange: (filters: Filters) => void
+  isMember?: boolean
 }
 
-export function ProductFilters({
-  filters,
-  onChange,
-  isMember = false,
-}: ProductFiltersProps) {
-  const { data: options, isLoading } = useFilterOptions();
+export function ProductFilters({filters, onChange, isMember = false}: ProductFiltersProps) {
+  const {data: options, isLoading} = useFilterOptions()
 
-  const handleFilterChange = (
-    key: keyof Filters,
-    value: string | undefined
-  ) => {
+  const handleFilterChange = (key: keyof Filters, value: string | undefined) => {
     onChange({
       ...filters,
       [key]: value,
-    });
-  };
+    })
+  }
 
   const handleExclusiveToggle = (checked: boolean) => {
     onChange({
       ...filters,
       exclusiveOnly: checked || undefined,
-    });
-  };
+    })
+  }
 
   const clearFilters = () => {
-    onChange({});
-  };
+    onChange({})
+  }
 
-  const hasActiveFilters = Object.values(filters).some(
-    (value) => value !== undefined
-  );
+  const hasActiveFilters = Object.values(filters).some((value) => value !== undefined)
 
   if (isLoading || !options) {
     return (
@@ -49,15 +40,11 @@ export function ProductFilters({
         </div>
         <div className="text-text-muted animate-pulse">Loading filters...</div>
       </div>
-    );
+    )
   }
 
   return (
-    <aside
-      className="p-md border-2 border-border"
-      role="region"
-      aria-label="Product filters"
-    >
+    <aside className="p-md border-2 border-border" role="region" aria-label="Product filters">
       <div className="flex items-center justify-between mb-md">
         <h2 className="text-lg font-bold">Filters</h2>
         {hasActiveFilters && (
@@ -73,19 +60,14 @@ export function ProductFilters({
 
       <div className="space-y-md">
         <div>
-          <label
-            className="block text-sm font-medium mb-xs"
-            htmlFor="roast-filter"
-          >
+          <label className="block text-sm font-medium mb-xs" htmlFor="roast-filter">
             Roast Level
           </label>
           <select
             id="roast-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.roastLevel || ''}
-            onChange={(e) =>
-              handleFilterChange('roastLevel', e.target.value || undefined)
-            }
+            onChange={(e) => handleFilterChange('roastLevel', e.target.value || undefined)}
           >
             <option value="">All Roasts</option>
             {options.roastLevels.map((roast) => (
@@ -97,19 +79,14 @@ export function ProductFilters({
         </div>
 
         <div>
-          <label
-            className="block text-sm font-medium mb-xs"
-            htmlFor="origin-filter"
-          >
+          <label className="block text-sm font-medium mb-xs" htmlFor="origin-filter">
             Origin
           </label>
           <select
             id="origin-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.origin || ''}
-            onChange={(e) =>
-              handleFilterChange('origin', e.target.value || undefined)
-            }
+            onChange={(e) => handleFilterChange('origin', e.target.value || undefined)}
           >
             <option value="">All Origins</option>
             {options.origins.map((origin) => (
@@ -121,19 +98,14 @@ export function ProductFilters({
         </div>
 
         <div>
-          <label
-            className="block text-sm font-medium mb-xs"
-            htmlFor="process-filter"
-          >
+          <label className="block text-sm font-medium mb-xs" htmlFor="process-filter">
             Process Method
           </label>
           <select
             id="process-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.processMethod || ''}
-            onChange={(e) =>
-              handleFilterChange('processMethod', e.target.value || undefined)
-            }
+            onChange={(e) => handleFilterChange('processMethod', e.target.value || undefined)}
           >
             <option value="">All Methods</option>
             {options.processMethods.map((method) => (
@@ -145,19 +117,14 @@ export function ProductFilters({
         </div>
 
         <div>
-          <label
-            className="block text-sm font-medium mb-xs"
-            htmlFor="best-for-filter"
-          >
+          <label className="block text-sm font-medium mb-xs" htmlFor="best-for-filter">
             Best For
           </label>
           <select
             id="best-for-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.bestFor || ''}
-            onChange={(e) =>
-              handleFilterChange('bestFor', e.target.value || undefined)
-            }
+            onChange={(e) => handleFilterChange('bestFor', e.target.value || undefined)}
           >
             <option value="">All Brewing Methods</option>
             {options.bestFor.map((method) => (
@@ -190,5 +157,5 @@ export function ProductFilters({
         )}
       </div>
     </aside>
-  );
+  )
 }

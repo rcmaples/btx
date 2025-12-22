@@ -1,5 +1,5 @@
-import {Metadata} from 'next'
 import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
+import type {Metadata} from 'next'
 
 import {getBundles} from '@/lib/services/sanity/queries'
 

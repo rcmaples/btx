@@ -1,37 +1,32 @@
-'use client';
+'use client'
 
-import { useState, useEffect, useMemo } from 'react';
-import type { User } from '@supabase/supabase-js';
-import type { Profile } from '@/lib/providers/AuthProvider';
-import { useCart } from '@/lib/hooks/useCart';
-import { ShippingAddressForm } from '@/components/checkout/ShippingAddressForm';
-import { OrderSummary } from '@/components/checkout/OrderSummary';
-import { PaymentForm } from '@/components/checkout/PaymentForm';
-import { CheckoutSuccess } from '@/components/checkout/CheckoutSuccess';
-import { createOrder } from './actions';
-import type { ShippingAddress } from '@/lib/types/checkout';
+import type {User} from '@supabase/supabase-js'
+import {useEffect, useMemo, useState} from 'react'
+
+import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
+import {OrderSummary} from '@/components/checkout/OrderSummary'
+import {PaymentForm} from '@/components/checkout/PaymentForm'
+import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
+import {useCart} from '@/lib/hooks/useCart'
+import type {Profile} from '@/lib/providers/AuthProvider'
+import type {ShippingAddress} from '@/lib/types/checkout'
+
+import {createOrder} from './actions'
 
 interface CheckoutClientProps {
-  initialUser: User | null;
-  initialProfile: Profile | null;
+  initialUser: User | null
+  initialProfile: Profile | null
 }
 
-export function CheckoutClient({
-  initialUser,
-  initialProfile,
-}: CheckoutClientProps) {
-  const { cart, clearCart, mounted } = useCart();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(
-    null
-  );
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string>
-  >({});
+export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProps) {
+  const {cart, clearCart, mounted} = useCart()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   // Guest email (only for non-authenticated users)
-  const [guestEmail, setGuestEmail] = useState('');
+  const [guestEmail, setGuestEmail] = useState('')
 
   // Shipping address state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -41,7 +36,7 @@ export function CheckoutClient({
     state: '',
     postalCode: '',
     country: 'US',
-  });
+  })
 
   // Pre-fill shipping address from profile
   useEffect(() => {
@@ -53,78 +48,75 @@ export function CheckoutClient({
         state: initialProfile.state || '',
         postalCode: initialProfile.postal_code || '',
         country: initialProfile.country || 'US',
-      });
+      })
     }
-  }, [initialProfile]);
+  }, [initialProfile])
 
   // Calculate shipping cost
   const shippingCost = useMemo(() => {
     // Free shipping for Exchange members
     if (initialUser && initialProfile?.is_exchange_member) {
-      return 0;
+      return 0
     }
     // $5 flat rate for everyone else
-    return 500; // cents
-  }, [initialUser, initialProfile]);
+    return 500 // cents
+  }, [initialUser, initialProfile])
 
-  const handleAddressChange = (
-    field: keyof ShippingAddress,
-    value: string
-  ) => {
-    setShippingAddress((prev) => ({ ...prev, [field]: value }));
+  const handleAddressChange = (field: keyof ShippingAddress, value: string) => {
+    setShippingAddress((prev) => ({...prev, [field]: value}))
     // Clear validation error for this field
-    setValidationErrors((prev) => ({ ...prev, [field]: '' }));
-  };
+    setValidationErrors((prev) => ({...prev, [field]: ''}))
+  }
 
   const handleEmailChange = (email: string) => {
-    setGuestEmail(email);
-    setValidationErrors((prev) => ({ ...prev, guestEmail: '' }));
-  };
+    setGuestEmail(email)
+    setValidationErrors((prev) => ({...prev, guestEmail: ''}))
+  }
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
+    const errors: Record<string, string> = {}
 
     // Validate guest email if not authenticated
     if (!initialUser) {
       if (!guestEmail) {
-        errors.guestEmail = 'Email is required';
+        errors.guestEmail = 'Email is required'
       } else {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(guestEmail)) {
-          errors.guestEmail = 'Invalid email format';
+          errors.guestEmail = 'Invalid email format'
         }
       }
     }
 
     // Validate shipping address
     if (!shippingAddress.streetAddress) {
-      errors.streetAddress = 'Street address is required';
+      errors.streetAddress = 'Street address is required'
     }
     if (!shippingAddress.city) {
-      errors.city = 'City is required';
+      errors.city = 'City is required'
     }
     if (!shippingAddress.state) {
-      errors.state = 'State is required';
+      errors.state = 'State is required'
     }
     if (!shippingAddress.postalCode) {
-      errors.postalCode = 'Postal code is required';
+      errors.postalCode = 'Postal code is required'
     }
 
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+    e.preventDefault()
+    setError(null)
 
     // Validate form
     if (!validateForm()) {
-      setError('Please fill in all required fields');
-      return;
+      setError('Please fill in all required fields')
+      return
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
       // Create order
@@ -136,23 +128,23 @@ export function CheckoutClient({
         cart,
         shippingCost,
         userId: initialUser?.id,
-      });
+      })
 
       if (result.success && result.orderNumber) {
         // Clear cart
-        clearCart();
+        clearCart()
         // Show success message
-        setSuccessOrderNumber(result.orderNumber);
+        setSuccessOrderNumber(result.orderNumber)
       } else {
-        setError(result.error || 'Failed to create order');
+        setError(result.error || 'Failed to create order')
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-      console.error('Checkout error:', err);
+      setError('An unexpected error occurred. Please try again.')
+      console.error('Checkout error:', err)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   // Show success state
   if (successOrderNumber) {
@@ -160,7 +152,7 @@ export function CheckoutClient({
       <div className="container mx-auto px-md py-xl max-w-4xl">
         <CheckoutSuccess orderNumber={successOrderNumber} />
       </div>
-    );
+    )
   }
 
   // Show loading if not mounted (prevent hydration issues)
@@ -170,7 +162,7 @@ export function CheckoutClient({
         <h1 className="text-4xl font-black tracking-tighter mb-xl">Checkout</h1>
         <p className="text-text-secondary">Loading...</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -178,10 +170,7 @@ export function CheckoutClient({
       <h1 className="text-4xl font-black tracking-tighter mb-xl">Checkout</h1>
 
       {error && (
-        <div
-          className="p-md bg-red-50 border border-error text-error mb-lg"
-          role="alert"
-        >
+        <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
           {error}
         </div>
       )}
@@ -230,5 +219,5 @@ export function CheckoutClient({
         </div>
       </form>
     </div>
-  );
+  )
 }

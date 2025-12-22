@@ -1,6 +1,7 @@
 'use client'
 
-import {useState, useEffect, useCallback} from 'react'
+import {useCallback, useEffect, useState} from 'react'
+
 import {useAuth} from '@/lib/providers/AuthProvider'
 import {membershipService} from '@/lib/services/membership/membership-service'
 import type {Membership} from '@/lib/types'

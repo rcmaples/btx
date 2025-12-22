@@ -1,17 +1,17 @@
-'use client';
+'use client'
 
-import type { Subscription } from '@/lib/types';
+import type {Subscription} from '@/lib/types'
 
 interface CadenceSelectorProps {
-  selectedCadence: Subscription['cadence'] | null;
-  onSelectCadence: (cadence: Subscription['cadence']) => void;
-  disabled?: boolean;
+  selectedCadence: Subscription['cadence'] | null
+  onSelectCadence: (cadence: Subscription['cadence']) => void
+  disabled?: boolean
 }
 
 const CADENCE_OPTIONS: Array<{
-  value: Subscription['cadence'];
-  label: string;
-  description: string;
+  value: Subscription['cadence']
+  label: string
+  description: string
 }> = [
   {
     value: 'weekly',
@@ -28,7 +28,7 @@ const CADENCE_OPTIONS: Array<{
     label: 'Monthly',
     description: 'Delivered every month',
   },
-];
+]
 
 export function CadenceSelector({
   selectedCadence,
@@ -43,17 +43,15 @@ export function CadenceSelector({
 
       <div className="space-y-sm">
         {CADENCE_OPTIONS.map((option) => {
-          const isSelected = selectedCadence === option.value;
-          const id = `cadence-${option.value}`;
+          const isSelected = selectedCadence === option.value
+          const id = `cadence-${option.value}`
 
           return (
             <label
               key={option.value}
               htmlFor={id}
               className={`block p-md border-2 cursor-pointer transition-all duration-fast ${
-                isSelected
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-primary'
+                isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary'
               } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               <input
@@ -68,14 +66,12 @@ export function CadenceSelector({
               />
               <div>
                 <span className="block font-medium">{option.label}</span>
-                <span className="block text-sm text-text-muted">
-                  {option.description}
-                </span>
+                <span className="block text-sm text-text-muted">{option.description}</span>
               </div>
             </label>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }

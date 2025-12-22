@@ -13,14 +13,12 @@ const DEFAULT_GRIND = 'Whole bean'
  * Only considers products that have availableGrinds defined.
  * Falls back to DEFAULT_GRIND if no intersection can be computed.
  */
-function computeGrindIntersection(
-  products: Array<{availableGrinds?: string[]}>
-): string[] {
+function computeGrindIntersection(products: Array<{availableGrinds?: string[]}>): string[] {
   if (products.length === 0) return [DEFAULT_GRIND]
 
   // Filter to only products that have grinds defined
   const productsWithGrinds = products.filter(
-    (p) => p.availableGrinds && p.availableGrinds.length > 0
+    (p) => p.availableGrinds && p.availableGrinds.length > 0,
   )
 
   // If no products have grinds defined, fall back to default
@@ -29,9 +27,7 @@ function computeGrindIntersection(
   const grindSets = productsWithGrinds.map((p) => new Set(p.availableGrinds))
 
   // Find intersection: grinds that exist in ALL sets
-  const intersection = [...grindSets[0]].filter((grind) =>
-    grindSets.every((set) => set.has(grind))
-  )
+  const intersection = [...grindSets[0]].filter((grind) => grindSets.every((set) => set.has(grind)))
 
   // If intersection is empty (products have no common grinds), fall back to default
   if (intersection.length === 0) return [DEFAULT_GRIND]
@@ -49,23 +45,17 @@ export function BundleGrindSelector({
   if (availableGrinds.length === 0) {
     return (
       <div className="mb-lg p-md bg-background-alt border border-border-light">
-        <p className="text-text-muted text-sm">
-          Grind selection is not available for this bundle.
-        </p>
+        <p className="text-text-muted text-sm">Grind selection is not available for this bundle.</p>
       </div>
     )
   }
 
   return (
     <div className="mb-lg">
-      <h3 className="text-sm font-bold uppercase tracking-wider mb-sm">
-        Grind
-      </h3>
+      <h3 className="text-sm font-bold uppercase tracking-wider mb-sm">Grind</h3>
       <div
         className={`grid gap-sm ${
-          availableGrinds.length <= 3
-            ? 'grid-cols-3'
-            : 'grid-cols-2 sm:grid-cols-4'
+          availableGrinds.length <= 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4'
         }`}
       >
         {availableGrinds.map((grind) => {

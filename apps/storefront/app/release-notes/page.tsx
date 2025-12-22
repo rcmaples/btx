@@ -1,7 +1,7 @@
-import {Metadata} from 'next'
+import type {Metadata} from 'next'
 
-import {getReleaseNotes} from '@/lib/services/sanity/queries'
 import {ArticleCard} from '@/components/article/ArticleCard'
+import {getReleaseNotes} from '@/lib/services/sanity/queries'
 
 export const metadata: Metadata = {
   title: 'Release Notes',

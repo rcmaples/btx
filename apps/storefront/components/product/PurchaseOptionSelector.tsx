@@ -1,46 +1,39 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import type { Product, PurchaseSelection, PriceEntry } from '@/lib/types';
+import {useEffect, useState} from 'react'
+
+import type {Product, PurchaseSelection} from '@/lib/types'
 
 interface PurchaseOptionSelectorProps {
-  product: Product;
-  onSelect: (selection: PurchaseSelection | null) => void;
+  product: Product
+  onSelect: (selection: PurchaseSelection | null) => void
 }
 
-const DEFAULT_SIZE_KEY = '340g';
-const DEFAULT_GRIND = 'Whole bean';
+const DEFAULT_SIZE_KEY = '340g'
+const DEFAULT_GRIND = 'Whole bean'
 
-export function PurchaseOptionSelector({
-  product,
-  onSelect,
-}: PurchaseOptionSelectorProps) {
-  const { pricing = [], availableGrinds = [] } = product;
+export function PurchaseOptionSelector({product, onSelect}: PurchaseOptionSelectorProps) {
+  const {pricing = [], availableGrinds = []} = product
 
   // Sort pricing by grams for consistent display
-  const sortedPricing = [...pricing].sort((a, b) => a.grams - b.grams);
+  const sortedPricing = [...pricing].sort((a, b) => a.grams - b.grams)
 
   // Find default size (340g or first available)
   const defaultPriceEntry =
     sortedPricing.find((p) => p.sizeKey === DEFAULT_SIZE_KEY) ||
     sortedPricing.find((p) => p.isBasePrice) ||
-    sortedPricing[0];
+    sortedPricing[0]
 
   // Find default grind (Whole bean or first available)
   const defaultGrind =
-    availableGrinds.find(
-      (g) => g.toLowerCase() === DEFAULT_GRIND.toLowerCase()
-    ) || availableGrinds[0];
+    availableGrinds.find((g) => g.toLowerCase() === DEFAULT_GRIND.toLowerCase()) ||
+    availableGrinds[0]
 
-  const [selectedSizeKey, setSelectedSizeKey] = useState<string>(
-    defaultPriceEntry?.sizeKey || ''
-  );
-  const [selectedGrind, setSelectedGrind] = useState<string>(defaultGrind || '');
+  const [selectedSizeKey, setSelectedSizeKey] = useState<string>(defaultPriceEntry?.sizeKey || '')
+  const [selectedGrind, setSelectedGrind] = useState<string>(defaultGrind || '')
 
   // Get current price entry
-  const selectedPriceEntry = sortedPricing.find(
-    (p) => p.sizeKey === selectedSizeKey
-  );
+  const selectedPriceEntry = sortedPricing.find((p) => p.sizeKey === selectedSizeKey)
 
   // Emit selection on any change
   useEffect(() => {
@@ -53,43 +46,32 @@ export function PurchaseOptionSelector({
         grams: selectedPriceEntry.grams,
         grind: selectedGrind,
         priceInCents: selectedPriceEntry.priceInCents,
-      });
+      })
     } else {
-      onSelect(null);
+      onSelect(null)
     }
-  }, [
-    selectedSizeKey,
-    selectedGrind,
-    selectedPriceEntry,
-    product._id,
-    product.name,
-    onSelect,
-  ]);
+  }, [selectedSizeKey, selectedGrind, selectedPriceEntry, product._id, product.name, onSelect])
 
   const formatPrice = (priceInCents: number) => {
-    return `$${(priceInCents / 100).toFixed(2)}`;
-  };
+    return `$${(priceInCents / 100).toFixed(2)}`
+  }
 
   if (sortedPricing.length === 0 || availableGrinds.length === 0) {
     return (
       <div className="p-md bg-background-alt border border-border-light text-center">
-        <p className="text-text-muted">
-          Purchase options are not available for this product.
-        </p>
+        <p className="text-text-muted">Purchase options are not available for this product.</p>
       </div>
-    );
+    )
   }
 
   return (
     <div className="space-y-lg">
       {/* Size Selection */}
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-wider mb-sm">
-          Size
-        </h3>
+        <h3 className="text-sm font-bold uppercase tracking-wider mb-sm">Size</h3>
         <div className="grid grid-cols-3 gap-sm">
           {sortedPricing.map((priceEntry) => {
-            const isSelected = selectedSizeKey === priceEntry.sizeKey;
+            const isSelected = selectedSizeKey === priceEntry.sizeKey
 
             return (
               <button
@@ -106,25 +88,21 @@ export function PurchaseOptionSelector({
                   {formatPrice(priceEntry.priceInCents)}
                 </span>
               </button>
-            );
+            )
           })}
         </div>
       </div>
 
       {/* Grind Selection */}
       <div>
-        <h3 className="text-sm font-bold uppercase tracking-wider mb-sm">
-          Grind
-        </h3>
+        <h3 className="text-sm font-bold uppercase tracking-wider mb-sm">Grind</h3>
         <div
           className={`grid gap-sm ${
-            availableGrinds.length <= 3
-              ? 'grid-cols-3'
-              : 'grid-cols-2 sm:grid-cols-4'
+            availableGrinds.length <= 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4'
           }`}
         >
           {availableGrinds.map((grind) => {
-            const isSelected = selectedGrind === grind;
+            const isSelected = selectedGrind === grind
 
             return (
               <button
@@ -138,7 +116,7 @@ export function PurchaseOptionSelector({
               >
                 <span className="block font-medium">{grind}</span>
               </button>
-            );
+            )
           })}
         </div>
       </div>
@@ -155,5 +133,5 @@ export function PurchaseOptionSelector({
         </div>
       )}
     </div>
-  );
+  )
 }
