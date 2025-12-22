@@ -47,3 +47,30 @@ export function trackAddToCart(params: AddToCartEvent): void {
 export function trackCheckoutInitiated(params: CheckoutInitiatedEvent): void {
   safeTrackEvent('Checkout Initiated', params)
 }
+
+// User identification functions
+export function identifyUser(userId: string, email: string): void {
+  if (typeof window === 'undefined' || !FS) return
+
+  try {
+    FS('setIdentity', {
+      uid: userId,
+      properties: {
+        displayName: email,
+        email: email,
+      },
+    })
+  } catch (error) {
+    console.warn('FullStory identify error:', error)
+  }
+}
+
+export function anonymizeUser(): void {
+  if (typeof window === 'undefined' || !FS) return
+
+  try {
+    FS('setIdentity', {anonymous: true})
+  } catch (error) {
+    console.warn('FullStory anonymize error:', error)
+  }
+}

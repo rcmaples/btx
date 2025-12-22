@@ -43,7 +43,7 @@ class OrderServiceImpl implements OrderService {
     }
 
     // Create order in Sanity
-    const createdOrder = await createOrder(orderData) as {
+    const createdOrder = (await createOrder(orderData)) as {
       _id: string
       orderNumber: string
       lineItems: Array<{
