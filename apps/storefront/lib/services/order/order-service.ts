@@ -27,7 +27,7 @@ class OrderServiceImpl implements OrderService {
         quantity: item.quantity,
         pricePerUnit: item.pricePerUnit,
         lineTotal: item.lineTotal,
-        itemType: item.itemType || 'product',
+        itemType: (item.itemType || 'product') as 'product' | 'bundle' | 'subscription',
       })),
       subtotal: cart.subtotal,
       discount: cart.discount,
@@ -43,7 +43,34 @@ class OrderServiceImpl implements OrderService {
     }
 
     // Create order in Sanity
-    const createdOrder = await createOrder(orderData)
+    const createdOrder = await createOrder(orderData) as {
+      _id: string
+      orderNumber: string
+      lineItems: Array<{
+        id: string
+        productId: string
+        productName: string
+        sizeKey: string
+        sizeName: string
+        grams: number
+        grind: string
+        quantity: number
+        pricePerUnit: number
+        lineTotal: number
+        itemType: 'product' | 'bundle' | 'subscription'
+      }>
+      subtotal: number
+      discount: number
+      total: number
+      appliedPromotion?: {
+        code?: string
+        name: string
+        discountType: string
+        discountValue: number
+      }
+      createdAt: string
+      isTestOrder: boolean
+    }
 
     return {
       _id: createdOrder._id,

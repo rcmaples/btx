@@ -317,7 +317,12 @@ export async function createOrder(orderData: {
   subtotal: number
   discount: number
   total: number
-  appliedPromotion?: Promotion
+  appliedPromotion?: {
+    code?: string
+    name: string
+    discountType: string
+    discountValue: number
+  }
 }) {
   return client.create({
     _type: 'order',

@@ -52,7 +52,7 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
   const imageUrl = urlFor(selectedImage).width(800).height(800).format('webp').url()
 
   // Get alt text: use image's alt if available (ProductImage type), otherwise use provided alt
-  const imageAlt = hasAlt(selectedImage) ? selectedImage.alt : alt
+  const imageAlt = (hasAlt(selectedImage) ? selectedImage.alt : alt) || 'Product image'
 
   return (
     <div>
@@ -74,7 +74,9 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
         <div className="flex gap-sm overflow-x-auto pb-sm">
           {imageList.map((img, index) => {
             const thumbUrl = urlFor(img).width(100).height(100).format('webp').url()
-            const thumbAlt = hasAlt(img) ? img.alt : `${alt} - Image ${index + 1}`
+            const thumbAlt =
+              (hasAlt(img) ? img.alt : alt ? `${alt} - Image ${index + 1}` : undefined) ||
+              `Product image ${index + 1}`
 
             return (
               <button
