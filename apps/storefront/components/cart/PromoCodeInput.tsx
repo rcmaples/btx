@@ -1,66 +1,66 @@
-'use client';
+'use client'
 
-import { useState, type FormEvent } from 'react';
-import type { Promotion } from '@/lib/types';
-import { InvalidPromoCodeError, PromoMinimumNotMetError } from '@/lib/types';
+import {type FormEvent, useState} from 'react'
+
+import type {Promotion} from '@/lib/types'
+import {InvalidPromoCodeError, PromoMinimumNotMetError} from '@/lib/types'
 
 interface PromoCodeInputProps {
-  onApply: (code: string) => Promise<void>;
-  appliedPromotion: Promotion | null;
-  disabled?: boolean;
+  onApply: (code: string) => Promise<void>
+  appliedPromotion: Promotion | null
+  disabled?: boolean
 }
 
-export function PromoCodeInput({
-  onApply,
-  appliedPromotion,
-  disabled = false,
-}: PromoCodeInputProps) {
-  const [code, setCode] = useState('');
-  const [isApplying, setIsApplying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: PromoCodeInputProps) {
+  const [code, setCode] = useState('')
+  const [isApplying, setIsApplying] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!code.trim()) {
-      return;
+      return
     }
 
-    setError(null);
-    setSuccess(false);
-    setIsApplying(true);
+    setError(null)
+    setSuccess(false)
+    setIsApplying(true)
 
     try {
-      await onApply(code.trim().toUpperCase());
-      setSuccess(true);
-      setCode('');
+      await onApply(code.trim().toUpperCase())
+      setSuccess(true)
+      setCode('')
 
       // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(false), 3000);
+      setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
       if (err instanceof InvalidPromoCodeError) {
-        setError('Invalid or expired promo code. Please check and try again.');
+        setError('Invalid or expired promo code. Please check and try again.')
       } else if (err instanceof PromoMinimumNotMetError) {
-        setError(err.message);
+        setError(err.message)
       } else if (err instanceof Error) {
-        setError(err.message);
+        setError(err.message)
       } else {
-        setError('Failed to apply promo code. Please try again.');
+        setError('Failed to apply promo code. Please try again.')
       }
     } finally {
-      setIsApplying(false);
+      setIsApplying(false)
     }
-  };
+  }
 
-  const hasPromotion = appliedPromotion !== null;
-  const isDisabled = disabled || isApplying || hasPromotion;
+  const hasPromotion = appliedPromotion !== null
+  const isDisabled = disabled || isApplying || hasPromotion
 
   return (
-    <div className="p-lg border border-border-light bg-background-secondary mt-lg">
-      <h3 className="text-base font-bold mb-md text-text">
-        Have a promo code?
-      </h3>
+    <div
+      className="p-lg border border-border-light bg-background-secondary mt-lg"
+      data-fs-element="promo-code-section"
+      data-fs-promo-applied-bool={hasPromotion}
+      data-fs-promo-code-str={appliedPromotion?.code}
+    >
+      <h3 className="text-base font-bold mb-md text-text">Have a promo code?</h3>
 
       <form onSubmit={handleSubmit} className="mb-sm">
         <div className="flex gap-sm w-full">
@@ -68,6 +68,7 @@ export function PromoCodeInput({
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            data-fs-element="promo-code-input"
             placeholder="Enter code"
             className="flex-1 p-sm text-base border border-border bg-background text-text font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-60 placeholder:normal-case placeholder:tracking-normal"
             disabled={isDisabled}
@@ -113,5 +114,5 @@ export function PromoCodeInput({
         </div>
       )}
     </div>
-  );
+  )
 }

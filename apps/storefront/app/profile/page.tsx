@@ -1,7 +1,9 @@
 import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
-import {getServerAuth} from '@/lib/supabase/server'
+
 import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
+import {getServerAuth} from '@/lib/supabase/server'
+
 import {ProfileClient} from './ProfileClient'
 
 export const metadata: Metadata = {
@@ -18,11 +20,7 @@ export default async function ProfilePage() {
   }
 
   // Fetch profile server-side - fast
-  const {data: profile} = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  const {data: profile} = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
   return (
     <ClientAuthWrapper>

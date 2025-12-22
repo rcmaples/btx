@@ -1,3 +1,4 @@
+import type {PortableTextBlock} from '@portabletext/types'
 import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {cache} from 'react'
@@ -7,16 +8,19 @@ import {getProductBySlug, getProductSlugs} from '@/lib/services/sanity/queries'
 import {ProductDetailClient} from './ProductDetailClient'
 
 // Extract plain text from Portable Text blocks for meta description
-function portableTextToPlainText(blocks: any[]): string {
+function portableTextToPlainText(blocks: PortableTextBlock[]): string {
   if (!blocks || !Array.isArray(blocks)) return ''
   return blocks
     .filter((block) => block._type === 'block')
-    .map((block) =>
-      block.children
-        ?.filter((child: any) => child._type === 'span')
-        .map((span: any) => span.text)
-        .join('') ?? ''
-    )
+    .map((block) => {
+      const children = block.children as Array<{_type: string; text?: string}>
+      return (
+        children
+          ?.filter((child) => child._type === 'span')
+          .map((span) => span.text)
+          .join('') ?? ''
+      )
+    })
     .join(' ')
     .slice(0, 160)
 }

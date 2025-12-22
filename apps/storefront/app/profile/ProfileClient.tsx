@@ -1,10 +1,11 @@
 'use client'
 
-import {useEffect, useState} from 'react'
-import {useRouter} from 'next/navigation'
-import Link from 'next/link'
 import type {User} from '@supabase/supabase-js'
-import {useAuth, type Profile} from '@/lib/providers/AuthProvider'
+import Link from 'next/link'
+import {useRouter} from 'next/navigation'
+import {useEffect, useState} from 'react'
+
+import {type Profile, useAuth} from '@/lib/providers/AuthProvider'
 
 interface ProfileClientProps {
   initialUser: User
@@ -115,19 +116,13 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
       </div>
 
       {error && (
-        <div
-          className="p-md bg-red-50 border border-error text-error mb-lg"
-          role="alert"
-        >
+        <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
           {error}
         </div>
       )}
 
       {success && (
-        <div
-          className="p-md bg-green-50 border border-success text-success mb-lg"
-          role="status"
-        >
+        <div className="p-md bg-green-50 border border-success text-success mb-lg" role="status">
           {success}
         </div>
       )}
@@ -172,10 +167,7 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="streetAddress2"
-                    className="block text-sm mb-xs"
-                  >
+                  <label htmlFor="streetAddress2" className="block text-sm mb-xs">
                     Apt, Suite, Unit (Optional)
                   </label>
                   <input
@@ -268,9 +260,7 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
           <div className="space-y-lg">
             <div>
               <h2 className="font-bold mb-xs">Phone</h2>
-              <p className="text-text-secondary">
-                {profile?.phone || 'Not provided'}
-              </p>
+              <p className="text-text-secondary">{profile?.phone || 'Not provided'}</p>
             </div>
 
             <div>
@@ -314,8 +304,8 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
                     <div className="p-md bg-yellow-50 border border-warning">
                       <p className="font-bold mb-sm">Are you sure you want to cancel?</p>
                       <p className="text-sm text-text-secondary mb-md">
-                        You&apos;ll lose access to exclusive drops and member-only products.
-                        You can rejoin anytime.
+                        You&apos;ll lose access to exclusive drops and member-only products. You can
+                        rejoin anytime.
                       </p>
                       <div className="flex gap-sm">
                         <button
@@ -350,10 +340,7 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
                       {new Date(profile.exchange_cancelled_at).toLocaleDateString()}
                     </p>
                   </div>
-                  <Link
-                    href="/members"
-                    className="inline-block text-primary hover:underline"
-                  >
+                  <Link href="/members" className="inline-block text-primary hover:underline">
                     Rejoin The Exchange
                   </Link>
                 </div>
@@ -362,10 +349,7 @@ export function ProfileClient({initialUser, initialProfile}: ProfileClientProps)
                   <p className="text-text-secondary mb-md">
                     You&apos;re not an Exchange member yet.
                   </p>
-                  <Link
-                    href="/members"
-                    className="inline-block text-primary hover:underline"
-                  >
+                  <Link href="/members" className="inline-block text-primary hover:underline">
                     Join The Exchange for exclusive access
                   </Link>
                 </div>

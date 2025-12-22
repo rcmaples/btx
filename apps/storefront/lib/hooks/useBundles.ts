@@ -1,8 +1,8 @@
 'use client'
 
 import {useQuery} from '@tanstack/react-query'
+
 import {bundleService} from '@/lib/services/bundle/bundle-service'
-import type {SanityBundle} from '@/lib/types'
 
 const bundleKeys = {
   all: ['bundles'] as const,

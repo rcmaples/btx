@@ -1,6 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import {useState} from 'react'
+
 import {urlFor} from '@/lib/sanity/image'
 import type {ProductImage as ProductImageType, SanityImage} from '@/lib/types'
 
@@ -48,22 +50,22 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
 
   const selectedImage = imageList[selectedIndex]
   const imageUrl = urlFor(selectedImage).width(800).height(800).format('webp').url()
-  const thumbnailUrl = urlFor(selectedImage).width(400).height(400).format('webp').url()
 
   // Get alt text: use image's alt if available (ProductImage type), otherwise use provided alt
-  const imageAlt = hasAlt(selectedImage) ? selectedImage.alt : alt
+  const imageAlt = (hasAlt(selectedImage) ? selectedImage.alt : alt) || 'Product image'
 
   return (
     <div>
       {/* Main Image */}
       <div className="aspect-square bg-background-alt border-2 border-border overflow-hidden mb-sm">
-        <img
+        <Image
           src={imageUrl}
-          srcSet={`${thumbnailUrl} 400w, ${imageUrl} 800w`}
-          sizes="(max-width: 768px) 100vw, 50vw"
           alt={imageAlt}
+          width={800}
+          height={800}
           className="w-full h-full object-cover"
-          loading="eager"
+          priority
+          unoptimized
         />
       </div>
 
@@ -72,7 +74,9 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
         <div className="flex gap-sm overflow-x-auto pb-sm">
           {imageList.map((img, index) => {
             const thumbUrl = urlFor(img).width(100).height(100).format('webp').url()
-            const thumbAlt = hasAlt(img) ? img.alt : `${alt} - Image ${index + 1}`
+            const thumbAlt =
+              (hasAlt(img) ? img.alt : alt ? `${alt} - Image ${index + 1}` : undefined) ||
+              `Product image ${index + 1}`
 
             return (
               <button
@@ -86,11 +90,13 @@ export function ProductImage({images, image, alt}: ProductImageProps) {
                 aria-label={`View image ${index + 1}`}
                 aria-current={selectedIndex === index ? 'true' : undefined}
               >
-                <img
+                <Image
                   src={thumbUrl}
                   alt={thumbAlt}
+                  width={100}
+                  height={100}
                   className="w-full h-full object-cover"
-                  loading="lazy"
+                  unoptimized
                 />
               </button>
             )

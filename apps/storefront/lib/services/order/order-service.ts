@@ -1,16 +1,17 @@
-import type { Cart, Order, OrderService } from '@/lib/types';
-import { createOrder, getOrderByNumber } from '../sanity/queries';
-import { EmptyCartError } from '@/lib/types';
+import type {Cart, Order, OrderService} from '@/lib/types'
+import {EmptyCartError} from '@/lib/types'
+
+import {createOrder, getOrderByNumber} from '../sanity/queries'
 
 class OrderServiceImpl implements OrderService {
   async createOrder(cart: Cart): Promise<Order> {
     // Validate cart is not empty
     if (cart.lineItems.length === 0) {
-      throw new EmptyCartError();
+      throw new EmptyCartError()
     }
 
     // Generate order number
-    const orderNumber = this.generateOrderNumber();
+    const orderNumber = this.generateOrderNumber()
 
     // Transform cart to order format
     const orderData = {
@@ -26,7 +27,7 @@ class OrderServiceImpl implements OrderService {
         quantity: item.quantity,
         pricePerUnit: item.pricePerUnit,
         lineTotal: item.lineTotal,
-        itemType: item.itemType || 'product',
+        itemType: (item.itemType || 'product') as 'product' | 'bundle' | 'subscription',
       })),
       subtotal: cart.subtotal,
       discount: cart.discount,
@@ -39,10 +40,37 @@ class OrderServiceImpl implements OrderService {
             discountValue: cart.appliedPromotion.discountValue,
           }
         : undefined,
-    };
+    }
 
     // Create order in Sanity
-    const createdOrder = await createOrder(orderData);
+    const createdOrder = await createOrder(orderData) as {
+      _id: string
+      orderNumber: string
+      lineItems: Array<{
+        id: string
+        productId: string
+        productName: string
+        sizeKey: string
+        sizeName: string
+        grams: number
+        grind: string
+        quantity: number
+        pricePerUnit: number
+        lineTotal: number
+        itemType: 'product' | 'bundle' | 'subscription'
+      }>
+      subtotal: number
+      discount: number
+      total: number
+      appliedPromotion?: {
+        code?: string
+        name: string
+        discountType: string
+        discountValue: number
+      }
+      createdAt: string
+      isTestOrder: boolean
+    }
 
     return {
       _id: createdOrder._id,
@@ -55,24 +83,24 @@ class OrderServiceImpl implements OrderService {
       appliedPromotion: createdOrder.appliedPromotion,
       createdAt: new Date(createdOrder.createdAt),
       isTestOrder: createdOrder.isTestOrder,
-    };
+    }
   }
 
   async getOrder(orderNumber: string): Promise<Order | null> {
-    const order = await getOrderByNumber(orderNumber);
+    const order = await getOrderByNumber(orderNumber)
 
     if (!order) {
-      return null;
+      return null
     }
 
-    return order as Order;
+    return order as Order
   }
 
   generateOrderNumber(): string {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-    return `BT-${timestamp}-${random}`;
+    const timestamp = Date.now()
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase()
+    return `BT-${timestamp}-${random}`
   }
 }
 
-export const orderService = new OrderServiceImpl();
+export const orderService = new OrderServiceImpl()

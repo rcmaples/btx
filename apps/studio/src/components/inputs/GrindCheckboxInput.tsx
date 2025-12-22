@@ -77,7 +77,7 @@ export function GrindCheckboxInput(props: GrindCheckboxInputProps) {
     return () => {
       isMounted = false
     }
-  }, [client, query]) // Only depend on client and query, not value/onChange
+  }, [client, props.value, query]) // Only depend on client and query, not value/onChange
 
   const handleCheckboxChange = useCallback(
     (optionValue: string) => {

@@ -1,7 +1,7 @@
 import {Box, Checkbox, Flex, Spinner, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import type {ArrayOfPrimitivesInputProps} from 'sanity'
-import {set, unset, useClient, useFormValue} from 'sanity'
+import {set, unset, useClient} from 'sanity'
 
 interface SizeOption {
   _key: string
@@ -85,7 +85,7 @@ export function SizeCheckboxInput(props: SizeCheckboxInputProps) {
     return () => {
       isMounted = false
     }
-  }, [client, query]) // Only depend on client and query, not value/onChange
+  }, [client, props.value, query]) // Only depend on client and query, not value/onChange
 
   const handleCheckboxChange = useCallback(
     (optionValue: string) => {

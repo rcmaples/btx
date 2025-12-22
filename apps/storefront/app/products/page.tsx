@@ -1,6 +1,8 @@
-import {Metadata} from 'next'
 import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
-import {getProducts, getFilterOptions} from '@/lib/services/sanity/queries'
+import type {Metadata} from 'next'
+
+import {getFilterOptions, getProducts} from '@/lib/services/sanity/queries'
+
 import {ProductsClientWrapper} from './ProductsClientWrapper'
 
 export const metadata: Metadata = {

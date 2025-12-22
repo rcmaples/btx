@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 import {urlFor} from '@/lib/sanity/image'
@@ -10,17 +11,13 @@ interface BundleCardProps {
 export function BundleCard({bundle}: BundleCardProps) {
   // Use bundle image, or fall back to first product's image
   const bundleImage =
-    bundle.image ||
-    bundle.products?.[0]?.images?.[0] ||
-    bundle.products?.[0]?.image
+    bundle.image || bundle.products?.[0]?.images?.[0] || bundle.products?.[0]?.image
   const imageUrl = bundleImage
     ? urlFor(bundleImage).width(400).height(400).format('webp').url()
     : null
 
   const formattedPrice = (bundle.price / 100).toFixed(2)
-  const formattedSavings = bundle.savingsAmount
-    ? (bundle.savingsAmount / 100).toFixed(2)
-    : null
+  const formattedSavings = bundle.savingsAmount ? (bundle.savingsAmount / 100).toFixed(2) : null
 
   return (
     <Link
@@ -29,11 +26,13 @@ export function BundleCard({bundle}: BundleCardProps) {
     >
       <div className="relative aspect-square bg-background-alt overflow-hidden">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={bundle.name}
+            width={400}
+            height={400}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow"
-            loading="lazy"
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -54,9 +53,7 @@ export function BundleCard({bundle}: BundleCardProps) {
 
       <div className="p-md">
         <div className="mb-sm">
-          <h3 className="text-lg font-bold mb-xs text-text group-hover:underline">
-            {bundle.name}
-          </h3>
+          <h3 className="text-lg font-bold mb-xs text-text group-hover:underline">{bundle.name}</h3>
           {bundle.description && (
             <p className="text-sm text-text-muted line-clamp-2">{bundle.description}</p>
           )}

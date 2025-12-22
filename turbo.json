@@ -8,7 +8,10 @@
     "apps/studio/.env"
   ],
   "globalEnv": [
+    "NODE_ENV",
     "SANITY_API_READ_TOKEN",
+    "SANITY_API_WRITE_TOKEN",
+    "SUPABASE_WEBHOOK_SECRET",
     "VERCEL_ENV",
     "NEXT_PUBLIC_SANITY_PROJECT_ID",
     "NEXT_PUBLIC_SANITY_DATASET",

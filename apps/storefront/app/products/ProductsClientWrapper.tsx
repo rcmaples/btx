@@ -1,10 +1,11 @@
 'use client'
 
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useRouter} from 'next/navigation'
 import {useEffect, useState} from 'react'
 
 import {ProductCard} from '@/components/product/ProductCard'
 import {ProductFilters} from '@/components/product/ProductFilters'
+import {usePageTracking} from '@/lib/fullstory/hooks'
 import {useMembership} from '@/lib/hooks/useMembership'
 import {useProducts} from '@/lib/hooks/useProducts'
 import type {ProductFilters as Filters} from '@/lib/types'
@@ -15,10 +16,12 @@ interface ProductsClientWrapperProps {
 
 export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const {isMember, mounted} = useMembership()
 
   const [filters, setFilters] = useState<Filters>(initialFilters)
+
+  // Track page view
+  usePageTracking('Product Catalog')
 
   // Use React Query - will use hydrated data from server on initial load
   const {data: products, isLoading, error} = useProducts(filters, mounted ? isMember : false)

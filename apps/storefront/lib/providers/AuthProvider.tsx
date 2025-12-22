@@ -1,13 +1,8 @@
 'use client'
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react'
-import type {User, Session} from '@supabase/supabase-js'
+import type {Session, User} from '@supabase/supabase-js'
+import {createContext, type ReactNode, useContext, useEffect, useState} from 'react'
+
 import {createClient} from '@/lib/supabase/client'
 import {profileCache} from '@/lib/utils/profileCache'
 
@@ -35,9 +30,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{error: Error | null}>
   signIn: (email: string, password: string) => Promise<{error: Error | null}>
   signOut: () => Promise<void>
-  updateProfile: (
-    data: Partial<Omit<Profile, 'id' | 'email'>>
-  ) => Promise<{error: Error | null}>
+  updateProfile: (data: Partial<Omit<Profile, 'id' | 'email'>>) => Promise<{error: Error | null}>
   refreshProfile: () => Promise<void>
   // Exchange membership methods
   enrollInExchange: () => Promise<{error: Error | null}>
@@ -69,11 +62,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
 
     // Create the promise - wrap in Promise.resolve for proper type
     const promise: Promise<Profile | null> = Promise.resolve(
-      supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
+      supabase.from('profiles').select('*').eq('id', userId).single(),
     ).then(({data, error}) => {
       if (error) {
         console.error('Error fetching profile:', error)
@@ -166,12 +155,10 @@ export function AuthProvider({children}: {children: ReactNode}) {
     return () => {
       subscription.unsubscribe()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const signUp = async (
-    email: string,
-    password: string
-  ): Promise<{error: Error | null}> => {
+  const signUp = async (email: string, password: string): Promise<{error: Error | null}> => {
     const {error} = await supabase.auth.signUp({
       email,
       password,
@@ -179,10 +166,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
     return {error}
   }
 
-  const signIn = async (
-    email: string,
-    password: string
-  ): Promise<{error: Error | null}> => {
+  const signIn = async (email: string, password: string): Promise<{error: Error | null}> => {
     const {error} = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -199,7 +183,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
   }
 
   const updateProfile = async (
-    data: Partial<Omit<Profile, 'id' | 'email'>>
+    data: Partial<Omit<Profile, 'id' | 'email'>>,
   ): Promise<{error: Error | null}> => {
     if (!user || !profile) {
       return {error: new Error('Not authenticated')}

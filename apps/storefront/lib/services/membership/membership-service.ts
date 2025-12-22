@@ -1,6 +1,6 @@
-import type { Membership, MembershipService } from '@/lib/types';
+import type {Membership, MembershipService} from '@/lib/types'
 
-const MEMBERSHIP_STORAGE_KEY = 'bt_membership';
+const MEMBERSHIP_STORAGE_KEY = 'bt_membership'
 
 class MembershipServiceImpl implements MembershipService {
   /**
@@ -8,24 +8,24 @@ class MembershipServiceImpl implements MembershipService {
    */
   getMembership(): Membership {
     if (typeof window === 'undefined') {
-      return { isMember: false };
+      return {isMember: false}
     }
 
-    const stored = localStorage.getItem(MEMBERSHIP_STORAGE_KEY);
+    const stored = localStorage.getItem(MEMBERSHIP_STORAGE_KEY)
 
     if (!stored) {
-      return { isMember: false };
+      return {isMember: false}
     }
 
     try {
-      const parsed = JSON.parse(stored) as Membership;
+      const parsed = JSON.parse(stored) as Membership
       return {
         isMember: parsed.isMember,
         enrolledAt: parsed.enrolledAt ? new Date(parsed.enrolledAt) : undefined,
-      };
+      }
     } catch (error) {
-      console.error('Failed to parse membership data:', error);
-      return { isMember: false };
+      console.error('Failed to parse membership data:', error)
+      return {isMember: false}
     }
   }
 
@@ -37,21 +37,21 @@ class MembershipServiceImpl implements MembershipService {
     const membership: Membership = {
       isMember: true,
       enrolledAt: new Date(),
-    };
-
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(MEMBERSHIP_STORAGE_KEY, JSON.stringify(membership));
     }
 
-    return membership;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MEMBERSHIP_STORAGE_KEY, JSON.stringify(membership))
+    }
+
+    return membership
   }
 
   /**
    * Check if user is member
    */
   isMember(): boolean {
-    return this.getMembership().isMember;
+    return this.getMembership().isMember
   }
 }
 
-export const membershipService = new MembershipServiceImpl();
+export const membershipService = new MembershipServiceImpl()

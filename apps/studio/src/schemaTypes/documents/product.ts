@@ -277,7 +277,8 @@ export const productSchema = defineType({
         input: (props: ArrayOfPrimitivesInputProps) =>
           SizeCheckboxInput({
             ...props,
-            query: '*[_type == "availableSizes"][0].sizeTypes[]{_key, "title": name, "value": _key, grams}',
+            query:
+              '*[_type == "availableSizes"][0].sizeTypes[]{_key, "title": name, "value": _key, grams}',
           }),
       },
       validation: (Rule) => Rule.required().min(1).error('At least one size must be selected'),
@@ -296,7 +297,8 @@ export const productSchema = defineType({
             query: '*[_type == "grindTypes"][0].grindOptions[]',
           }),
       },
-      validation: (Rule) => Rule.required().min(1).error('At least one grind type must be selected'),
+      validation: (Rule) =>
+        Rule.required().min(1).error('At least one grind type must be selected'),
     },
     {
       name: 'pricing',
@@ -316,7 +318,8 @@ export const productSchema = defineType({
         },
       ],
       fieldset: 'purchaseOptions',
-      description: 'Set the base price (smallest size) and other sizes will auto-calculate proportionally',
+      description:
+        'Set the base price (smallest size) and other sizes will auto-calculate proportionally',
       components: {
         input: (props: ArrayOfObjectsInputProps) => DynamicPricingInput(props),
       },

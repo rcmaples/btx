@@ -1,12 +1,14 @@
-import Link from 'next/link';
-import { urlFor } from '@/lib/sanity/image';
-import type { Product } from '@/lib/types';
+import Image from 'next/image'
+import Link from 'next/link'
+
+import {urlFor} from '@/lib/sanity/image'
+import type {Product} from '@/lib/types'
 
 interface ProductCardProps {
-  product: Product;
+  product: Product
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({product}: ProductCardProps) {
   // Use first product shot from images array, fall back to legacy image field
   const productImage = product.images?.[0] || product.image
   const imageUrl = productImage
@@ -16,15 +18,22 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
+      data-fs-element="product-card"
+      data-fs-product-id-str={product._id}
+      data-fs-product-name-str={product.name}
+      data-fs-roast-level-str={product.roastLevel}
+      data-fs-origin-str={product.origin}
       className="block border-2 border-border hover:shadow-brutal transition-all duration-fast no-underline group"
     >
       <div className="relative aspect-square bg-background-alt overflow-hidden">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={product.images?.[0]?.alt || product.name}
+            width={400}
+            height={400}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-slow"
-            loading="lazy"
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -66,5 +75,5 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
     </Link>
-  );
+  )
 }

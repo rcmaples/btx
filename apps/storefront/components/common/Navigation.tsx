@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {useAuth} from '@/lib/providers/AuthProvider'
+
 import {useCart} from '@/lib/hooks/useCart'
+import {useAuth} from '@/lib/providers/AuthProvider'
 
 export const Navigation = () => {
   const {itemCount} = useCart()
@@ -78,9 +79,7 @@ export const Navigation = () => {
             <Link
               href="/login"
               className={`text-base font-medium no-underline text-text px-md py-sm border border-transparent transition-all duration-fast hover:border-b-border ${
-                pathname === '/login' || pathname === '/signup'
-                  ? 'border-b-2 border-b-border'
-                  : ''
+                pathname === '/login' || pathname === '/signup' ? 'border-b-2 border-b-border' : ''
               }`}
             >
               Sign In

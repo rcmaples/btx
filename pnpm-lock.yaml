@@ -32,6 +32,12 @@ importers:
 
   apps/storefront:
     dependencies:
+      '@fullstory/browser':
+        specifier: ^2.0.6
+        version: 2.0.6
+      '@portabletext/types':
+        specifier: ^4.0.0
+        version: 4.0.0
       '@sanity/client':
         specifier: ^7.13.2
         version: 7.13.2(debug@4.4.3)
@@ -1495,6 +1501,12 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@fullstory/browser@2.0.6':
+    resolution: {integrity: sha512-5cbZldOkb+KhgAFRQ5iMEoJR+TgKhCBRFiZN3PMHr+++EmHqprtNMyEAGppe02GUkASV4+7s4txghq6nkrRj8Q==}
+
+  '@fullstory/snippet@2.0.5':
+    resolution: {integrity: sha512-33GJ/QhzZNk4q2B6LhU6Siha68NalrkPxdOaqrVZbUp0UyNYf3qHmU3ATTe51Vk/aM2J34ylrItJ7u94PQ16sA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -8220,6 +8232,12 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@fullstory/browser@2.0.6':
+    dependencies:
+      '@fullstory/snippet': 2.0.5
+
+  '@fullstory/snippet@2.0.5': {}
 
   '@humanfs/core@0.19.1': {}
 

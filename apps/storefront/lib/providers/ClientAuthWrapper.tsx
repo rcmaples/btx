@@ -1,6 +1,8 @@
 'use client'
 
-import {ReactNode, Suspense} from 'react'
+import type {ReactNode} from 'react'
+import {Suspense} from 'react'
+
 import {AuthProvider} from './AuthProvider'
 
 export function ClientAuthWrapper({children}: {children: ReactNode}) {

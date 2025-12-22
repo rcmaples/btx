@@ -1,45 +1,33 @@
-import type {
-  Cart,
-  CartService,
-  Promotion,
-  PurchaseSelection,
-  CartLineItem,
-} from '@/lib/types';
-import { generateCartItemId } from '@/lib/types';
-import { getPromotionByCode, getAutoPromotions } from '../sanity/queries';
+import type {Cart, CartLineItem, CartService, Promotion, PurchaseSelection} from '@/lib/types'
+import {generateCartItemId} from '@/lib/types'
+import {InvalidPromoCodeError, PromoMinimumNotMetError} from '@/lib/types'
+
+import {getAutoPromotions, getPromotionByCode} from '../sanity/queries'
 import {
-  loadCartFromStorage,
-  saveCartToStorage,
-  clearCartFromStorage,
-  calculateCartTotals,
   addOrUpdateLineItem,
+  calculateCartTotals,
+  clearCartFromStorage,
+  loadCartFromStorage,
   removeLineItem,
+  saveCartToStorage,
   updateLineItemQuantity,
-} from './storage';
-import { InvalidPromoCodeError, PromoMinimumNotMetError } from '@/lib/types';
+} from './storage'
 
 class CartServiceImpl implements CartService {
-  private cart: Cart | null = null;
+  private cart: Cart | null = null
 
   getCart(): Cart {
     if (!this.cart) {
-      this.cart = loadCartFromStorage();
+      this.cart = loadCartFromStorage()
     }
-    return this.cart;
+    return this.cart
   }
 
-  async addToCart(
-    selection: PurchaseSelection,
-    quantity: number = 1
-  ): Promise<Cart> {
-    const cart = this.getCart();
+  async addToCart(selection: PurchaseSelection, quantity: number = 1): Promise<Cart> {
+    const cart = this.getCart()
 
     // Generate deterministic ID for deduplication
-    const itemId = generateCartItemId(
-      selection.productId,
-      selection.sizeKey,
-      selection.grind
-    );
+    const itemId = generateCartItemId(selection.productId, selection.sizeKey, selection.grind)
 
     // Create line item from selection data (no Sanity fetch needed)
     const lineItem: CartLineItem = {
@@ -53,16 +41,13 @@ class CartServiceImpl implements CartService {
       quantity,
       pricePerUnit: selection.priceInCents,
       lineTotal: quantity * selection.priceInCents,
-    };
+    }
 
     // Add or update line item
-    const updatedLineItems = addOrUpdateLineItem(cart.lineItems, lineItem);
+    const updatedLineItems = addOrUpdateLineItem(cart.lineItems, lineItem)
 
     // Recalculate totals
-    const { subtotal, total } = calculateCartTotals(
-      updatedLineItems,
-      cart.discount
-    );
+    const {subtotal, total} = calculateCartTotals(updatedLineItems, cart.discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -70,26 +55,26 @@ class CartServiceImpl implements CartService {
       subtotal,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
     // Check for auto-apply promotions
-    return this.checkAutoPromotions();
+    return this.checkAutoPromotions()
   }
 
   async addBundleToCart(bundle: {
-    _id: string;
-    name: string;
-    price: number;
-    grind?: string;
-    products: Array<{ _id: string; name: string }>;
+    _id: string
+    name: string
+    price: number
+    grind?: string
+    products: Array<{_id: string; name: string}>
   }): Promise<Cart> {
-    const cart = this.getCart();
+    const cart = this.getCart()
 
-    const grind = bundle.grind || 'Whole bean';
-    const normalizedGrind = grind.toLowerCase().replace(/\s+/g, '');
+    const grind = bundle.grind || 'Whole bean'
+    const normalizedGrind = grind.toLowerCase().replace(/\s+/g, '')
 
     // Create bundle line item using bundle ID (include grind to allow same bundle with different grinds)
     const lineItem: CartLineItem = {
@@ -113,14 +98,12 @@ class CartServiceImpl implements CartService {
           quantity: 1,
         })),
       },
-    };
+    }
 
     // Check if bundle already in cart, increment quantity
-    const existingIndex = cart.lineItems.findIndex(
-      (item) => item.id === lineItem.id
-    );
+    const existingIndex = cart.lineItems.findIndex((item) => item.id === lineItem.id)
 
-    let updatedLineItems;
+    let updatedLineItems
     if (existingIndex >= 0) {
       updatedLineItems = cart.lineItems.map((item, index) =>
         index === existingIndex
@@ -129,17 +112,14 @@ class CartServiceImpl implements CartService {
               quantity: item.quantity + 1,
               lineTotal: (item.quantity + 1) * item.pricePerUnit,
             }
-          : item
-      );
+          : item,
+      )
     } else {
-      updatedLineItems = [...cart.lineItems, lineItem];
+      updatedLineItems = [...cart.lineItems, lineItem]
     }
 
     // Recalculate totals
-    const { subtotal, total } = calculateCartTotals(
-      updatedLineItems,
-      cart.discount
-    );
+    const {subtotal, total} = calculateCartTotals(updatedLineItems, cart.discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -147,24 +127,21 @@ class CartServiceImpl implements CartService {
       subtotal,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
     // Check for auto-apply promotions
-    return this.checkAutoPromotions();
+    return this.checkAutoPromotions()
   }
 
   removeFromCart(itemId: string): Cart {
-    const cart = this.getCart();
-    const updatedLineItems = removeLineItem(cart.lineItems, itemId);
+    const cart = this.getCart()
+    const updatedLineItems = removeLineItem(cart.lineItems, itemId)
 
     // Recalculate totals
-    const { subtotal, total } = calculateCartTotals(
-      updatedLineItems,
-      cart.discount
-    );
+    const {subtotal, total} = calculateCartTotals(updatedLineItems, cart.discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -172,31 +149,24 @@ class CartServiceImpl implements CartService {
       subtotal,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
-    return updatedCart;
+    return updatedCart
   }
 
   updateQuantity(itemId: string, quantity: number): Cart {
     if (quantity < 1) {
-      throw new Error('Quantity must be at least 1');
+      throw new Error('Quantity must be at least 1')
     }
 
-    const cart = this.getCart();
-    const updatedLineItems = updateLineItemQuantity(
-      cart.lineItems,
-      itemId,
-      quantity
-    );
+    const cart = this.getCart()
+    const updatedLineItems = updateLineItemQuantity(cart.lineItems, itemId, quantity)
 
     // Recalculate totals
-    const { subtotal, total } = calculateCartTotals(
-      updatedLineItems,
-      cart.discount
-    );
+    const {subtotal, total} = calculateCartTotals(updatedLineItems, cart.discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -204,53 +174,50 @@ class CartServiceImpl implements CartService {
       subtotal,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
-    return updatedCart;
+    return updatedCart
   }
 
   clearCart(): Cart {
-    clearCartFromStorage();
-    const emptyCart = loadCartFromStorage();
-    this.cart = emptyCart;
-    return emptyCart;
+    clearCartFromStorage()
+    const emptyCart = loadCartFromStorage()
+    this.cart = emptyCart
+    return emptyCart
   }
 
   async applyPromoCode(code: string): Promise<Cart> {
-    const cart = this.getCart();
+    const cart = this.getCart()
 
     // Fetch promotion
-    const promotion = await getPromotionByCode(code);
+    const promotion = await getPromotionByCode(code)
 
     if (!promotion) {
-      throw new InvalidPromoCodeError(code);
+      throw new InvalidPromoCodeError(code)
     }
 
     // Check if promotion is valid
     if (promotion.validUntil && new Date() > new Date(promotion.validUntil)) {
-      throw new InvalidPromoCodeError(code);
+      throw new InvalidPromoCodeError(code)
     }
 
     // Check minimum purchase requirement
-    if (
-      promotion.minSubtotalCents &&
-      cart.subtotal < promotion.minSubtotalCents
-    ) {
-      throw new PromoMinimumNotMetError(promotion.minSubtotalCents);
+    if (promotion.minSubtotalCents && cart.subtotal < promotion.minSubtotalCents) {
+      throw new PromoMinimumNotMetError(promotion.minSubtotalCents)
     }
 
     // Calculate discount
-    let discount = 0;
+    let discount = 0
     if (promotion.discountType === 'percentage') {
-      discount = Math.floor(cart.subtotal * (promotion.discountValue / 100));
+      discount = Math.floor(cart.subtotal * (promotion.discountValue / 100))
     } else if (promotion.discountType === 'fixed_amount') {
-      discount = Math.min(promotion.discountValue, cart.subtotal);
+      discount = Math.min(promotion.discountValue, cart.subtotal)
     }
 
-    const { total } = calculateCartTotals(cart.lineItems, discount);
+    const {total} = calculateCartTotals(cart.lineItems, discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -258,18 +225,18 @@ class CartServiceImpl implements CartService {
       discount,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
-    return updatedCart;
+    return updatedCart
   }
 
   removePromotion(): Cart {
-    const cart = this.getCart();
+    const cart = this.getCart()
 
-    const { total } = calculateCartTotals(cart.lineItems, 0);
+    const {total} = calculateCartTotals(cart.lineItems, 0)
 
     const updatedCart: Cart = {
       ...cart,
@@ -277,38 +244,32 @@ class CartServiceImpl implements CartService {
       discount: 0,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
-    return updatedCart;
+    return updatedCart
   }
 
   async checkAutoPromotions(): Promise<Cart> {
-    const cart = this.getCart();
+    const cart = this.getCart()
 
     // Don't override manual promo codes
     if (cart.appliedPromotion?.type === 'manual') {
-      return cart;
+      return cart
     }
 
     // Fetch auto promotions
-    const promotions = await getAutoPromotions();
+    const promotions = await getAutoPromotions()
 
     // Find best matching promotion (highest minimum that cart qualifies for)
-    let bestPromotion: Promotion | null = null;
+    let bestPromotion: Promotion | null = null
     for (const promo of promotions) {
-      if (
-        !promo.minSubtotalCents ||
-        cart.subtotal >= promo.minSubtotalCents
-      ) {
-        if (
-          !promo.validUntil ||
-          new Date() <= new Date(promo.validUntil)
-        ) {
-          bestPromotion = promo;
-          break; // Promotions are ordered by minimum purchase desc
+      if (!promo.minSubtotalCents || cart.subtotal >= promo.minSubtotalCents) {
+        if (!promo.validUntil || new Date() <= new Date(promo.validUntil)) {
+          bestPromotion = promo
+          break // Promotions are ordered by minimum purchase desc
         }
       }
     }
@@ -316,22 +277,20 @@ class CartServiceImpl implements CartService {
     if (!bestPromotion) {
       // Remove any existing auto promotion if cart no longer qualifies
       if (cart.appliedPromotion?.type === 'auto') {
-        return this.removePromotion();
+        return this.removePromotion()
       }
-      return cart;
+      return cart
     }
 
     // Calculate discount
-    let discount = 0;
+    let discount = 0
     if (bestPromotion.discountType === 'percentage') {
-      discount = Math.floor(
-        cart.subtotal * (bestPromotion.discountValue / 100)
-      );
+      discount = Math.floor(cart.subtotal * (bestPromotion.discountValue / 100))
     } else if (bestPromotion.discountType === 'fixed_amount') {
-      discount = Math.min(bestPromotion.discountValue, cart.subtotal);
+      discount = Math.min(bestPromotion.discountValue, cart.subtotal)
     }
 
-    const { total } = calculateCartTotals(cart.lineItems, discount);
+    const {total} = calculateCartTotals(cart.lineItems, discount)
 
     const updatedCart: Cart = {
       ...cart,
@@ -339,23 +298,23 @@ class CartServiceImpl implements CartService {
       discount,
       total,
       updatedAt: new Date(),
-    };
+    }
 
-    this.persistCart(updatedCart);
-    this.cart = updatedCart;
+    this.persistCart(updatedCart)
+    this.cart = updatedCart
 
-    return updatedCart;
+    return updatedCart
   }
 
   persistCart(cart: Cart): void {
-    saveCartToStorage(cart);
+    saveCartToStorage(cart)
   }
 
   async validateInventory(): Promise<string[]> {
     // All purchase options are considered in stock for MVP
     // Inventory validation will be implemented with Supabase integration
-    return [];
+    return []
   }
 }
 
-export const cartService = new CartServiceImpl();
+export const cartService = new CartServiceImpl()

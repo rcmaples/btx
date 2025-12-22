@@ -1,8 +1,8 @@
 'use client'
 
-import {useMembership} from '@/lib/hooks/useMembership'
-import {useBundles} from '@/lib/hooks/useBundles'
 import {BundleCard} from '@/components/bundle/BundleCard'
+import {useBundles} from '@/lib/hooks/useBundles'
+import {useMembership} from '@/lib/hooks/useMembership'
 
 export function BundlesClientWrapper() {
   const {isMember, mounted} = useMembership()
@@ -18,9 +18,7 @@ export function BundlesClientWrapper() {
     <div>
       <header className="mb-xl">
         <h1 className="text-5xl font-black tracking-tighter mb-sm">Bundles</h1>
-        <p className="text-lg text-text-muted">
-          Curated coffee collections at special prices
-        </p>
+        <p className="text-lg text-text-muted">Curated coffee collections at special prices</p>
       </header>
 
       <main>

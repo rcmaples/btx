@@ -1,8 +1,9 @@
 'use client'
 
 import {useQuery} from '@tanstack/react-query'
+
 import {productService} from '@/lib/services/product/product-service'
-import type {FilterOptions, Product, ProductFilters} from '@/lib/types'
+import type {ProductFilters} from '@/lib/types'
 
 // Query key factory for stable keys
 const productKeys = {

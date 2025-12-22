@@ -1,5 +1,7 @@
 import type {Metadata} from 'next'
+
 import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
+
 import {ExchangeClient} from './ExchangeClient'
 
 export const metadata: Metadata = {

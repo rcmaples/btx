@@ -1,7 +1,8 @@
+import type {PortableTextBlock} from '@portabletext/types'
 import {PortableText, type PortableTextComponents} from 'next-sanity'
 
 interface ProductDescriptionProps {
-  description: any[] // Portable Text blocks
+  description: PortableTextBlock[]
 }
 
 const components: PortableTextComponents = {
@@ -25,15 +26,9 @@ const components: PortableTextComponents = {
   },
   block: {
     normal: ({children}) => <p className="mb-sm leading-relaxed">{children}</p>,
-    h1: ({children}) => (
-      <h3 className="text-xl font-bold mt-md mb-sm">{children}</h3>
-    ),
-    h2: ({children}) => (
-      <h4 className="text-lg font-bold mt-md mb-sm">{children}</h4>
-    ),
-    h3: ({children}) => (
-      <h5 className="text-base font-bold mt-sm mb-xs">{children}</h5>
-    ),
+    h1: ({children}) => <h3 className="text-xl font-bold mt-md mb-sm">{children}</h3>,
+    h2: ({children}) => <h4 className="text-lg font-bold mt-md mb-sm">{children}</h4>,
+    h3: ({children}) => <h5 className="text-base font-bold mt-sm mb-xs">{children}</h5>,
     blockquote: ({children}) => (
       <blockquote className="border-l-4 border-primary pl-md my-md italic text-text-secondary">
         {children}

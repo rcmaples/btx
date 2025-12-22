@@ -1,9 +1,10 @@
 'use client'
 
-import {useState} from 'react'
 import Image from 'next/image'
+import {useState} from 'react'
+
 import {urlForImage} from '@/lib/sanity/utils'
-import type {Product, BundleProduct} from '@/lib/types'
+import type {BundleProduct, Product} from '@/lib/types'
 
 interface BundleProductSelectorProps {
   products: Product[]
