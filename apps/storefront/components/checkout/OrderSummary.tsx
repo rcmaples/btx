@@ -1,5 +1,6 @@
 'use client'
 
+import {centsToReal} from '@/lib/fullstory/utils'
 import type {Cart} from '@/lib/types'
 
 interface OrderSummaryProps {
@@ -22,6 +23,11 @@ export function OrderSummary({cart, shippingCost, isMember}: OrderSummaryProps) 
       className="p-lg border-2 border-border bg-background-secondary"
       role="region"
       aria-label="Order summary"
+      data-fs-element="checkout-order-summary"
+      data-fs-total-amount-real={centsToReal(total)}
+      data-fs-item-count-int={cart.lineItems.reduce((sum, item) => sum + item.quantity, 0)}
+      data-fs-has-promotion-bool={hasPromotion}
+      data-fs-discount-amount-real={centsToReal(cart.discount)}
     >
       <h2 className="text-xl font-bold mb-md pb-md border-b border-border">Order Summary</h2>
 

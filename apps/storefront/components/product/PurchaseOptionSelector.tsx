@@ -77,6 +77,11 @@ export function PurchaseOptionSelector({product, onSelect}: PurchaseOptionSelect
               <button
                 key={priceEntry._key}
                 onClick={() => setSelectedSizeKey(priceEntry.sizeKey)}
+                data-fs-element="size-selector-button"
+                data-fs-size-key-str={priceEntry.sizeKey}
+                data-fs-size-name-str={priceEntry.sizeName}
+                data-fs-price-real={priceEntry.priceInCents / 100}
+                data-fs-is-selected-bool={isSelected}
                 className={`p-md border-2 transition-all duration-fast text-center ${
                   isSelected
                     ? 'border-primary bg-primary text-background'
@@ -108,6 +113,9 @@ export function PurchaseOptionSelector({product, onSelect}: PurchaseOptionSelect
               <button
                 key={grind}
                 onClick={() => setSelectedGrind(grind)}
+                data-fs-element="grind-selector-button"
+                data-fs-grind-str={grind}
+                data-fs-is-selected-bool={isSelected}
                 className={`p-md border-2 transition-all duration-fast text-center ${
                   isSelected
                     ? 'border-primary bg-primary text-background'

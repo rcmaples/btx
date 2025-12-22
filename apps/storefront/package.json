@@ -13,6 +13,7 @@
   },
   "packageManager": "pnpm@10.26.1",
   "dependencies": {
+    "@fullstory/browser": "^2.0.6",
     "@sanity/client": "^7.13.2",
     "@sanity/image-url": "^2.0.2",
     "@stripe/stripe-js": "^8.6.0",

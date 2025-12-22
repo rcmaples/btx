@@ -7,6 +7,7 @@ import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
 import {OrderSummary} from '@/components/checkout/OrderSummary'
 import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
+import {usePageTracking} from '@/lib/fullstory/hooks'
 import {useCart} from '@/lib/hooks/useCart'
 import type {Profile} from '@/lib/providers/AuthProvider'
 import type {ShippingAddress} from '@/lib/types/checkout'
@@ -24,6 +25,9 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
   const [error, setError] = useState<string | null>(null)
   const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+
+  // Track page view (conditional based on success state)
+  usePageTracking(successOrderNumber ? 'Order Confirmation' : 'Checkout')
 
   // Guest email (only for non-authenticated users)
   const [guestEmail, setGuestEmail] = useState('')
@@ -209,6 +213,7 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
               {/* Place Order Button */}
               <button
                 type="submit"
+                data-fs-element="place-order-button"
                 disabled={isSubmitting || cart.lineItems.length === 0}
                 className="w-full py-md px-lg bg-primary text-background border-2 border-primary text-base font-semibold transition-all duration-fast hover:bg-primary-dark hover:border-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 disabled:bg-disabled disabled:border-disabled disabled:cursor-not-allowed disabled:opacity-60"
               >

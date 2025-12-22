@@ -54,7 +54,12 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
   const isDisabled = disabled || isApplying || hasPromotion
 
   return (
-    <div className="p-lg border border-border-light bg-background-secondary mt-lg">
+    <div
+      className="p-lg border border-border-light bg-background-secondary mt-lg"
+      data-fs-element="promo-code-section"
+      data-fs-promo-applied-bool={hasPromotion}
+      data-fs-promo-code-str={appliedPromotion?.code}
+    >
       <h3 className="text-base font-bold mb-md text-text">Have a promo code?</h3>
 
       <form onSubmit={handleSubmit} className="mb-sm">
@@ -63,6 +68,7 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            data-fs-element="promo-code-input"
             placeholder="Enter code"
             className="flex-1 p-sm text-base border border-border bg-background text-text font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-60 placeholder:normal-case placeholder:tracking-normal"
             disabled={isDisabled}

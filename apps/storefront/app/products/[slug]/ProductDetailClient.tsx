@@ -7,6 +7,8 @@ import {ProductDescription} from '@/components/product/ProductDescription'
 import {ProductImage} from '@/components/product/ProductImage'
 import {PurchaseOptionSelector} from '@/components/product/PurchaseOptionSelector'
 import {SubscriptionConfigurator} from '@/components/subscription/SubscriptionConfigurator'
+import {usePageTracking} from '@/lib/fullstory/hooks'
+import {centsToReal, trackAddToCart} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {Product, PurchaseSelection} from '@/lib/types'
 
@@ -22,11 +24,25 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
   )
   const [addToCartSuccess, setAddToCartSuccess] = useState(false)
 
+  // Track page view
+  usePageTracking('Product Detail', product.name)
+
   const handleAddToCart = async () => {
     if (!selectedPurchaseOption) return
 
     try {
       await addToCart(selectedPurchaseOption, 1)
+
+      // Track FS event AFTER successful add
+      trackAddToCart({
+        product_sku_str: selectedPurchaseOption.productId,
+        product_name_str: selectedPurchaseOption.productName,
+        quantity_int: 1,
+        price_real: centsToReal(selectedPurchaseOption.priceInCents),
+        size_str: selectedPurchaseOption.sizeName,
+        grind_str: selectedPurchaseOption.grind,
+      })
+
       setAddToCartSuccess(true)
 
       // Reset success message after 3 seconds
@@ -136,6 +152,13 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
 
           <button
             onClick={handleAddToCart}
+            data-fs-element="add-to-cart-button"
+            data-fs-product-id-str={product._id}
+            data-fs-price-real={
+              selectedPurchaseOption ? centsToReal(selectedPurchaseOption.priceInCents) : undefined
+            }
+            data-fs-selected-size-str={selectedPurchaseOption?.sizeName}
+            data-fs-selected-grind-str={selectedPurchaseOption?.grind}
             disabled={!selectedPurchaseOption || isAddingToCart}
             className="w-full py-md bg-primary text-background border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
           >

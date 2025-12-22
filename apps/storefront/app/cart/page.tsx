@@ -6,6 +6,8 @@ import {CartLineItem} from '@/components/cart/CartLineItem'
 import {CartSummary} from '@/components/cart/CartSummary'
 import {EmptyCart} from '@/components/cart/EmptyCart'
 import {PromoCodeInput} from '@/components/cart/PromoCodeInput'
+import {usePageTracking} from '@/lib/fullstory/hooks'
+import {centsToReal, trackCheckoutInitiated} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 
 export default function CartPage() {
@@ -21,7 +23,18 @@ export default function CartPage() {
     error,
   } = useCart()
 
+  // Track page view
+  usePageTracking('Shopping Cart')
+
   const handleCheckout = () => {
+    // Track before navigation
+    trackCheckoutInitiated({
+      cart_value_real: centsToReal(cart.total),
+      item_count_int: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
+      has_promotion_bool: cart.appliedPromotion !== null,
+      promotion_code_str: cart.appliedPromotion?.code,
+    })
+
     router.push('/checkout')
   }
 

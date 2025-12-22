@@ -65,6 +65,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           </label>
           <select
             id="roast-filter"
+            data-fs-element="roast-level-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.roastLevel || ''}
             onChange={(e) => handleFilterChange('roastLevel', e.target.value || undefined)}
@@ -84,6 +85,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           </label>
           <select
             id="origin-filter"
+            data-fs-element="origin-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.origin || ''}
             onChange={(e) => handleFilterChange('origin', e.target.value || undefined)}
@@ -103,6 +105,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           </label>
           <select
             id="process-filter"
+            data-fs-element="process-method-filter"
             className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.processMethod || ''}
             onChange={(e) => handleFilterChange('processMethod', e.target.value || undefined)}

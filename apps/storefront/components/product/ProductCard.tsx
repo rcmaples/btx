@@ -18,6 +18,11 @@ export function ProductCard({product}: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
+      data-fs-element="product-card"
+      data-fs-product-id-str={product._id}
+      data-fs-product-name-str={product.name}
+      data-fs-roast-level-str={product.roastLevel}
+      data-fs-origin-str={product.origin}
       className="block border-2 border-border hover:shadow-brutal transition-all duration-fast no-underline group"
     >
       <div className="relative aspect-square bg-background-alt overflow-hidden">

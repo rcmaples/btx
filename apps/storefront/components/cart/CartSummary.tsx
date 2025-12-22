@@ -2,6 +2,7 @@
 
 import {useEffect, useRef} from 'react'
 
+import {centsToReal} from '@/lib/fullstory/utils'
 import type {Cart} from '@/lib/types'
 
 interface CartSummaryProps {
@@ -39,6 +40,10 @@ export function CartSummary({
       className="p-lg border-2 border-border bg-background-secondary"
       role="region"
       aria-label="Order summary"
+      data-fs-element="cart-summary"
+      data-fs-total-amount-real={centsToReal(cart.total)}
+      data-fs-item-count-int={cart.lineItems.reduce((sum, item) => sum + item.quantity, 0)}
+      data-fs-has-promotion-bool={hasPromotion}
     >
       {/* Screen reader announcements for cart updates */}
       <div
@@ -91,6 +96,7 @@ export function CartSummary({
       {showCheckoutButton && onCheckout && (
         <button
           onClick={onCheckout}
+          data-fs-element="proceed-to-checkout-button"
           disabled={cart.lineItems.length === 0}
           className="w-full py-md px-lg mt-lg bg-primary text-background border-2 border-primary text-base font-semibold cursor-pointer transition-all duration-fast hover:bg-primary-dark hover:border-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 disabled:bg-disabled disabled:border-disabled disabled:cursor-not-allowed disabled:opacity-60"
         >
