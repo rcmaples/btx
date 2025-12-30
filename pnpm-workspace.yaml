@@ -6,7 +6,10 @@ ignoredBuiltDependencies:
   - '@vercel/speed-insights'
 
 onlyBuiltDependencies:
+  - '@clerk/shared'
+  - '@prisma/engines'
   - '@tailwindcss/oxide'
   - esbuild
+  - prisma
   - sharp
   - unrs-resolver
