@@ -84,9 +84,13 @@ export async function POST(req: Request) {
       return NextResponse.json({error: 'No email found'}, {status: 400})
     }
 
+    // Use email prefix as fallback if name is missing (e.g., OAuth without name)
+    const emailPrefix = email.split('@')[0]
+    const firstName = first_name || emailPrefix
+    const lastName = last_name || ''
+
     if (!first_name || !last_name) {
-      console.error('Missing name for user:', clerkUserId)
-      return NextResponse.json({error: 'Missing required name fields'}, {status: 400})
+      console.warn(`Missing name for user ${clerkUserId}, using email prefix as fallback`)
     }
 
     // Try to get profile from Prisma (may not exist yet for new users)
@@ -96,8 +100,8 @@ export async function POST(req: Request) {
       // Sync to Sanity
       await upsertCustomer({
         clerkUserId,
-        firstName: first_name,
-        lastName: last_name,
+        firstName,
+        lastName,
         email,
         phone: profile?.phone ?? undefined,
         address: profile
