@@ -4,7 +4,7 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 import {revalidatePath} from 'next/cache'
 
 import {prisma} from '@/lib/prisma'
-import {updateCustomerProfile, updateCustomerMembership} from '@/lib/sanity/write-client'
+import {upsertCustomer, updateCustomerProfile, updateCustomerMembership} from '@/lib/sanity/write-client'
 
 export type ProfileFormData = {
   phone?: string
@@ -66,11 +66,17 @@ export async function createProfile(data: ProfileFormData): Promise<ProfileActio
     return {success: false, error: 'Not authenticated'}
   }
 
-  // Get user's email from Clerk
+  // Get user data from Clerk
   const user = await currentUser()
   if (!user?.primaryEmailAddress?.emailAddress) {
     return {success: false, error: 'No email address found'}
   }
+
+  const email = user.primaryEmailAddress.emailAddress
+  // Use email prefix as fallback if name is missing (OAuth without name)
+  const emailPrefix = email.split('@')[0]
+  const firstName = user.firstName || emailPrefix
+  const lastName = user.lastName || ''
 
   try {
     // Check if profile already exists
@@ -82,11 +88,11 @@ export async function createProfile(data: ProfileFormData): Promise<ProfileActio
       return {success: false, error: 'Profile already exists'}
     }
 
-    // Create the profile
+    // Create the profile in Prisma
     const profile = await prisma.profile.create({
       data: {
         clerkUserId: userId,
-        email: user.primaryEmailAddress.emailAddress,
+        email,
         phone: data.phone || null,
         streetAddress: data.streetAddress,
         streetAddress2: data.streetAddress2 || null,
@@ -97,8 +103,25 @@ export async function createProfile(data: ProfileFormData): Promise<ProfileActio
       },
     })
 
-    // Sync to Sanity
-    await syncProfileToSanity(userId)
+    // Create complete customer record in Sanity (this is the single source of truth creation)
+    await upsertCustomer({
+      clerkUserId: userId,
+      firstName,
+      lastName,
+      email,
+      phone: data.phone ?? undefined,
+      address: {
+        street: data.streetAddress,
+        street2: data.streetAddress2 ?? undefined,
+        city: data.city,
+        state: data.state,
+        postalCode: data.postalCode,
+        country: data.country || 'US',
+      },
+      exchangeMembership: {
+        isMember: false,
+      },
+    })
 
     revalidatePath('/profile')
 
@@ -120,17 +143,20 @@ export async function updateProfile(data: Partial<ProfileFormData>): Promise<Pro
   }
 
   try {
+    // Build update data object, only including defined values
+    // This prevents undefined values from overwriting existing data with NULL
+    const updateData: Record<string, string | null> = {}
+    if (data.phone !== undefined) updateData.phone = data.phone || null
+    if (data.streetAddress !== undefined) updateData.streetAddress = data.streetAddress
+    if (data.streetAddress2 !== undefined) updateData.streetAddress2 = data.streetAddress2 || null
+    if (data.city !== undefined) updateData.city = data.city
+    if (data.state !== undefined) updateData.state = data.state
+    if (data.postalCode !== undefined) updateData.postalCode = data.postalCode
+    if (data.country !== undefined) updateData.country = data.country
+
     const profile = await prisma.profile.update({
       where: {clerkUserId: userId},
-      data: {
-        phone: data.phone,
-        streetAddress: data.streetAddress,
-        streetAddress2: data.streetAddress2,
-        city: data.city,
-        state: data.state,
-        postalCode: data.postalCode,
-        country: data.country,
-      },
+      data: updateData,
     })
 
     // Sync to Sanity

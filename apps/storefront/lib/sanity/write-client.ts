@@ -41,6 +41,8 @@ export interface SanityCustomer {
   }
   createdAt: string
   updatedAt: string
+  accountClosed?: boolean
+  accountClosedAt?: string
 }
 
 /**
@@ -158,6 +160,29 @@ export async function updateCustomerMembership(
       .commit()) as SanityCustomer
   } catch {
     // Customer doesn't exist yet
+    return null
+  }
+}
+
+/**
+ * Mark a customer account as closed (soft delete)
+ * Used when a user deletes their Clerk account
+ */
+export async function closeCustomerAccount(clerkUserId: string): Promise<SanityCustomer | null> {
+  const documentId = `customer-${clerkUserId}`
+  const now = new Date().toISOString()
+
+  try {
+    return (await writeClient
+      .patch(documentId)
+      .set({
+        accountClosed: true,
+        accountClosedAt: now,
+        updatedAt: now,
+      })
+      .commit()) as SanityCustomer
+  } catch {
+    // Customer doesn't exist
     return null
   }
 }

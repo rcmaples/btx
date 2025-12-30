@@ -3,14 +3,17 @@ import {headers} from 'next/headers'
 import {NextResponse} from 'next/server'
 import {Webhook} from 'svix'
 
-import {getProfile} from '@/lib/prisma'
-import {upsertCustomer} from '@/lib/sanity/write-client'
+import {closeCustomerAccount} from '@/lib/sanity/write-client'
 
 /**
  * Clerk Webhook Handler
  *
- * Handles user.created and user.updated events to sync customer data to Sanity.
+ * Handles user.deleted events to mark customer accounts as closed in Sanity.
  * Webhook signature is verified using Svix.
+ *
+ * Note: user.created/updated are NOT handled here. Customer records in Sanity
+ * are created when the user completes their profile (via createProfile action).
+ * This avoids race conditions between webhook and profile completion.
  *
  * Required environment variables:
  * - CLERK_WEBHOOK_SECRET: Signing secret from Clerk Dashboard (production)
@@ -66,73 +69,25 @@ export async function POST(req: Request) {
   // Handle the webhook
   const eventType = evt.type
 
-  if (eventType === 'user.created' || eventType === 'user.updated') {
-    const {
-      id: clerkUserId,
-      email_addresses,
-      primary_email_address_id,
-      first_name,
-      last_name,
-    } = evt.data
+  if (eventType === 'user.deleted') {
+    const {id: clerkUserId} = evt.data
 
-    // Get primary email
-    const primaryEmail = email_addresses?.find((e) => e.id === primary_email_address_id)
-    const email = primaryEmail?.email_address
-
-    if (!email) {
-      console.error('No email found for user:', clerkUserId)
-      return NextResponse.json({error: 'No email found'}, {status: 400})
+    if (!clerkUserId) {
+      console.error('No user ID in user.deleted event')
+      return NextResponse.json({error: 'No user ID found'}, {status: 400})
     }
-
-    // Use email prefix as fallback if name is missing (e.g., OAuth without name)
-    const emailPrefix = email.split('@')[0]
-    const firstName = first_name || emailPrefix
-    const lastName = last_name || ''
-
-    if (!first_name || !last_name) {
-      console.warn(`Missing name for user ${clerkUserId}, using email prefix as fallback`)
-    }
-
-    // Try to get profile from Prisma (may not exist yet for new users)
-    const profile = await getProfile(clerkUserId)
 
     try {
-      // Sync to Sanity
-      await upsertCustomer({
-        clerkUserId,
-        firstName,
-        lastName,
-        email,
-        phone: profile?.phone ?? undefined,
-        address: profile
-          ? {
-              street: profile.streetAddress ?? undefined,
-              street2: profile.streetAddress2 ?? undefined,
-              city: profile.city ?? undefined,
-              state: profile.state ?? undefined,
-              postalCode: profile.postalCode ?? undefined,
-              country: profile.country,
-            }
-          : undefined,
-        exchangeMembership: profile
-          ? {
-              isMember: profile.isExchangeMember,
-              enrolledAt: profile.exchangeEnrolledAt?.toISOString(),
-              cancelledAt: profile.exchangeCancelledAt?.toISOString(),
-            }
-          : {
-              isMember: false,
-            },
-      })
-
-      console.log(`Synced customer ${clerkUserId} to Sanity`)
+      // Mark customer as closed in Sanity (soft delete)
+      await closeCustomerAccount(clerkUserId)
+      console.log(`Marked customer ${clerkUserId} as closed in Sanity`)
       return NextResponse.json({success: true})
     } catch (error) {
-      console.error('Error syncing to Sanity:', error)
-      return NextResponse.json({error: 'Failed to sync to Sanity'}, {status: 500})
+      console.error('Error closing customer account in Sanity:', error)
+      return NextResponse.json({error: 'Failed to close customer account'}, {status: 500})
     }
   }
 
-  // Acknowledge other event types
+  // Acknowledge other event types (user.created, user.updated are handled via profile creation)
   return NextResponse.json({success: true, message: 'Event type not handled'})
 }

@@ -23,19 +23,22 @@ export type ProfileResponse = {
 
 /**
  * GET /api/profile
- * Returns the current user's profile or null if not authenticated/no profile
+ * Returns the current user's profile
+ * - 401 if not authenticated
+ * - 404 if authenticated but no profile exists
+ * - 200 with profile data on success
  */
 export async function GET() {
   const {userId} = await auth()
 
   if (!userId) {
-    return NextResponse.json(null)
+    return NextResponse.json({error: 'Unauthorized'}, {status: 401})
   }
 
   const profile = await getProfile(userId)
 
   if (!profile) {
-    return NextResponse.json(null)
+    return NextResponse.json({error: 'Profile not found'}, {status: 404})
   }
 
   // Serialize dates for JSON response

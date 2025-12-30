@@ -7,9 +7,21 @@ import type {ProfileResponse} from '@/app/api/profile/route'
 
 async function fetchProfile(): Promise<ProfileResponse> {
   const response = await fetch('/api/profile')
+
+  // 404 means profile doesn't exist yet - return null (valid state for new users)
+  if (response.status === 404) {
+    return null
+  }
+
+  // 401 shouldn't happen since we gate on isSignedIn, but handle it gracefully
+  if (response.status === 401) {
+    return null
+  }
+
   if (!response.ok) {
     throw new Error('Failed to fetch profile')
   }
+
   return response.json()
 }
 

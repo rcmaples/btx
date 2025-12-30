@@ -113,6 +113,21 @@ export const customerSchema = defineType({
       type: 'datetime',
       readOnly: true,
     },
+    {
+      name: 'accountClosed',
+      title: 'Account Closed',
+      type: 'boolean',
+      description: 'Whether the user has deleted their account',
+      initialValue: false,
+      readOnly: true,
+    },
+    {
+      name: 'accountClosedAt',
+      title: 'Account Closed At',
+      type: 'datetime',
+      description: 'When the user deleted their account',
+      readOnly: true,
+    },
   ],
   preview: {
     select: {

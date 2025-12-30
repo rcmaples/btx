@@ -12,6 +12,23 @@ export const metadata: Metadata = {
   description: 'Complete your profile to start shopping at Batch Theory.',
 }
 
+/**
+ * Validates a redirect URL to prevent open redirect attacks.
+ * Only allows relative paths starting with /
+ */
+function getSafeRedirectUrl(url: string | undefined): string {
+  const defaultUrl = '/profile'
+  if (!url) return defaultUrl
+
+  // Only allow relative paths starting with /
+  if (!url.startsWith('/')) return defaultUrl
+
+  // Block protocol-relative URLs (//evil.com)
+  if (url.startsWith('//')) return defaultUrl
+
+  return url
+}
+
 export default async function CompleteProfilePage({
   searchParams,
 }: {
@@ -24,15 +41,14 @@ export default async function CompleteProfilePage({
     redirect('/login')
   }
 
+  const params = await searchParams
+  const redirectUrl = getSafeRedirectUrl(params.redirect_url)
+
   // If user already has a profile, redirect them
   const profileExists = await hasProfile(userId)
   if (profileExists) {
-    const params = await searchParams
-    redirect(params.redirect_url || '/profile')
+    redirect(redirectUrl)
   }
-
-  const params = await searchParams
-  const redirectUrl = params.redirect_url || '/profile'
 
   return (
     <div className="max-w-md mx-auto">
