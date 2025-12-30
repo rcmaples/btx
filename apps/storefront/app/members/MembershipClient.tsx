@@ -7,17 +7,27 @@ import {useMembership} from '@/lib/hooks/useMembership'
 
 export function MembershipClient() {
   const router = useRouter()
-  // Auth stubbed during migration - will use Clerk in Phase 2
-  const user = null
-  const {isMember, mounted, isEnrolling} = useMembership()
+  const {isMember, mounted, isEnrolling, enrollMembership, isLoggedIn, hasProfile} = useMembership()
 
   const handleEnroll = async () => {
-    if (user) {
-      // Logged in: enrollment stubbed during migration
-      router.push('/exchange')
-    } else {
+    if (!isLoggedIn) {
       // Not logged in: redirect to login with return URL
-      router.push('/login?redirect=/members')
+      router.push('/login?redirect_url=/members')
+      return
+    }
+
+    if (!hasProfile) {
+      // Logged in but no profile: redirect to complete profile
+      router.push('/complete-profile?redirect_url=/members')
+      return
+    }
+
+    // Logged in with profile: enroll in Exchange
+    try {
+      await enrollMembership()
+      router.push('/exchange')
+    } catch (error) {
+      console.error('Failed to enroll:', error)
     }
   }
 
@@ -30,11 +40,8 @@ export function MembershipClient() {
     )
   }
 
-  // Check membership status (DB check stubbed during migration)
-  const isActiveMember = isMember
-
   // If already a member, show member status
-  if (isActiveMember) {
+  if (isMember) {
     return (
       <div className="w-full text-center py-xxl">
         <div className="w-full max-w-xl mx-auto p-xl bg-green-50 border-2 border-success">
@@ -55,6 +62,6 @@ export function MembershipClient() {
   }
 
   return (
-    <MembershipEnrollment onEnroll={handleEnroll} isEnrolling={isEnrolling} isLoggedIn={!!user} />
+    <MembershipEnrollment onEnroll={handleEnroll} isEnrolling={isEnrolling} isLoggedIn={isLoggedIn} />
   )
 }

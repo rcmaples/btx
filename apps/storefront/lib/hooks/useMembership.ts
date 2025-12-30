@@ -1,65 +1,80 @@
 'use client'
 
-import {useCallback, useEffect, useState} from 'react'
+import {useUser} from '@clerk/nextjs'
+import {useCallback, useState} from 'react'
 
-import {membershipService} from '@/lib/services/membership/membership-service'
-import type {Membership} from '@/lib/types'
+import {enrollInExchange, cancelExchangeMembership} from '@/lib/actions/profile'
+import {useProfile} from '@/lib/hooks/useProfile'
 
-// Auth stubbed during migration - will use Clerk in Phase 2
+/**
+ * Hook for Exchange membership status and actions
+ * Uses Clerk for auth and Prisma for membership data
+ */
 export function useMembership() {
-  // Auth stubbed - always returns not logged in
-  const isLoggedIn = false
+  const {isSignedIn, isLoaded: isUserLoaded} = useUser()
+  const {profile, isLoading: isProfileLoading, invalidateProfile, isExchangeMember} = useProfile()
 
-  const [localMembership, setLocalMembership] = useState<Membership>({
-    isMember: false,
-  })
   const [isEnrolling, setIsEnrolling] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  // Initialize local membership from localStorage after mount
-  useEffect(() => {
-    setMounted(true)
-    setLocalMembership(membershipService.getMembership())
-  }, [])
-
-  // Sync with localStorage changes (e.g., from other tabs)
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setLocalMembership(membershipService.getMembership())
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [])
-
-  // Use localStorage membership (DB membership stubbed during migration)
-  const membership: Membership = localMembership
+  const [isCancelling, setIsCancelling] = useState(false)
 
   const enrollMembership = useCallback(async () => {
+    if (!isSignedIn) {
+      throw new Error('Must be signed in to enroll')
+    }
+
     setIsEnrolling(true)
 
     try {
-      // Use localStorage for membership (legacy behavior preserved)
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      const newMembership = membershipService.enrollMembership()
-      setLocalMembership(newMembership)
-    } catch (error) {
-      console.error('Failed to enroll in membership:', error)
-      throw error
+      const result = await enrollInExchange()
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to enroll')
+      }
+      // Invalidate profile cache to refetch with new membership status
+      invalidateProfile()
     } finally {
       setIsEnrolling(false)
     }
-  }, [])
+  }, [isSignedIn, invalidateProfile])
+
+  const cancelMembership = useCallback(async () => {
+    if (!isSignedIn) {
+      throw new Error('Must be signed in to cancel')
+    }
+
+    setIsCancelling(true)
+
+    try {
+      const result = await cancelExchangeMembership()
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to cancel')
+      }
+      // Invalidate profile cache to refetch with new membership status
+      invalidateProfile()
+    } finally {
+      setIsCancelling(false)
+    }
+  }, [isSignedIn, invalidateProfile])
+
+  // Mounted state - true when both user and profile data are loaded
+  const mounted = isUserLoaded && !isProfileLoading
 
   return {
-    membership,
-    isMember: mounted ? membership.isMember : false,
+    // Membership state
+    isMember: isExchangeMember,
     isEnrolling,
-    enrollMembership,
+    isCancelling,
     mounted,
-    // Additional helpers
-    enrolledAt: membership.enrolledAt,
-    cancelledAt: membership.cancelledAt,
-    isLoggedIn,
+
+    // Actions
+    enrollMembership,
+    cancelMembership,
+
+    // Profile details
+    enrolledAt: profile?.exchangeEnrolledAt ? new Date(profile.exchangeEnrolledAt) : undefined,
+    cancelledAt: profile?.exchangeCancelledAt ? new Date(profile.exchangeCancelledAt) : undefined,
+
+    // Auth state
+    isLoggedIn: isSignedIn ?? false,
+    hasProfile: !!profile,
   }
 }

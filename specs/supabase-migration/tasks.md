@@ -102,40 +102,40 @@
 
 ---
 
-## Phase 2: Clerk Authentication
+## Phase 2: Clerk Authentication ✅
 
 ### P2-1: Add ClerkProvider to Layout
-- [ ] Update `apps/storefront/app/layout.tsx`
-- [ ] Wrap children in `<ClerkProvider>`
-- [ ] Import from `@clerk/nextjs`
+- [x] Update `apps/storefront/app/layout.tsx`
+- [x] Wrap children in `<ClerkProvider>`
+- [x] Import from `@clerk/nextjs`
 
 ### P2-2: Implement Clerk Middleware
-- [ ] Create new `apps/storefront/middleware.ts`
-- [ ] Use `clerkMiddleware()` from `@clerk/nextjs/server`
-- [ ] Create route matchers for protected routes (`/profile`, `/account`)
-- [ ] Add logic to check for profile existence (redirect to `/complete-profile`)
-- [ ] Export config with matcher
+- [x] Create new `apps/storefront/proxy.ts` (migrated from middleware.ts for Next.js 16)
+- [x] Use `clerkMiddleware()` from `@clerk/nextjs/server`
+- [x] Create route matchers for protected routes (`/profile`, `/account`)
+- [x] Profile existence check moved to page level (Edge runtime limitation)
+- [x] Export config with matcher
 
 ### P2-3: Create Sign-In Page
-- [ ] Update `apps/storefront/app/login/page.tsx`
-- [ ] Use Clerk's `<SignIn />` component
-- [ ] Configure routing props
-- [ ] Style to match existing design
+- [x] Update `apps/storefront/app/login/page.tsx`
+- [x] Use Clerk's `<SignIn />` component
+- [x] Configure routing props
+- [x] Style to match existing design
 
 ### P2-4: Create Sign-Up Page (Step 1)
-- [ ] Update `apps/storefront/app/signup/page.tsx`
-- [ ] Use Clerk's `<SignUp />` component
-- [ ] Configure to redirect to `/complete-profile` after auth
+- [x] Update `apps/storefront/app/signup/page.tsx`
+- [x] Use Clerk's `<SignUp />` component
+- [x] Configure to redirect to `/complete-profile` after auth
 
 ### P2-5: Create Profile Completion Page
-- [ ] Create `apps/storefront/app/complete-profile/page.tsx`
-- [ ] Server component that checks for existing profile
-- [ ] If profile exists, redirect to `/profile`
-- [ ] If no profile, render `ProfileCompletionForm`
+- [x] Create `apps/storefront/app/complete-profile/page.tsx`
+- [x] Server component that checks for existing profile
+- [x] If profile exists, redirect to `/profile`
+- [x] If no profile, render `ProfileCompletionForm`
 
 ### P2-6: Create Profile Completion Form
-- [ ] Create `apps/storefront/app/complete-profile/ProfileCompletionForm.tsx`
-- [ ] Client component with form fields:
+- [x] Create `apps/storefront/app/complete-profile/ProfileCompletionForm.tsx`
+- [x] Client component with form fields:
   - Phone (optional)
   - Street Address (required)
   - Street Address 2 (optional)
@@ -143,26 +143,25 @@
   - State (required)
   - Postal Code (required)
   - Country (required, default US)
-- [ ] Form validation
-- [ ] Submit calls Server Action to create profile
-- [ ] On success, redirect to `/profile`
+- [x] Form validation
+- [x] Submit calls Server Action to create profile
+- [x] On success, redirect to `/profile`
 
 ### P2-7: Create Profile Server Action
-- [ ] Create `apps/storefront/lib/actions/profile.ts`
-- [ ] Implement `createProfile(formData)` action
-- [ ] Validate user is authenticated via `auth()`
-- [ ] Create profile in Prisma with Clerk user ID
-- [ ] Return success/error
+- [x] Create `apps/storefront/lib/actions/profile.ts`
+- [x] Implement `createProfile(formData)` action
+- [x] Validate user is authenticated via `auth()`
+- [x] Create profile in Prisma with Clerk user ID
+- [x] Return success/error
 
 ### P2-8: Update Header/Navigation
-- [ ] Update `apps/storefront/components/Header.tsx`
-- [ ] Use Clerk's `<UserButton />` for signed-in users
-- [ ] Or implement custom UI with `useUser()` hook
-- [ ] Show sign in/sign up links for unauthenticated users
+- [x] Update `apps/storefront/components/common/Navigation.tsx`
+- [x] Use Clerk's `useUser()` hook
+- [x] Show sign in/sign up links for unauthenticated users
+- [x] Show Profile link + Sign Out for authenticated users
 
 ### P2-9: Implement Sign-Out
-- [ ] Ensure sign-out works via `<UserButton />` or
-- [ ] Implement custom sign-out with `useClerk().signOut()`
+- [x] Implement sign-out with Clerk's `<SignOutButton />`
 
 ### P2-10: Verify Auth Flows
 - [ ] Test email/password sign-up → profile form → profile page
@@ -174,44 +173,45 @@
 
 ---
 
-## Phase 3: Prisma Database Integration
+## Phase 3: Prisma Database Integration ✅
 
 ### P3-1: Create Prisma Client Singleton
-- [ ] Create `apps/storefront/lib/prisma.ts`
-- [ ] Implement singleton pattern for Prisma client
-- [ ] Handle edge runtime / serverless considerations
+- [x] Create `apps/storefront/lib/prisma.ts`
+- [x] Implement singleton pattern for Prisma client
+- [x] Handle serverless considerations with Prisma Accelerate
 
 ### P3-2: Implement Profile Helpers
-- [ ] Add `getProfile(clerkUserId)` function
-- [ ] Add `hasProfile(clerkUserId)` function (for middleware)
-- [ ] Add `getProfileByClerkId(clerkUserId)` with error handling
+- [x] Add `getProfile(clerkUserId)` function
+- [x] Add `hasProfile(clerkUserId)` function
+- [x] Add `getProfileOrThrow(clerkUserId)` with error handling
 
 ### P3-3: Update Profile Page
-- [ ] Update `apps/storefront/app/profile/page.tsx`
-- [ ] Fetch profile from Prisma using `auth()` to get Clerk user ID
-- [ ] Pass profile data to client component
+- [x] Update `apps/storefront/app/profile/page.tsx`
+- [x] Fetch profile from Prisma using `auth()` to get Clerk user ID
+- [x] Display profile data directly in server component
 
 ### P3-4: Update Profile Client Component
-- [ ] Update `apps/storefront/app/profile/ProfileClient.tsx`
-- [ ] Replace Supabase hooks with Clerk hooks
-- [ ] Display profile data from props/server fetch
+- [x] Created `ExchangeMembershipSection.tsx` client component
+- [x] Added enroll/cancel Exchange membership buttons
+- [x] Created profile edit page at `/profile/edit`
 
 ### P3-5: Implement Profile Update Action
-- [ ] Add `updateProfile(formData)` to `lib/actions/profile.ts`
-- [ ] Validate ownership (Clerk user ID matches profile)
-- [ ] Update profile in Prisma
-- [ ] Revalidate path
+- [x] Add `updateProfile(formData)` to `lib/actions/profile.ts`
+- [x] Validate ownership (Clerk user ID matches profile)
+- [x] Update profile in Prisma
+- [x] Revalidate path
 
 ### P3-6: Implement Exchange Membership Actions
-- [ ] Add `enrollInExchange()` action
-- [ ] Add `cancelExchangeMembership()` action
-- [ ] Update isExchangeMember, enrolledAt, cancelledAt fields
+- [x] Add `enrollInExchange()` action
+- [x] Add `cancelExchangeMembership()` action
+- [x] Update isExchangeMember, enrolledAt, cancelledAt fields
 
 ### P3-7: Update Order Creation
-- [ ] Update `apps/storefront/app/checkout/actions.ts`
-- [ ] Replace Supabase client with Prisma
-- [ ] Create orders in Prisma with profile relation (if authenticated)
-- [ ] Support guest checkout (profileId: null, guestEmail: email)
+- [x] Update `apps/storefront/app/checkout/actions.ts`
+- [x] Replace stubbed code with Prisma
+- [x] Create orders in Prisma with profile relation (if authenticated)
+- [x] Support guest checkout (profileId: null, guestEmail: email)
+- [x] Add first/last name fields to shipping address
 
 ### P3-8: Verify Database Operations
 - [ ] Test profile creation during sign-up

@@ -7,17 +7,27 @@ import {useMembership} from '@/lib/hooks/useMembership'
 
 export function ExchangeClient() {
   const router = useRouter()
-  // Auth stubbed during migration - will use Clerk in Phase 2
-  const user = null
-  const {isMember, mounted, isEnrolling} = useMembership()
+  const {isMember, mounted, isEnrolling, enrollMembership, isLoggedIn, hasProfile} = useMembership()
 
   const handleJoin = async () => {
-    if (!user) {
+    if (!isLoggedIn) {
       // Not logged in: redirect to login
-      router.push('/login?redirect=/members')
+      router.push('/login?redirect_url=/members')
       return
     }
-    // Enrollment stubbed during migration
+
+    if (!hasProfile) {
+      // Logged in but no profile: redirect to complete profile
+      router.push('/complete-profile?redirect_url=/members')
+      return
+    }
+
+    // Logged in with profile: enroll in Exchange
+    try {
+      await enrollMembership()
+    } catch (error) {
+      console.error('Failed to enroll:', error)
+    }
   }
 
   return (
@@ -85,13 +95,13 @@ export function ExchangeClient() {
                 disabled={isEnrolling}
                 className="bg-primary text-background px-lg py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isEnrolling ? 'Joining...' : user ? 'Become a Member' : 'Sign In to Join'}
+                {isEnrolling ? 'Joining...' : isLoggedIn ? 'Become a Member' : 'Sign In to Join'}
               </button>
-              {!user && (
+              {!isLoggedIn && (
                 <p className="text-sm text-text-muted mt-md">
                   Don&apos;t have an account?{' '}
                   <Link
-                    href="/signup?redirect=/members"
+                    href="/signup?redirect_url=/members"
                     className="text-primary underline hover:no-underline"
                   >
                     Sign up
