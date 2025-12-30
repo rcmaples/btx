@@ -6,10 +6,10 @@ export const customerSchema = defineType({
   type: 'document',
   fields: [
     {
-      name: 'supabaseId',
-      title: 'Supabase User ID',
+      name: 'clerkUserId',
+      title: 'Clerk User ID',
       type: 'string',
-      description: 'Unique identifier from Supabase Auth',
+      description: 'Unique identifier from Clerk Auth (format: user_xxx)',
       validation: (Rule) => Rule.required(),
       readOnly: true,
     },

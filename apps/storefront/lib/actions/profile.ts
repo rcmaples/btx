@@ -4,6 +4,7 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 import {revalidatePath} from 'next/cache'
 
 import {prisma} from '@/lib/prisma'
+import {upsertCustomer, updateCustomerMembership} from '@/lib/sanity/write-client'
 
 export type ProfileFormData = {
   phone?: string
@@ -19,6 +20,42 @@ export type ProfileActionResult = {
   success: boolean
   error?: string
   profileId?: string
+}
+
+/**
+ * Helper to sync profile data to Sanity
+ * Called after profile mutations to keep Sanity in sync
+ */
+async function syncProfileToSanity(clerkUserId: string): Promise<void> {
+  try {
+    const profile = await prisma.profile.findUnique({
+      where: {clerkUserId},
+    })
+
+    if (!profile) return
+
+    await upsertCustomer({
+      clerkUserId,
+      email: profile.email,
+      phone: profile.phone ?? undefined,
+      address: {
+        street: profile.streetAddress ?? undefined,
+        street2: profile.streetAddress2 ?? undefined,
+        city: profile.city ?? undefined,
+        state: profile.state ?? undefined,
+        postalCode: profile.postalCode ?? undefined,
+        country: profile.country,
+      },
+      exchangeMembership: {
+        isMember: profile.isExchangeMember,
+        enrolledAt: profile.exchangeEnrolledAt?.toISOString(),
+        cancelledAt: profile.exchangeCancelledAt?.toISOString(),
+      },
+    })
+  } catch (error) {
+    // Log but don't fail the action if Sanity sync fails
+    console.error('Error syncing profile to Sanity:', error)
+  }
 }
 
 /**
@@ -62,6 +99,9 @@ export async function createProfile(data: ProfileFormData): Promise<ProfileActio
       },
     })
 
+    // Sync to Sanity
+    await syncProfileToSanity(userId)
+
     revalidatePath('/profile')
 
     return {success: true, profileId: profile.id}
@@ -94,6 +134,9 @@ export async function updateProfile(data: Partial<ProfileFormData>): Promise<Pro
         country: data.country,
       },
     })
+
+    // Sync to Sanity
+    await syncProfileToSanity(userId)
 
     revalidatePath('/profile')
 
@@ -130,13 +173,21 @@ export async function enrollInExchange(): Promise<ProfileActionResult> {
   }
 
   try {
+    const enrolledAt = new Date()
     const profile = await prisma.profile.update({
       where: {clerkUserId: userId},
       data: {
         isExchangeMember: true,
-        exchangeEnrolledAt: new Date(),
+        exchangeEnrolledAt: enrolledAt,
         exchangeCancelledAt: null, // Clear any previous cancellation
       },
+    })
+
+    // Sync membership status to Sanity
+    await updateCustomerMembership(userId, {
+      isMember: true,
+      enrolledAt: enrolledAt.toISOString(),
+      cancelledAt: null,
     })
 
     revalidatePath('/profile')
@@ -159,12 +210,19 @@ export async function cancelExchangeMembership(): Promise<ProfileActionResult> {
   }
 
   try {
+    const cancelledAt = new Date()
     const profile = await prisma.profile.update({
       where: {clerkUserId: userId},
       data: {
         isExchangeMember: false,
-        exchangeCancelledAt: new Date(),
+        exchangeCancelledAt: cancelledAt,
       },
+    })
+
+    // Sync membership status to Sanity
+    await updateCustomerMembership(userId, {
+      isMember: false,
+      cancelledAt: cancelledAt.toISOString(),
     })
 
     revalidatePath('/profile')
