@@ -1,7 +1,7 @@
 'use client'
 
 import {ArticleCard} from '@/components/article/ArticleCard'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import type {Article} from '@/lib/types'
 
 interface ReleaseNotesClientProps {
@@ -9,7 +9,7 @@ interface ReleaseNotesClientProps {
 }
 
 export function ReleaseNotesClient({articles}: ReleaseNotesClientProps) {
-  usePageTracking('Release Notes')
+  usePageName('Release Notes')
 
   return (
     <div>

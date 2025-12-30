@@ -1,10 +1,10 @@
+import {auth, currentUser} from '@clerk/nextjs/server'
 import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
 
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
-import {getServerAuth} from '@/lib/supabase/server'
+import {getProfile} from '@/lib/prisma'
 
-import {ProfileClient} from './ProfileClient'
+import {ExchangeMembershipSection} from './ExchangeMembershipSection'
 
 export const metadata: Metadata = {
   title: 'My Profile',
@@ -12,19 +12,73 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  // Server-side auth check - instant, reads from cookie
-  const {supabase, user} = await getServerAuth()
+  const {userId} = await auth()
 
-  if (!user) {
-    redirect('/login?redirect=/profile')
+  // Middleware handles unauthenticated users, but this is a safety check
+  if (!userId) {
+    redirect('/login')
   }
 
-  // Fetch profile server-side - fast
-  const {data: profile} = await supabase.from('profiles').select('*').eq('id', user.id).single()
+  // Check if user has a profile
+  const profile = await getProfile(userId)
+
+  // If no profile, redirect to complete profile page
+  if (!profile) {
+    redirect('/complete-profile')
+  }
+
+  // Get user details from Clerk
+  const user = await currentUser()
 
   return (
-    <ClientAuthWrapper>
-      <ProfileClient initialUser={user} initialProfile={profile} />
-    </ClientAuthWrapper>
+    <div className="max-w-2xl mx-auto">
+      <div className="flex items-center justify-between mb-xl">
+        <h1 className="text-4xl font-black tracking-tighter">My Profile</h1>
+        <a
+          href="/profile/edit"
+          className="px-lg py-sm bg-primary text-background border-2 border-primary font-semibold transition-colors hover:bg-primary-dark hover:border-primary-dark"
+        >
+          Edit Profile
+        </a>
+      </div>
+
+      <div className="space-y-lg">
+        {/* Account Info */}
+        <section className="bg-background-secondary border-2 border-border p-xl">
+          <h2 className="text-xl font-bold mb-lg">Account</h2>
+          <div className="space-y-md">
+            <div>
+              <span className="text-text-secondary text-sm">Email</span>
+              <p className="text-text font-medium">{user?.primaryEmailAddress?.emailAddress}</p>
+            </div>
+            {profile.phone && (
+              <div>
+                <span className="text-text-secondary text-sm">Phone</span>
+                <p className="text-text font-medium">{profile.phone}</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Shipping Address */}
+        <section className="bg-background-secondary border-2 border-border p-xl">
+          <h2 className="text-xl font-bold mb-lg">Shipping Address</h2>
+          <address className="not-italic text-text">
+            <p>{profile.streetAddress}</p>
+            {profile.streetAddress2 && <p>{profile.streetAddress2}</p>}
+            <p>
+              {profile.city}, {profile.state} {profile.postalCode}
+            </p>
+            <p>{profile.country}</p>
+          </address>
+        </section>
+
+        {/* Exchange Membership */}
+        <ExchangeMembershipSection
+          isExchangeMember={profile.isExchangeMember}
+          exchangeEnrolledAt={profile.exchangeEnrolledAt}
+        />
+      </div>
+    </div>
   )
 }

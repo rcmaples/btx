@@ -1,8 +1,11 @@
 import Link from 'next/link'
 
+import {FSPageName} from '@/components/common/FSPageName'
+
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-md">
+      <FSPageName pageName="404" />
       <h1 className="text-5xl font-black mb-md">404</h1>
       <h2 className="text-3xl font-bold mb-md">Page Not Found</h2>
       <p className="text-text-muted mb-lg max-w-md">

@@ -24,7 +24,7 @@ export default function HomePage() {
             Browse Products
           </Link>
           <Link
-            href="/exchange"
+            href="/members"
             className="bg-transparent text-primary px-xl py-md border-2 border-primary hover:bg-primary hover:text-background transition-all duration-fast no-underline font-bold text-lg"
           >
             Join Exchange
@@ -43,7 +43,7 @@ export default function HomePage() {
         </Link>
 
         <Link
-          href="/exchange"
+          href="/members"
           className="block p-xl border-2 border-border hover:shadow-brutal transition-all duration-fast no-underline group"
         >
           <h2 className="text-2xl font-bold mb-sm group-hover:underline">The Exchange</h2>

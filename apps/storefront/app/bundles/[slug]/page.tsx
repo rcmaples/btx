@@ -2,6 +2,7 @@ import type {Metadata} from 'next'
 import {notFound} from 'next/navigation'
 import {cache} from 'react'
 
+import {FSPageName} from '@/components/common/FSPageName'
 import {getBundleBySlug, getBundleSlugs} from '@/lib/services/sanity/queries'
 
 import {BundleDetailClient} from './BundleDetailClient'
@@ -47,5 +48,10 @@ export default async function BundleDetailPage({params}: BundlePageProps) {
     notFound()
   }
 
-  return <BundleDetailClient bundle={bundle} />
+  return (
+    <>
+      <FSPageName pageName={`Bundle: ${bundle.name}`} />
+      <BundleDetailClient bundle={bundle} />
+    </>
+  )
 }

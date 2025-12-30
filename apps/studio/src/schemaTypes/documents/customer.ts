@@ -6,12 +6,24 @@ export const customerSchema = defineType({
   type: 'document',
   fields: [
     {
-      name: 'supabaseId',
-      title: 'Supabase User ID',
+      name: 'clerkUserId',
+      title: 'Clerk User ID',
       type: 'string',
-      description: 'Unique identifier from Supabase Auth',
+      description: 'Unique identifier from Clerk Auth (format: user_xxx)',
       validation: (Rule) => Rule.required(),
       readOnly: true,
+    },
+    {
+      name: 'firstName',
+      title: 'First Name',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'lastName',
+      title: 'Last Name',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'email',
@@ -101,17 +113,32 @@ export const customerSchema = defineType({
       type: 'datetime',
       readOnly: true,
     },
+    {
+      name: 'accountClosed',
+      title: 'Account Closed',
+      type: 'boolean',
+      description: 'Whether the user has deleted their account',
+      initialValue: false,
+      readOnly: true,
+    },
+    {
+      name: 'accountClosedAt',
+      title: 'Account Closed At',
+      type: 'datetime',
+      description: 'When the user deleted their account',
+      readOnly: true,
+    },
   ],
   preview: {
     select: {
-      title: 'email',
-      subtitle: 'phone',
-      isMember: 'exchangeMembership.isMember',
+      firstName: 'firstName',
+      lastName: 'lastName',
+      email: 'email',
     },
-    prepare({title, subtitle, isMember}) {
+    prepare({firstName, lastName, email}) {
       return {
-        title,
-        subtitle: isMember ? `${subtitle || ''} [Exchange Member]`.trim() : subtitle,
+        title: `${firstName} ${lastName}`,
+        subtitle: email,
       }
     },
   },

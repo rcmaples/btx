@@ -312,7 +312,7 @@ class CartServiceImpl implements CartService {
 
   async validateInventory(): Promise<string[]> {
     // All purchase options are considered in stock for MVP
-    // Inventory validation will be implemented with Supabase integration
+    // Inventory validation will be implemented with Prisma integration
     return []
   }
 }

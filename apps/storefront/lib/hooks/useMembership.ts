@@ -1,87 +1,80 @@
 'use client'
 
-import {useCallback, useEffect, useState} from 'react'
+import {useUser} from '@clerk/nextjs'
+import {useCallback, useState} from 'react'
 
-import {useAuth} from '@/lib/providers/AuthProvider'
-import {membershipService} from '@/lib/services/membership/membership-service'
-import type {Membership} from '@/lib/types'
+import {cancelExchangeMembership, enrollInExchange} from '@/lib/actions/profile'
+import {useProfile} from '@/lib/hooks/useProfile'
 
+/**
+ * Hook for Exchange membership status and actions
+ * Uses Clerk for auth and Prisma for membership data
+ */
 export function useMembership() {
-  const {user, profile, enrollInExchange, isLoading: authLoading} = useAuth()
-  const [localMembership, setLocalMembership] = useState<Membership>({
-    isMember: false,
-  })
+  const {isSignedIn, isLoaded: isUserLoaded} = useUser()
+  const {profile, isLoading: isProfileLoading, invalidateProfile, isExchangeMember} = useProfile()
+
   const [isEnrolling, setIsEnrolling] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  // Initialize local membership from localStorage after mount (for non-logged-in users)
-  useEffect(() => {
-    setMounted(true)
-    if (!user) {
-      setLocalMembership(membershipService.getMembership())
-    }
-  }, [user])
-
-  // Sync with localStorage changes (e.g., from other tabs) for non-logged-in users
-  useEffect(() => {
-    if (user) return // Skip for logged-in users
-
-    const handleStorageChange = () => {
-      setLocalMembership(membershipService.getMembership())
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [user])
-
-  // Compute current membership status based on auth state
-  const membership: Membership = user
-    ? {
-        isMember: profile?.is_exchange_member ?? false,
-        enrolledAt: profile?.exchange_enrolled_at
-          ? new Date(profile.exchange_enrolled_at)
-          : undefined,
-        cancelledAt: profile?.exchange_cancelled_at
-          ? new Date(profile.exchange_cancelled_at)
-          : undefined,
-      }
-    : localMembership
+  const [isCancelling, setIsCancelling] = useState(false)
 
   const enrollMembership = useCallback(async () => {
+    if (!isSignedIn) {
+      throw new Error('Must be signed in to enroll')
+    }
+
     setIsEnrolling(true)
 
     try {
-      if (user) {
-        // Logged in: save to database
-        const {error} = await enrollInExchange()
-        if (error) throw error
-        // Clear localStorage since we're now using DB
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('bt_membership')
-        }
-      } else {
-        // Not logged in: use localStorage (legacy behavior)
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        const newMembership = membershipService.enrollMembership()
-        setLocalMembership(newMembership)
+      const result = await enrollInExchange()
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to enroll')
       }
-    } catch (error) {
-      console.error('Failed to enroll in membership:', error)
-      throw error
+      // Invalidate profile cache to refetch with new membership status
+      invalidateProfile()
     } finally {
       setIsEnrolling(false)
     }
-  }, [user, enrollInExchange])
+  }, [isSignedIn, invalidateProfile])
+
+  const cancelMembership = useCallback(async () => {
+    if (!isSignedIn) {
+      throw new Error('Must be signed in to cancel')
+    }
+
+    setIsCancelling(true)
+
+    try {
+      const result = await cancelExchangeMembership()
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to cancel')
+      }
+      // Invalidate profile cache to refetch with new membership status
+      invalidateProfile()
+    } finally {
+      setIsCancelling(false)
+    }
+  }, [isSignedIn, invalidateProfile])
+
+  // Mounted state - true when both user and profile data are loaded
+  const mounted = isUserLoaded && !isProfileLoading
 
   return {
-    membership,
-    isMember: mounted ? membership.isMember : false,
+    // Membership state
+    isMember: isExchangeMember,
     isEnrolling,
+    isCancelling,
+    mounted,
+
+    // Actions
     enrollMembership,
-    mounted: mounted && !authLoading,
-    // Additional helpers
-    enrolledAt: membership.enrolledAt,
-    cancelledAt: membership.cancelledAt,
-    isLoggedIn: !!user,
+    cancelMembership,
+
+    // Profile details
+    enrolledAt: profile?.exchangeEnrolledAt ? new Date(profile.exchangeEnrolledAt) : undefined,
+    cancelledAt: profile?.exchangeCancelledAt ? new Date(profile.exchangeCancelledAt) : undefined,
+
+    // Auth state
+    isLoggedIn: isSignedIn ?? false,
+    hasProfile: !!profile,
   }
 }

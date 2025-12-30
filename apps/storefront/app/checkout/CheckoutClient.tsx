@@ -1,18 +1,31 @@
 'use client'
 
-import type {User} from '@supabase/supabase-js'
 import {useEffect, useMemo, useState} from 'react'
 
 import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
 import {OrderSummary} from '@/components/checkout/OrderSummary'
 import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {useCart} from '@/lib/hooks/useCart'
-import type {Profile} from '@/lib/providers/AuthProvider'
 import type {ShippingAddress} from '@/lib/types/checkout'
 
 import {createOrder} from './actions'
+
+interface User {
+  id: string
+  email?: string
+}
+
+interface Profile {
+  isExchangeMember: boolean
+  streetAddress: string | null
+  streetAddress2: string | null
+  city: string | null
+  state: string | null
+  postalCode: string | null
+  country: string | null
+}
 
 interface CheckoutClientProps {
   initialUser: User | null
@@ -27,13 +40,15 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   // Track page view (conditional based on success state)
-  usePageTracking(successOrderNumber ? 'Order Confirmation' : 'Checkout')
+  usePageName(successOrderNumber ? 'Order Confirmation' : 'Checkout')
 
   // Guest email (only for non-authenticated users)
   const [guestEmail, setGuestEmail] = useState('')
 
   // Shipping address state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
+    firstName: '',
+    lastName: '',
     streetAddress: '',
     streetAddress2: '',
     city: '',
@@ -42,24 +57,25 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
     country: 'US',
   })
 
-  // Pre-fill shipping address from profile
+  // Pre-fill shipping address from profile (names not stored in profile)
   useEffect(() => {
     if (initialProfile) {
-      setShippingAddress({
-        streetAddress: initialProfile.street_address || '',
-        streetAddress2: initialProfile.street_address_2 || '',
+      setShippingAddress((prev) => ({
+        ...prev,
+        streetAddress: initialProfile.streetAddress || '',
+        streetAddress2: initialProfile.streetAddress2 || '',
         city: initialProfile.city || '',
         state: initialProfile.state || '',
-        postalCode: initialProfile.postal_code || '',
+        postalCode: initialProfile.postalCode || '',
         country: initialProfile.country || 'US',
-      })
+      }))
     }
   }, [initialProfile])
 
   // Calculate shipping cost
   const shippingCost = useMemo(() => {
     // Free shipping for Exchange members
-    if (initialUser && initialProfile?.is_exchange_member) {
+    if (initialUser && initialProfile?.isExchangeMember) {
       return 0
     }
     // $5 flat rate for everyone else
@@ -93,6 +109,12 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
     }
 
     // Validate shipping address
+    if (!shippingAddress.firstName) {
+      errors.firstName = 'First name is required'
+    }
+    if (!shippingAddress.lastName) {
+      errors.lastName = 'Last name is required'
+    }
     if (!shippingAddress.streetAddress) {
       errors.streetAddress = 'Street address is required'
     }
@@ -207,7 +229,7 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
               <OrderSummary
                 cart={cart}
                 shippingCost={shippingCost}
-                isMember={initialProfile?.is_exchange_member || false}
+                isMember={initialProfile?.isExchangeMember || false}
               />
 
               {/* Place Order Button */}

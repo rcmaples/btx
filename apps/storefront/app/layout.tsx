@@ -1,14 +1,14 @@
 import './globals.css'
 
+import {ClerkProvider} from '@clerk/nextjs'
 import type {Metadata} from 'next'
 import {Inter} from 'next/font/google'
 import type {ReactNode} from 'react'
 
 import {Footer} from '@/components/common/Footer'
+import {FullStoryAuth} from '@/components/common/FullStoryAuth'
 import {FullStoryCapture} from '@/components/common/FullStoryCapture'
 import {Navigation} from '@/components/common/Navigation'
-import {MigrationPromptWrapper} from '@/components/membership/MigrationPromptWrapper'
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
 import {QueryProvider} from '@/lib/providers/QueryProvider'
 
 const inter = Inter({
@@ -36,11 +36,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}: {children: ReactNode}) {
   return (
-    <html lang="en" className={inter.variable}>
-      <FullStoryCapture />
-      <body className="min-h-screen flex flex-col">
-        <QueryProvider>
-          <ClientAuthWrapper>
+    <ClerkProvider>
+      <html lang="en" className={inter.variable}>
+        <FullStoryCapture />
+        <body className="min-h-screen flex flex-col">
+          <QueryProvider>
+            <FullStoryAuth />
             {/* Skip link for keyboard navigation */}
             <a
               href="#main-content"
@@ -60,11 +61,9 @@ export default function RootLayout({children}: {children: ReactNode}) {
             </main>
 
             <Footer />
-
-            <MigrationPromptWrapper />
-          </ClientAuthWrapper>
-        </QueryProvider>
-      </body>
-    </html>
+          </QueryProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

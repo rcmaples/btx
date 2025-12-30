@@ -2,6 +2,7 @@ import type {Metadata} from 'next'
 import {Suspense} from 'react'
 
 import {LoginForm} from '@/components/auth/LoginForm'
+import {FSPageName} from '@/components/common/FSPageName'
 
 export const metadata: Metadata = {
   title: 'Sign In',
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="max-w-md mx-auto">
+      <FSPageName pageName="Sign In" />
       <div className="text-center mb-xl">
         <h1 className="text-4xl font-black tracking-tighter mb-sm">Sign In</h1>
         <p className="text-text-secondary">Welcome back to Batch Theory</p>

@@ -1,6 +1,8 @@
 import type {Cart} from './index'
 
 export interface ShippingAddress {
+  firstName: string
+  lastName: string
   streetAddress: string
   streetAddress2?: string
   city: string

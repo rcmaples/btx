@@ -1,30 +1,37 @@
 'use client'
 
+import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 
 import {MembershipEnrollment} from '@/components/membership/MembershipEnrollment'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {useMembership} from '@/lib/hooks/useMembership'
-import {useAuth} from '@/lib/providers/AuthProvider'
 
 export function MembershipClient() {
   const router = useRouter()
-  const {user, profile, enrollInExchange} = useAuth()
-  const {isMember, mounted, isEnrolling} = useMembership()
+  const {isMember, mounted, isEnrolling, enrollMembership, isLoggedIn, hasProfile} = useMembership()
+
+  usePageName('Exchange Membership')
 
   const handleEnroll = async () => {
-    if (user) {
-      // Logged in: save to database
-      const {error} = await enrollInExchange()
-      if (!error) {
-        // Clear localStorage since we're now using DB
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('bt_membership')
-        }
-        router.push('/exchange')
-      }
-    } else {
+    if (!isLoggedIn) {
       // Not logged in: redirect to login with return URL
-      router.push('/login?redirect=/members')
+      router.push('/login?redirect_url=/members')
+      return
+    }
+
+    if (!hasProfile) {
+      // Logged in but no profile: redirect to complete profile
+      router.push('/complete-profile?redirect_url=/members')
+      return
+    }
+
+    // Logged in with profile: enroll in Exchange
+    try {
+      await enrollMembership()
+      // Stay on page - the isMember state will update and show member UI
+    } catch (error) {
+      console.error('Failed to enroll:', error)
     }
   }
 
@@ -37,11 +44,8 @@ export function MembershipClient() {
     )
   }
 
-  // Check DB membership for logged-in users
-  const isActiveMember = user ? profile?.is_exchange_member : isMember
-
   // If already a member, show member status
-  if (isActiveMember) {
+  if (isMember) {
     return (
       <div className="w-full text-center py-xxl">
         <div className="w-full max-w-xl mx-auto p-xl bg-green-50 border-2 border-success">
@@ -50,18 +54,22 @@ export function MembershipClient() {
             Thank you for being part of The Exchange. You now have access to all member-exclusive
             products and drops.
           </p>
-          <button
-            onClick={() => router.push('/exchange')}
-            className="bg-primary text-background px-lg py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold"
+          <Link
+            href="/products"
+            className="inline-block bg-primary text-background px-lg py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold no-underline"
           >
             Browse Exclusive Products
-          </button>
+          </Link>
         </div>
       </div>
     )
   }
 
   return (
-    <MembershipEnrollment onEnroll={handleEnroll} isEnrolling={isEnrolling} isLoggedIn={!!user} />
+    <MembershipEnrollment
+      onEnroll={handleEnroll}
+      isEnrolling={isEnrolling}
+      isLoggedIn={isLoggedIn}
+    />
   )
 }

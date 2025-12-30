@@ -1,20 +1,20 @@
 'use client'
 
+import {SignOutButton, useUser} from '@clerk/nextjs'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 
 import {useCart} from '@/lib/hooks/useCart'
-import {useAuth} from '@/lib/providers/AuthProvider'
 
 export const Navigation = () => {
   const {itemCount} = useCart()
   const pathname = usePathname()
-  const {user, isLoading} = useAuth()
+  const {user, isLoaded} = useUser()
 
   const navLinks = [
     {href: '/products', label: 'Products'},
     {href: '/bundles', label: 'Bundles'},
-    {href: '/exchange', label: 'Exchange'},
+    {href: '/members', label: 'Exchange'},
     {href: '/release-notes', label: 'Release Notes'},
   ]
 
@@ -60,21 +60,27 @@ export const Navigation = () => {
             )}
           </Link>
 
-          {/* Render auth links immediately - show skeleton while loading */}
-          {isLoading ? (
+          {!isLoaded ? (
             <div
               className="w-20 h-8 bg-border/30 animate-pulse rounded"
               aria-label="Loading authentication state"
             />
           ) : user ? (
-            <Link
-              href="/profile"
-              className={`text-base font-medium no-underline text-text px-md py-sm border border-transparent transition-all duration-fast hover:border-b-border ${
-                pathname === '/profile' ? 'border-b-2 border-b-border' : ''
-              }`}
-            >
-              Profile
-            </Link>
+            <div className="flex items-center gap-md">
+              <Link
+                href="/profile"
+                className={`text-base font-medium no-underline text-text px-md py-sm border border-transparent transition-all duration-fast hover:border-b-border ${
+                  pathname === '/profile' ? 'border-b-2 border-b-border' : ''
+                }`}
+              >
+                Profile
+              </Link>
+              <SignOutButton>
+                <button className="text-base font-medium text-text-secondary px-md py-sm border border-transparent transition-all duration-fast hover:text-text hover:border-b-border">
+                  Sign Out
+                </button>
+              </SignOutButton>
+            </div>
           ) : (
             <Link
               href="/login"

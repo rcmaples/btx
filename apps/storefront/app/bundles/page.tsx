@@ -1,6 +1,7 @@
 import {dehydrate, HydrationBoundary, QueryClient} from '@tanstack/react-query'
 import type {Metadata} from 'next'
 
+import {FSPageName} from '@/components/common/FSPageName'
 import {getBundles} from '@/lib/services/sanity/queries'
 
 import {BundlesClientWrapper} from './BundlesClientWrapper'
@@ -21,6 +22,7 @@ export default async function BundlesPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
+      <FSPageName pageName="Bundles" />
       <BundlesClientWrapper />
     </HydrationBoundary>
   )

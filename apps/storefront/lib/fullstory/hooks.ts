@@ -1,7 +1,7 @@
 import {FullStory as FS} from '@fullstory/browser'
 import {useEffect} from 'react'
 
-export function usePageTracking(pageName: string, dynamicSuffix?: string): void {
+export function usePageName(pageName: string, dynamicSuffix?: string): void {
   useEffect(() => {
     if (typeof window !== 'undefined' && FS) {
       const fullPageName = dynamicSuffix ? `${pageName}: ${dynamicSuffix}` : pageName
