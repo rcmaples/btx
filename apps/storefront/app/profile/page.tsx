@@ -5,6 +5,8 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 
 import {getProfile} from '@/lib/prisma'
 
+import {ExchangeMembershipSection} from './ExchangeMembershipSection'
+
 export const metadata: Metadata = {
   title: 'My Profile',
   description: 'View and edit your Batch Theory profile.',
@@ -31,7 +33,15 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-4xl font-black tracking-tighter mb-xl">My Profile</h1>
+      <div className="flex items-center justify-between mb-xl">
+        <h1 className="text-4xl font-black tracking-tighter">My Profile</h1>
+        <a
+          href="/profile/edit"
+          className="px-lg py-sm bg-primary text-background border-2 border-primary font-semibold transition-colors hover:bg-primary-dark hover:border-primary-dark"
+        >
+          Edit Profile
+        </a>
+      </div>
 
       <div className="space-y-lg">
         {/* Account Info */}
@@ -65,21 +75,10 @@ export default async function ProfilePage() {
         </section>
 
         {/* Exchange Membership */}
-        <section className="bg-background-secondary border-2 border-border p-xl">
-          <h2 className="text-xl font-bold mb-lg">Exchange Membership</h2>
-          {profile.isExchangeMember ? (
-            <div>
-              <p className="text-success font-medium">Active Member</p>
-              {profile.exchangeEnrolledAt && (
-                <p className="text-text-secondary text-sm">
-                  Member since {new Date(profile.exchangeEnrolledAt).toLocaleDateString()}
-                </p>
-              )}
-            </div>
-          ) : (
-            <p className="text-text-secondary">Not an Exchange member</p>
-          )}
-        </section>
+        <ExchangeMembershipSection
+          isExchangeMember={profile.isExchangeMember}
+          exchangeEnrolledAt={profile.exchangeEnrolledAt}
+        />
       </div>
     </div>
   )

@@ -12,19 +12,18 @@ import type {ShippingAddress} from '@/lib/types/checkout'
 
 import {createOrder} from './actions'
 
-// Simplified types during migration - will use Clerk/Prisma types in later phases
 interface User {
   id: string
   email?: string
 }
 
 interface Profile {
-  is_exchange_member: boolean
-  street_address: string | null
-  street_address_2: string | null
+  isExchangeMember: boolean
+  streetAddress: string | null
+  streetAddress2: string | null
   city: string | null
   state: string | null
-  postal_code: string | null
+  postalCode: string | null
   country: string | null
 }
 
@@ -48,6 +47,8 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
 
   // Shipping address state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
+    firstName: '',
+    lastName: '',
     streetAddress: '',
     streetAddress2: '',
     city: '',
@@ -56,24 +57,25 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
     country: 'US',
   })
 
-  // Pre-fill shipping address from profile
+  // Pre-fill shipping address from profile (names not stored in profile)
   useEffect(() => {
     if (initialProfile) {
-      setShippingAddress({
-        streetAddress: initialProfile.street_address || '',
-        streetAddress2: initialProfile.street_address_2 || '',
+      setShippingAddress((prev) => ({
+        ...prev,
+        streetAddress: initialProfile.streetAddress || '',
+        streetAddress2: initialProfile.streetAddress2 || '',
         city: initialProfile.city || '',
         state: initialProfile.state || '',
-        postalCode: initialProfile.postal_code || '',
+        postalCode: initialProfile.postalCode || '',
         country: initialProfile.country || 'US',
-      })
+      }))
     }
   }, [initialProfile])
 
   // Calculate shipping cost
   const shippingCost = useMemo(() => {
     // Free shipping for Exchange members
-    if (initialUser && initialProfile?.is_exchange_member) {
+    if (initialUser && initialProfile?.isExchangeMember) {
       return 0
     }
     // $5 flat rate for everyone else
@@ -107,6 +109,12 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
     }
 
     // Validate shipping address
+    if (!shippingAddress.firstName) {
+      errors.firstName = 'First name is required'
+    }
+    if (!shippingAddress.lastName) {
+      errors.lastName = 'Last name is required'
+    }
     if (!shippingAddress.streetAddress) {
       errors.streetAddress = 'Street address is required'
     }
@@ -221,7 +229,7 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
               <OrderSummary
                 cart={cart}
                 shippingCost={shippingCost}
-                isMember={initialProfile?.is_exchange_member || false}
+                isMember={initialProfile?.isExchangeMember || false}
               />
 
               {/* Place Order Button */}

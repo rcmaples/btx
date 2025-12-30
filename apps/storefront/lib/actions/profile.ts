@@ -118,3 +118,60 @@ export async function getCurrentProfile() {
     where: {clerkUserId: userId},
   })
 }
+
+/**
+ * Enroll the authenticated user in the Exchange membership program
+ */
+export async function enrollInExchange(): Promise<ProfileActionResult> {
+  const {userId} = await auth()
+
+  if (!userId) {
+    return {success: false, error: 'Not authenticated'}
+  }
+
+  try {
+    const profile = await prisma.profile.update({
+      where: {clerkUserId: userId},
+      data: {
+        isExchangeMember: true,
+        exchangeEnrolledAt: new Date(),
+        exchangeCancelledAt: null, // Clear any previous cancellation
+      },
+    })
+
+    revalidatePath('/profile')
+
+    return {success: true, profileId: profile.id}
+  } catch (error) {
+    console.error('Error enrolling in Exchange:', error)
+    return {success: false, error: 'Failed to enroll in Exchange'}
+  }
+}
+
+/**
+ * Cancel the authenticated user's Exchange membership
+ */
+export async function cancelExchangeMembership(): Promise<ProfileActionResult> {
+  const {userId} = await auth()
+
+  if (!userId) {
+    return {success: false, error: 'Not authenticated'}
+  }
+
+  try {
+    const profile = await prisma.profile.update({
+      where: {clerkUserId: userId},
+      data: {
+        isExchangeMember: false,
+        exchangeCancelledAt: new Date(),
+      },
+    })
+
+    revalidatePath('/profile')
+
+    return {success: true, profileId: profile.id}
+  } catch (error) {
+    console.error('Error cancelling Exchange membership:', error)
+    return {success: false, error: 'Failed to cancel Exchange membership'}
+  }
+}

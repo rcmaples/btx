@@ -42,6 +42,39 @@ export function ShippingAddressForm({
         </div>
       )}
 
+      {/* First and Last Name */}
+      <div className="grid grid-cols-2 gap-md">
+        <div>
+          <label htmlFor="firstName" className="block font-bold mb-xs">
+            First Name <span className="text-error">*</span>
+          </label>
+          <input
+            id="firstName"
+            type="text"
+            value={address.firstName}
+            onChange={(e) => onAddressChange('firstName', e.target.value)}
+            className="w-full px-md py-sm border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
+            required
+          />
+          {errors.firstName && <p className="text-sm text-error mt-xs">{errors.firstName}</p>}
+        </div>
+
+        <div>
+          <label htmlFor="lastName" className="block font-bold mb-xs">
+            Last Name <span className="text-error">*</span>
+          </label>
+          <input
+            id="lastName"
+            type="text"
+            value={address.lastName}
+            onChange={(e) => onAddressChange('lastName', e.target.value)}
+            className="w-full px-md py-sm border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors"
+            required
+          />
+          {errors.lastName && <p className="text-sm text-error mt-xs">{errors.lastName}</p>}
+        </div>
+      </div>
+
       {/* Street Address */}
       <div>
         <label htmlFor="streetAddress" className="block font-bold mb-xs">
