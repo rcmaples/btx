@@ -67,7 +67,13 @@ export async function POST(req: Request) {
   const eventType = evt.type
 
   if (eventType === 'user.created' || eventType === 'user.updated') {
-    const {id: clerkUserId, email_addresses, primary_email_address_id} = evt.data
+    const {
+      id: clerkUserId,
+      email_addresses,
+      primary_email_address_id,
+      first_name,
+      last_name,
+    } = evt.data
 
     // Get primary email
     const primaryEmail = email_addresses?.find((e) => e.id === primary_email_address_id)
@@ -85,6 +91,8 @@ export async function POST(req: Request) {
       // Sync to Sanity
       await upsertCustomer({
         clerkUserId,
+        firstName: first_name ?? undefined,
+        lastName: last_name ?? undefined,
         email,
         phone: profile?.phone ?? undefined,
         address: profile

@@ -14,6 +14,16 @@ export const customerSchema = defineType({
       readOnly: true,
     },
     {
+      name: 'firstName',
+      title: 'First Name',
+      type: 'string',
+    },
+    {
+      name: 'lastName',
+      title: 'Last Name',
+      type: 'string',
+    },
+    {
       name: 'email',
       title: 'Email',
       type: 'string',
@@ -104,14 +114,15 @@ export const customerSchema = defineType({
   ],
   preview: {
     select: {
-      title: 'email',
-      subtitle: 'phone',
-      isMember: 'exchangeMembership.isMember',
+      firstName: 'firstName',
+      lastName: 'lastName',
+      email: 'email',
     },
-    prepare({title, subtitle, isMember}) {
+    prepare({firstName, lastName, email}) {
+      const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Unnamed Customer'
       return {
-        title,
-        subtitle: isMember ? `${subtitle || ''} [Exchange Member]`.trim() : subtitle,
+        title: fullName,
+        subtitle: email,
       }
     },
   },

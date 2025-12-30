@@ -22,6 +22,8 @@ export interface SanityCustomer {
   _id: string
   _type: 'customer'
   clerkUserId: string
+  firstName?: string
+  lastName?: string
   email: string
   phone?: string
   address?: {
