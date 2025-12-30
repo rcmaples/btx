@@ -76,9 +76,9 @@ export function ProfileCompletionForm({redirectUrl}: Props) {
     const formData = new FormData(e.currentTarget)
 
     const data: ProfileFormData = {
-      phone: formData.get('phone') as string || undefined,
+      phone: (formData.get('phone') as string) || undefined,
       streetAddress: formData.get('streetAddress') as string,
-      streetAddress2: formData.get('streetAddress2') as string || undefined,
+      streetAddress2: (formData.get('streetAddress2') as string) || undefined,
       city: formData.get('city') as string,
       state: formData.get('state') as string,
       postalCode: formData.get('postalCode') as string,

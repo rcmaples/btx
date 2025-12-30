@@ -11,7 +11,7 @@ export function LoginForm() {
           appearance={{
             elements: {
               rootBox: 'w-full',
-              card: 'shadow-none border-2 border-border bg-background',
+              // card: 'shadow-none border-2 border-border bg-background',
               headerTitle: 'text-text font-black',
               headerSubtitle: 'text-text-secondary',
               socialButtonsBlockButton:
