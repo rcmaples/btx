@@ -35,6 +35,7 @@ export const baseConfig = [
             'SANITY_STUDIO_PROJECT_ID',
             'CLERK_SECRET_KEY',
             'CLERK_WEBHOOK_SECRET',
+            'CLERK_LOCAL_WEBHOOK_SECRET',
             'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
             'NEXT_PUBLIC_CLERK_SIGN_IN_URL',
             'NEXT_PUBLIC_CLERK_SIGN_UP_URL',

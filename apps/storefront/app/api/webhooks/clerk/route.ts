@@ -12,14 +12,22 @@ import {upsertCustomer} from '@/lib/sanity/write-client'
  * Handles user.created and user.updated events to sync customer data to Sanity.
  * Webhook signature is verified using Svix.
  *
- * Required environment variable:
- * - CLERK_WEBHOOK_SECRET: Signing secret from Clerk Dashboard
+ * Required environment variables:
+ * - CLERK_WEBHOOK_SECRET: Signing secret from Clerk Dashboard (production)
+ * - CLERK_LOCAL_WEBHOOK_SECRET: Signing secret for local development (optional)
  */
 export async function POST(req: Request) {
-  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  const WEBHOOK_SECRET = isDevelopment
+    ? process.env.CLERK_LOCAL_WEBHOOK_SECRET || process.env.CLERK_WEBHOOK_SECRET
+    : process.env.CLERK_WEBHOOK_SECRET
 
   if (!WEBHOOK_SECRET) {
-    console.error('CLERK_WEBHOOK_SECRET is not set')
+    console.error(
+      isDevelopment
+        ? 'CLERK_LOCAL_WEBHOOK_SECRET or CLERK_WEBHOOK_SECRET is not set'
+        : 'CLERK_WEBHOOK_SECRET is not set',
+    )
     return NextResponse.json({error: 'Server configuration error'}, {status: 500})
   }
 
