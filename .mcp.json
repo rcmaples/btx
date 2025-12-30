@@ -4,6 +4,14 @@
       "command": "npx",
       "args": ["mcp-remote", "https://mcp.sanity.io", "--transport", "http-only"]
     },
+    "Prisma-Local": {
+      "command": "npx",
+      "args": ["-y", "prisma", "mcp"]
+    },
+    "Prisma-Remote": {
+      "type": "http",
+      "url": "https://mcp.prisma.io/mcp"
+    },
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=vmyrxxgpzjgcbrcmwoxq"
@@ -14,7 +22,7 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/rc/github"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/rc.maples/github"]
     }
   }
 }

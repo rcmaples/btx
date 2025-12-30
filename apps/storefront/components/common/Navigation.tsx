@@ -4,12 +4,14 @@ import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 
 import {useCart} from '@/lib/hooks/useCart'
-import {useAuth} from '@/lib/providers/AuthProvider'
 
 export const Navigation = () => {
   const {itemCount} = useCart()
   const pathname = usePathname()
-  const {user, isLoading} = useAuth()
+
+  // Auth state stubbed during migration - will be replaced with Clerk in Phase 2
+  const user = null
+  const isLoading = false
 
   const navLinks = [
     {href: '/products', label: 'Products'},
@@ -60,7 +62,7 @@ export const Navigation = () => {
             )}
           </Link>
 
-          {/* Render auth links immediately - show skeleton while loading */}
+          {/* Auth links stubbed during migration */}
           {isLoading ? (
             <div
               className="w-20 h-8 bg-border/30 animate-pulse rounded"

@@ -1,20 +1,8 @@
-import {createClient} from '@/lib/supabase/server'
-
 import {CheckoutClient} from './CheckoutClient'
 
-export default async function CheckoutPage() {
-  // Get user and profile from Supabase (if authenticated)
-  const supabase = await createClient()
-
-  const {
-    data: {user},
-  } = await supabase.auth.getUser()
-
-  let profile = null
-  if (user) {
-    const {data} = await supabase.from('profiles').select('*').eq('id', user.id).single()
-    profile = data
-  }
-
-  return <CheckoutClient initialUser={user} initialProfile={profile} />
+// Checkout page - auth integration stubbed during migration
+// Will be fully implemented with Clerk auth in Phase 2
+export default function CheckoutPage() {
+  // Pass null for user/profile during migration
+  return <CheckoutClient initialUser={null} initialProfile={null} />
 }

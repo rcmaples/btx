@@ -1,7 +1,5 @@
 import type {Metadata} from 'next'
 
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
-
 import {MembershipClient} from './MembershipClient'
 
 export const metadata: Metadata = {
@@ -11,9 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function MembershipPage() {
-  return (
-    <ClientAuthWrapper>
-      <MembershipClient />
-    </ClientAuthWrapper>
-  )
+  return <MembershipClient />
 }

@@ -7,8 +7,6 @@ import type {ReactNode} from 'react'
 import {Footer} from '@/components/common/Footer'
 import {FullStoryCapture} from '@/components/common/FullStoryCapture'
 import {Navigation} from '@/components/common/Navigation'
-import {MigrationPromptWrapper} from '@/components/membership/MigrationPromptWrapper'
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
 import {QueryProvider} from '@/lib/providers/QueryProvider'
 
 const inter = Inter({
@@ -40,29 +38,25 @@ export default function RootLayout({children}: {children: ReactNode}) {
       <FullStoryCapture />
       <body className="min-h-screen flex flex-col">
         <QueryProvider>
-          <ClientAuthWrapper>
-            {/* Skip link for keyboard navigation */}
-            <a
-              href="#main-content"
-              className="absolute -top-full left-1/2 -translate-x-1/2 bg-primary text-background px-lg py-sm rounded z-[9999] transition-all duration-fast focus:top-md focus:outline focus:outline-2 focus:outline-focus focus:outline-offset-2"
-            >
-              Skip to main content
-            </a>
+          {/* Skip link for keyboard navigation */}
+          <a
+            href="#main-content"
+            className="absolute -top-full left-1/2 -translate-x-1/2 bg-primary text-background px-lg py-sm rounded z-[9999] transition-all duration-fast focus:top-md focus:outline focus:outline-2 focus:outline-focus focus:outline-offset-2"
+          >
+            Skip to main content
+          </a>
 
-            <Navigation />
+          <Navigation />
 
-            <main
-              id="main-content"
-              className="flex-1 max-w-[1400px] w-full mx-auto px-xl py-xxl"
-              role="main"
-            >
-              {children}
-            </main>
+          <main
+            id="main-content"
+            className="flex-1 max-w-[1400px] w-full mx-auto px-xl py-xxl"
+            role="main"
+          >
+            {children}
+          </main>
 
-            <Footer />
-
-            <MigrationPromptWrapper />
-          </ClientAuthWrapper>
+          <Footer />
         </QueryProvider>
       </body>
     </html>

@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id                  String    @id @default(cuid())
+  clerkUserId         String    @unique
+  email               String
+
+  // Contact
+  phone               String?
+
+  // Address
+  streetAddress       String?
+  streetAddress2      String?
+  city                String?
+  state               String?
+  postalCode          String?
+  country             String    @default("US")
+
+  // Exchange Membership
+  isExchangeMember    Boolean   @default(false)
+  exchangeEnrolledAt  DateTime?
+  exchangeCancelledAt DateTime?
+
+  // Timestamps
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  orders              Order[]
+
+  @@map("profiles")
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  orderNumber           String      @unique
+
+  // User (optional - null for guest checkout)
+  profile               Profile?    @relation(fields: [profileId], references: [id])
+  profileId             String?
+
+  // Guest checkout
+  guestEmail            String?
+
+  // Shipping Address
+  shippingFirstName     String
+  shippingLastName      String
+  shippingStreet        String
+  shippingStreet2       String?
+  shippingCity          String
+  shippingState         String
+  shippingPostalCode    String
+  shippingCountry       String      @default("US")
+
+  // Order Contents
+  lineItems             Json        // Array of cart items
+
+  // Pricing (in cents)
+  subtotal              Int
+  discount              Int         @default(0)
+  shippingCost          Int
+  total                 Int
+
+  // Promotions
+  appliedPromotion      Json?
+
+  // Stripe
+  stripePaymentIntentId String?
+  stripePaymentStatus   String?
+
+  // Status
+  status                OrderStatus @default(PENDING)
+  isTestOrder           Boolean     @default(false)
+
+  // Timestamps
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([profileId])
+  @@index([guestEmail])
+  @@index([orderNumber])
+  @@index([stripePaymentIntentId])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}

@@ -1,30 +1,31 @@
 import type {Metadata} from 'next'
-import {redirect} from 'next/navigation'
-
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
-import {getServerAuth} from '@/lib/supabase/server'
-
-import {ProfileClient} from './ProfileClient'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'My Profile',
   description: 'View and edit your Batch Theory profile.',
 }
 
-export default async function ProfilePage() {
-  // Server-side auth check - instant, reads from cookie
-  const {supabase, user} = await getServerAuth()
-
-  if (!user) {
-    redirect('/login?redirect=/profile')
-  }
-
-  // Fetch profile server-side - fast
-  const {data: profile} = await supabase.from('profiles').select('*').eq('id', user.id).single()
-
+// Profile page stubbed during Supabase removal
+// Will be fully implemented with Clerk auth in Phase 2
+export default function ProfilePage() {
   return (
-    <ClientAuthWrapper>
-      <ProfileClient initialUser={user} initialProfile={profile} />
-    </ClientAuthWrapper>
+    <div className="max-w-2xl mx-auto">
+      <h1 className="text-4xl font-black tracking-tighter mb-xl">My Profile</h1>
+
+      <div className="bg-background-secondary border-2 border-border p-xl">
+        <div className="text-center py-xl">
+          <p className="text-text-secondary mb-lg">
+            Authentication is being upgraded. Profile features will be available soon.
+          </p>
+          <Link
+            href="/"
+            className="inline-block bg-primary text-background px-xl py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold"
+          >
+            Return Home
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }

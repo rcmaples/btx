@@ -4,24 +4,17 @@ import {useRouter} from 'next/navigation'
 
 import {MembershipEnrollment} from '@/components/membership/MembershipEnrollment'
 import {useMembership} from '@/lib/hooks/useMembership'
-import {useAuth} from '@/lib/providers/AuthProvider'
 
 export function MembershipClient() {
   const router = useRouter()
-  const {user, profile, enrollInExchange} = useAuth()
+  // Auth stubbed during migration - will use Clerk in Phase 2
+  const user = null
   const {isMember, mounted, isEnrolling} = useMembership()
 
   const handleEnroll = async () => {
     if (user) {
-      // Logged in: save to database
-      const {error} = await enrollInExchange()
-      if (!error) {
-        // Clear localStorage since we're now using DB
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('bt_membership')
-        }
-        router.push('/exchange')
-      }
+      // Logged in: enrollment stubbed during migration
+      router.push('/exchange')
     } else {
       // Not logged in: redirect to login with return URL
       router.push('/login?redirect=/members')
@@ -37,8 +30,8 @@ export function MembershipClient() {
     )
   }
 
-  // Check DB membership for logged-in users
-  const isActiveMember = user ? profile?.is_exchange_member : isMember
+  // Check membership status (DB check stubbed during migration)
+  const isActiveMember = isMember
 
   // If already a member, show member status
   if (isActiveMember) {

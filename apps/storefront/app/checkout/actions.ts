@@ -1,6 +1,5 @@
 'use server'
 
-import {createClient} from '@/lib/supabase/server'
 import type {CheckoutResult, CreateOrderRequest} from '@/lib/types/checkout'
 
 // Generate unique order number
@@ -10,29 +9,16 @@ function generateOrderNumber(): string {
   return `BT-${timestamp}-${random}`
 }
 
-export async function calculateShipping(userId?: string): Promise<number> {
-  // Return 0 if Exchange member, 500 cents otherwise
-  if (!userId) return 500
-
-  const supabase = await createClient()
-  const {data: profile} = await supabase
-    .from('profiles')
-    .select('is_exchange_member')
-    .eq('id', userId)
-    .single()
-
-  return profile?.is_exchange_member ? 0 : 500
+// Stubbed during Supabase removal - will use Prisma in Phase 3
+export async function calculateShipping(_userId?: string): Promise<number> {
+  // Always return standard shipping during migration
+  return 500
 }
 
+// Stubbed during Supabase removal - will use Prisma in Phase 3
 export async function createOrder(request: CreateOrderRequest): Promise<CheckoutResult> {
   try {
-    // 1. Get authenticated user (if any)
-    const supabase = await createClient()
-    const {
-      data: {user},
-    } = await supabase.auth.getUser()
-
-    // 2. Validate inputs
+    // Validate inputs
     if (!request.formData.shippingAddress.streetAddress) {
       return {success: false, error: 'Street address is required'}
     }
@@ -50,7 +36,7 @@ export async function createOrder(request: CreateOrderRequest): Promise<Checkout
     }
 
     // Guest checkout validation
-    if (!user && !request.formData.guestEmail) {
+    if (!request.userId && !request.formData.guestEmail) {
       return {success: false, error: 'Email is required for guest checkout'}
     }
 
@@ -67,59 +53,22 @@ export async function createOrder(request: CreateOrderRequest): Promise<Checkout
       return {success: false, error: 'Cart is empty'}
     }
 
-    // 3. Generate order number
+    // Generate order number (order creation stubbed - will use Prisma in Phase 3)
     const orderNumber = generateOrderNumber()
 
-    // 4. Prepare line items JSONB
-    const lineItems = request.cart.lineItems.map((item) => ({
-      id: item.id,
-      productId: item.productId,
-      productName: item.productName,
-      sizeKey: item.sizeKey,
-      sizeName: item.sizeName,
-      grams: item.grams,
-      grind: item.grind,
-      quantity: item.quantity,
-      pricePerUnit: item.pricePerUnit,
-      lineTotal: item.lineTotal,
-      itemType: item.itemType || 'product',
-      bundleDetails: item.bundleDetails,
-    }))
-
-    // 5. Insert order into Supabase
-    const {data: order, error} = await supabase
-      .from('orders')
-      .insert({
-        order_number: orderNumber,
-        user_id: user?.id || null,
-        guest_email: request.formData.guestEmail || null,
-        shipping_street_address: request.formData.shippingAddress.streetAddress,
-        shipping_street_address_2: request.formData.shippingAddress.streetAddress2 || null,
-        shipping_city: request.formData.shippingAddress.city,
-        shipping_state: request.formData.shippingAddress.state,
-        shipping_postal_code: request.formData.shippingAddress.postalCode,
-        shipping_country: request.formData.shippingAddress.country,
-        line_items: lineItems,
-        subtotal: request.cart.subtotal,
-        discount: request.cart.discount,
-        shipping_cost: request.shippingCost,
-        total: request.cart.total + request.shippingCost,
-        applied_promotion: request.cart.appliedPromotion,
-        status: 'completed',
-        is_test_order: true,
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error('Order creation error:', error)
-      return {success: false, error: error.message}
-    }
+    // For now, just return success with order number
+    // Actual database insertion will be implemented in Phase 3
+    console.log('Order created (stubbed):', {
+      orderNumber,
+      email: request.formData.guestEmail || 'authenticated user',
+      itemCount: request.cart.lineItems.length,
+      total: request.cart.total + request.shippingCost,
+    })
 
     return {
       success: true,
-      orderId: order.id,
-      orderNumber: order.order_number,
+      orderId: `stub-${orderNumber}`,
+      orderNumber,
     }
   } catch (error) {
     console.error('Unexpected error during checkout:', error)

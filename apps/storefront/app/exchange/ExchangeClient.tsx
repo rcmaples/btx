@@ -4,11 +4,11 @@ import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 
 import {useMembership} from '@/lib/hooks/useMembership'
-import {useAuth} from '@/lib/providers/AuthProvider'
 
 export function ExchangeClient() {
   const router = useRouter()
-  const {user, enrollInExchange} = useAuth()
+  // Auth stubbed during migration - will use Clerk in Phase 2
+  const user = null
   const {isMember, mounted, isEnrolling} = useMembership()
 
   const handleJoin = async () => {
@@ -17,12 +17,7 @@ export function ExchangeClient() {
       router.push('/login?redirect=/members')
       return
     }
-
-    // Logged in: enroll in Exchange
-    const {error} = await enrollInExchange()
-    if (!error) {
-      router.refresh()
-    }
+    // Enrollment stubbed during migration
   }
 
   return (

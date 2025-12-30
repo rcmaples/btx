@@ -1,6 +1,5 @@
 'use client'
 
-import type {User} from '@supabase/supabase-js'
 import {useEffect, useMemo, useState} from 'react'
 
 import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
@@ -9,10 +8,25 @@ import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
 import {usePageTracking} from '@/lib/fullstory/hooks'
 import {useCart} from '@/lib/hooks/useCart'
-import type {Profile} from '@/lib/providers/AuthProvider'
 import type {ShippingAddress} from '@/lib/types/checkout'
 
 import {createOrder} from './actions'
+
+// Simplified types during migration - will use Clerk/Prisma types in later phases
+interface User {
+  id: string
+  email?: string
+}
+
+interface Profile {
+  is_exchange_member: boolean
+  street_address: string | null
+  street_address_2: string | null
+  city: string | null
+  state: string | null
+  postal_code: string | null
+  country: string | null
+}
 
 interface CheckoutClientProps {
   initialUser: User | null

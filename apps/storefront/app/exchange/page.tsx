@@ -1,7 +1,5 @@
 import type {Metadata} from 'next'
 
-import {ClientAuthWrapper} from '@/lib/providers/ClientAuthWrapper'
-
 import {ExchangeClient} from './ExchangeClient'
 
 export const metadata: Metadata = {
@@ -10,9 +8,5 @@ export const metadata: Metadata = {
 }
 
 export default function ExchangePage() {
-  return (
-    <ClientAuthWrapper>
-      <ExchangeClient />
-    </ClientAuthWrapper>
-  )
+  return <ExchangeClient />
 }
