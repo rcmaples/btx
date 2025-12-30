@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 
 import {MembershipEnrollment} from '@/components/membership/MembershipEnrollment'
@@ -25,7 +26,7 @@ export function MembershipClient() {
     // Logged in with profile: enroll in Exchange
     try {
       await enrollMembership()
-      router.push('/exchange')
+      // Stay on page - the isMember state will update and show member UI
     } catch (error) {
       console.error('Failed to enroll:', error)
     }
@@ -50,12 +51,12 @@ export function MembershipClient() {
             Thank you for being part of The Exchange. You now have access to all member-exclusive
             products and drops.
           </p>
-          <button
-            onClick={() => router.push('/exchange')}
-            className="bg-primary text-background px-lg py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold"
+          <Link
+            href="/products"
+            className="inline-block bg-primary text-background px-lg py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold no-underline"
           >
             Browse Exclusive Products
-          </button>
+          </Link>
         </div>
       </div>
     )

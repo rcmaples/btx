@@ -6,6 +6,7 @@ import {Inter} from 'next/font/google'
 import type {ReactNode} from 'react'
 
 import {Footer} from '@/components/common/Footer'
+import {FullStoryAuth} from '@/components/common/FullStoryAuth'
 import {FullStoryCapture} from '@/components/common/FullStoryCapture'
 import {Navigation} from '@/components/common/Navigation'
 import {QueryProvider} from '@/lib/providers/QueryProvider'
@@ -38,6 +39,7 @@ export default function RootLayout({children}: {children: ReactNode}) {
     <ClerkProvider>
       <html lang="en" className={inter.variable}>
         <FullStoryCapture />
+        <FullStoryAuth />
         <body className="min-h-screen flex flex-col">
           <QueryProvider>
             {/* Skip link for keyboard navigation */}

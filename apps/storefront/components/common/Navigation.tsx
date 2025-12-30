@@ -14,7 +14,7 @@ export const Navigation = () => {
   const navLinks = [
     {href: '/products', label: 'Products'},
     {href: '/bundles', label: 'Bundles'},
-    {href: '/exchange', label: 'Exchange'},
+    {href: '/members', label: 'Exchange'},
     {href: '/release-notes', label: 'Release Notes'},
   ]
 

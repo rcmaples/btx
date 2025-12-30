@@ -15,6 +15,10 @@ model Profile {
   clerkUserId         String    @unique
   email               String
 
+  // Name
+  firstName           String?
+  lastName            String?
+
   // Contact
   phone               String?
 

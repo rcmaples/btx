@@ -93,6 +93,8 @@ export async function createProfile(data: ProfileFormData): Promise<ProfileActio
       data: {
         clerkUserId: userId,
         email,
+        firstName,
+        lastName: lastName || null,
         phone: data.phone || null,
         streetAddress: data.streetAddress,
         streetAddress2: data.streetAddress2 || null,

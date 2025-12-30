@@ -49,15 +49,21 @@ export function trackCheckoutInitiated(params: CheckoutInitiatedEvent): void {
 }
 
 // User identification functions
-export function identifyUser(userId: string, email: string): void {
+export function identifyUser(
+  userId: string,
+  email: string,
+  displayName?: string,
+  isExchangeMember?: boolean,
+): void {
   if (typeof window === 'undefined' || !FS) return
 
   try {
     FS('setIdentity', {
       uid: userId,
       properties: {
-        displayName: email,
+        displayName: displayName || email,
         email: email,
+        isExchangeMember: isExchangeMember ?? false,
       },
     })
   } catch (error) {
