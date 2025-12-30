@@ -4,7 +4,7 @@ import {NextResponse} from 'next/server'
 // Routes that require authentication
 const isProtectedRoute = createRouteMatcher(['/profile(.*)', '/account(.*)', '/complete-profile'])
 
-export default clerkMiddleware(async (auth, request) => {
+export const proxy = clerkMiddleware(async (auth, request) => {
   const {userId} = await auth()
 
   // If route is protected and user isn't authenticated, redirect to login
@@ -14,7 +14,7 @@ export default clerkMiddleware(async (auth, request) => {
     return NextResponse.redirect(signInUrl)
   }
 
-  // Note: Profile existence check is done at the page level since Edge middleware
+  // Note: Profile existence check is done at the page level since Edge proxy
   // cannot access Prisma directly. See /profile and /account pages.
 
   return NextResponse.next()
