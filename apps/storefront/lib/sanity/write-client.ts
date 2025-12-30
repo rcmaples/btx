@@ -5,14 +5,14 @@ import {apiVersion, dataset, projectId} from './api'
 /**
  * Server-side Sanity client with write permissions
  * Only use in server contexts (API routes, Server Actions)
- * Requires SANITY_API_TOKEN environment variable with write permissions
+ * Requires SANITY_API_WRITE_TOKEN environment variable with write permissions
  */
 export const writeClient = createClient({
   projectId,
   dataset,
   apiVersion,
   useCdn: false, // Don't use CDN for writes
-  token: process.env.SANITY_API_TOKEN,
+  token: process.env.SANITY_API_WRITE_TOKEN,
 })
 
 /**
