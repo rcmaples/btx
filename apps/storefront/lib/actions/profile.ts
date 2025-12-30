@@ -4,7 +4,7 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 import {revalidatePath} from 'next/cache'
 
 import {prisma} from '@/lib/prisma'
-import {upsertCustomer, updateCustomerMembership} from '@/lib/sanity/write-client'
+import {updateCustomerProfile, updateCustomerMembership} from '@/lib/sanity/write-client'
 
 export type ProfileFormData = {
   phone?: string
@@ -34,9 +34,7 @@ async function syncProfileToSanity(clerkUserId: string): Promise<void> {
 
     if (!profile) return
 
-    await upsertCustomer({
-      clerkUserId,
-      email: profile.email,
+    await updateCustomerProfile(clerkUserId, {
       phone: profile.phone ?? undefined,
       address: {
         street: profile.streetAddress ?? undefined,

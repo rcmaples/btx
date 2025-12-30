@@ -22,8 +22,8 @@ export interface SanityCustomer {
   _id: string
   _type: 'customer'
   clerkUserId: string
-  firstName?: string
-  lastName?: string
+  firstName: string
+  lastName: string
   email: string
   phone?: string
   address?: {
@@ -88,6 +88,46 @@ export async function getCustomerByClerkId(clerkUserId: string): Promise<SanityC
     `*[_type == "customer" && clerkUserId == $clerkUserId][0]`,
     {clerkUserId},
   )
+}
+
+/**
+ * Update customer profile data (phone, address, membership)
+ * Used when profile is updated - doesn't modify name fields
+ */
+export async function updateCustomerProfile(
+  clerkUserId: string,
+  data: {
+    phone?: string
+    address?: {
+      street?: string
+      street2?: string
+      city?: string
+      state?: string
+      postalCode?: string
+      country?: string
+    }
+    exchangeMembership?: {
+      isMember: boolean
+      enrolledAt?: string
+      cancelledAt?: string
+    }
+  },
+): Promise<SanityCustomer | null> {
+  const documentId = `customer-${clerkUserId}`
+  const now = new Date().toISOString()
+
+  try {
+    return (await writeClient
+      .patch(documentId)
+      .set({
+        ...data,
+        updatedAt: now,
+      })
+      .commit()) as SanityCustomer
+  } catch {
+    // Customer doesn't exist yet
+    return null
+  }
 }
 
 /**

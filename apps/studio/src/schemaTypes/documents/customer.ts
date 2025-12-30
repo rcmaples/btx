@@ -17,11 +17,13 @@ export const customerSchema = defineType({
       name: 'firstName',
       title: 'First Name',
       type: 'string',
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'lastName',
       title: 'Last Name',
       type: 'string',
+      validation: (Rule) => Rule.required(),
     },
     {
       name: 'email',
@@ -119,9 +121,8 @@ export const customerSchema = defineType({
       email: 'email',
     },
     prepare({firstName, lastName, email}) {
-      const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Unnamed Customer'
       return {
-        title: fullName,
+        title: `${firstName} ${lastName}`,
         subtitle: email,
       }
     },

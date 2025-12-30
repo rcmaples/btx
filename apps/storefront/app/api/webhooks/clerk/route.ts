@@ -84,6 +84,11 @@ export async function POST(req: Request) {
       return NextResponse.json({error: 'No email found'}, {status: 400})
     }
 
+    if (!first_name || !last_name) {
+      console.error('Missing name for user:', clerkUserId)
+      return NextResponse.json({error: 'Missing required name fields'}, {status: 400})
+    }
+
     // Try to get profile from Prisma (may not exist yet for new users)
     const profile = await getProfile(clerkUserId)
 
@@ -91,8 +96,8 @@ export async function POST(req: Request) {
       // Sync to Sanity
       await upsertCustomer({
         clerkUserId,
-        firstName: first_name ?? undefined,
-        lastName: last_name ?? undefined,
+        firstName: first_name,
+        lastName: last_name,
         email,
         phone: profile?.phone ?? undefined,
         address: profile
