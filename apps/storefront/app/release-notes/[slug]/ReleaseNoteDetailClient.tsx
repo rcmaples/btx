@@ -3,7 +3,7 @@
 import Link from 'next/link'
 
 import {ArticleBody} from '@/components/article/ArticleBody'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import type {Article} from '@/lib/types'
 import {formatDate} from '@/lib/utils/date'
 
@@ -12,7 +12,7 @@ interface ReleaseNoteDetailClientProps {
 }
 
 export function ReleaseNoteDetailClient({article}: ReleaseNoteDetailClientProps) {
-  usePageTracking('Release Notes', article.title)
+  usePageName('Release Notes', article.title)
 
   return (
     <div>

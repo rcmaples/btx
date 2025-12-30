@@ -39,9 +39,9 @@ export default function RootLayout({children}: {children: ReactNode}) {
     <ClerkProvider>
       <html lang="en" className={inter.variable}>
         <FullStoryCapture />
-        <FullStoryAuth />
         <body className="min-h-screen flex flex-col">
           <QueryProvider>
+            <FullStoryAuth />
             {/* Skip link for keyboard navigation */}
             <a
               href="#main-content"

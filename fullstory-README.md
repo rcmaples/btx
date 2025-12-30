@@ -25,7 +25,9 @@ This app was build with the following tools:
 
 - I used a combination of Claude Code in the terminal and Kilo Code inside VS Code with Sonnet and Opus models for prototyping and styling the front end.
 
-- I chose to use Supabase for managing user signup / authentication and checkout details in a centralized location.
+- ~~I chose to use Supabase for managing user signup / authentication and checkout details in a centralized location~~.
+
+- Supabase introduced a lot of complexity and overhead, as a result page loads were incredibly slow. Supabase was replaced by Clerk for authentication and a postgres database hosted by Prisma.
 
 - Next.js, Supabase, and Sanity all have MCP servers which helped keep things on track within the Next.js app itself while also providing the LLMs a set of rules for Sanity best practices and agentic setup of Supabase. I might have been able to move quicker with something like MongoDB, but that would have required more setup for user auth. I haven't used Supabase much, but it simplified things even though it required a bit more effort.
 
@@ -35,12 +37,21 @@ This app was build with the following tools:
 
 ## What We Capture
 
-### 1. Page Views (4 pages)
+### 1. Named Pages
 
 - **Product Catalog** (`/products`)
 - **Product Detail** (`/products/[slug]`) - Dynamic, e.g. "Product Detail: [Coffee Name]"
 - **Shopping Cart** (`/cart`)
 - **Checkout/Order Confirmation** (`/checkout`) - Conditional based on order state
+- **Exchange Membership** (`/members`)
+- **Release Notes** (`/release-notes`)
+- **Release Notes Article** (`/release-notes`) - Dynamic, e.g. "Release Notes: [Article Title]"
+- **404** (`/not-found`)
+- **Bundles** (`/bundles`)
+- **Bundle Detail** (`/bundles/[slug]`) - Dynamic, e.g. "Bundle: [Bundle Name]"
+- **Profile Completion Page** (``)
+- **Sign In**(`/login/[[...sign-in]]`)
+- **Sign Up**(`/signup/[[...sign-up]]`)
 
 ### 2. Custom Events for adding to cart and transitioning to checkout
 
@@ -100,8 +111,6 @@ This app was build with the following tools:
 
 ---
 
----
-
 ## Why We Capture
 
 ### Business Rationale
@@ -111,6 +120,8 @@ This app was build with the following tools:
 - **Product Detail pages**: Identify which coffees generate most interest
 - **Checkout flow**: Measure funnel drop-off points
 - **Cart abandonment**: Track users who add items but don't complete purchase
+- **Release notes articles**: Identify which articles are most engaging and lead to conversion
+- **Profile completion**: Measure drop-off points in account setup
 
 **Custom Events**
 
@@ -146,8 +157,6 @@ This app was build with the following tools:
 
 ---
 
----
-
 ## How We Capture
 
 To configure capture of things like custom events and page names, we've implemented custom hooks and created utility or helper functions. This approach allows for an easier and more consistent implementation as new products are added or as the site evolves over time. Utility functions enable the ability to call FullStory's API from event handlers or other conditional logic; storing them in a centralized place means developers don't need to write FS calls all over the codebase and reduces the chances of human error while increasing maintainability. The hook pattern allows us to pass specific context and avoid unnessecary re-renders within the app—providing a seamless user experience.
@@ -168,7 +177,7 @@ To configure capture of things like custom events and page names, we've implemen
 ┌─────────────────────────────────────────┐
 │  Hook Layer                             │
 │  (lib/fullstory/hooks.ts)               │
-│  - usePageTracking()                    │
+│  - usePageName()                    │
 └─────────────────────────────────────────┘
               ↑
 ┌─────────────────────────────────────────┐
@@ -181,11 +190,11 @@ To configure capture of things like custom events and page names, we've implemen
 
 #### Code samples
 
-**1. Page Tracking (Hook-based)**
+**1a. Page Naming (Hook-based)**
 
 ```typescript
 // lib/fullstory/hooks.ts
-export function usePageTracking(pageName: string, dynamicSuffix?: string) {
+export function usePageName(pageName: string, dynamicSuffix?: string) {
   useEffect(() => {
     if (typeof window !== 'undefined' && FS) {
       const fullPageName = dynamicSuffix ? `${pageName}: ${dynamicSuffix}` : pageName
@@ -199,10 +208,31 @@ export function usePageTracking(pageName: string, dynamicSuffix?: string) {
 }
 
 // Usage in component
-usePageTracking('Product Detail', product.name)
+usePageName('Product Detail', product.name)
 ```
 
-**2. Event Tracking (Utility functions)**
+**1b. Page Naming (Server-rendered pages)**
+
+```typescript
+// components/common/FSPageName.tsx
+export function FSPageName({pageName, dynamicSuffix}: Props) {
+  usePageName(pageName, dynamicSuffix)
+  return null
+}
+
+// Usage in Server Component
+export default async function ProductPage() {
+  const product = await getProduct()
+  return (
+    <div>
+      <FSPageName pageName="Product Detail" dynamicSuffix={product.name} />
+      {/* ... rest of content */}
+    </div>
+  )
+}
+```
+
+**2. Event Capture (Utility functions)**
 
 ```typescript
 // lib/fullstory/utils.ts
@@ -249,7 +279,6 @@ const handleAddToCart = async () => {
 
 **Next.js App Router Constraints**
 
-- All FS calls in client components only
 - Server components pass data to client wrappers
 - Hooks used in client components to trigger tracking
 

@@ -5,7 +5,7 @@ import {useEffect, useState} from 'react'
 
 import {ProductCard} from '@/components/product/ProductCard'
 import {ProductFilters} from '@/components/product/ProductFilters'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {useMembership} from '@/lib/hooks/useMembership'
 import {useProducts} from '@/lib/hooks/useProducts'
 import type {ProductFilters as Filters} from '@/lib/types'
@@ -21,7 +21,7 @@ export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperPro
   const [filters, setFilters] = useState<Filters>(initialFilters)
 
   // Track page view
-  usePageTracking('Product Catalog')
+  usePageName('Product Catalog')
 
   // Use React Query - will use hydrated data from server on initial load
   const {data: products, isLoading, error} = useProducts(filters, mounted ? isMember : false)

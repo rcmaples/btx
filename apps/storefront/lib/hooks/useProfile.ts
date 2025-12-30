@@ -33,7 +33,12 @@ export function useProfile() {
   const {isSignedIn, isLoaded} = useUser()
   const queryClient = useQueryClient()
 
-  const {data: profile, isLoading, error, refetch} = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['profile'],
     queryFn: fetchProfile,
     // Only fetch if user is signed in

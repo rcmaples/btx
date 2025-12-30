@@ -7,12 +7,14 @@ Replace Supabase authentication and database with Clerk (auth) and Prisma Postgr
 ## Current State (Supabase)
 
 ### Authentication
+
 - Email/password sign up and sign in
 - Session management via cookies (`@supabase/ssr`)
 - Auth state context provider with React hooks
 - Route protection via Next.js middleware
 
 ### Database Tables
+
 1. **profiles** (linked to `auth.users`)
    - Contact info: email, phone
    - Address: street, street2, city, state, postal_code, country
@@ -30,6 +32,7 @@ Replace Supabase authentication and database with Clerk (auth) and Prisma Postgr
    - Flags: is_test_order
 
 ### Integrations
+
 - Webhook to Sanity CMS on profile changes
 - FullStory user identification (note: requires manual update post-migration)
 
@@ -40,27 +43,32 @@ Replace Supabase authentication and database with Clerk (auth) and Prisma Postgr
 ### Authentication (Clerk)
 
 #### Supported Methods
+
 - Email/password sign up and sign in
 - Google OAuth
 - GitHub OAuth
 
 #### Session Management
+
 - Clerk's built-in session handling
 - `@clerk/nextjs` middleware for route protection
 - `auth()` and `currentUser()` helpers for server-side auth
 - `useUser()` and `useAuth()` hooks for client-side auth
 
 #### Protected Routes
+
 - `/profile` - requires authentication
 - `/account` - requires authentication (future)
 
 #### Public Routes
+
 - `/`, `/products`, `/bundles`, `/exchange`, `/release-notes`
 - `/login`, `/signup` (redirect to `/profile` if authenticated)
 
 ### Database (Prisma Postgres)
 
 #### Profile Model
+
 ```prisma
 model Profile {
   id                   String    @id @default(cuid())
@@ -91,6 +99,7 @@ model Profile {
 ```
 
 #### Order Model
+
 ```prisma
 model Order {
   id                    String      @id @default(cuid())
@@ -156,6 +165,7 @@ enum OrderStatus {
 ### Integrations
 
 #### Clerk Webhook to Sanity
+
 - Endpoint: `/api/webhooks/clerk`
 - Triggers: `user.created`, `user.updated`
 - Action: Create/update `customer` document in Sanity
@@ -165,6 +175,7 @@ enum OrderStatus {
   - Profile data from Prisma (fetched on webhook) → Sanity address/membership fields
 
 #### FullStory (Manual Follow-up)
+
 - Current: `FS.identify(supabaseUserId, { email, displayName })`
 - After migration: Update to use `clerkUserId` instead
 - Note: User ID format changes from UUID to Clerk's `user_xxx` format
@@ -174,6 +185,7 @@ enum OrderStatus {
 ## Functional Requirements
 
 ### FR-1: User Registration
+
 - User can sign up with email/password
 - User can sign up with Google OAuth
 - User can sign up with GitHub OAuth
@@ -185,6 +197,7 @@ enum OrderStatus {
 - Profile is synced to Sanity CMS
 
 ### FR-2: User Sign In
+
 - User can sign in with email/password
 - User can sign in with Google OAuth
 - User can sign in with GitHub OAuth
@@ -192,16 +205,19 @@ enum OrderStatus {
 - Session expires according to Clerk settings
 
 ### FR-3: User Sign Out
+
 - User can sign out from any page
 - Session is invalidated
 - User is redirected to home page
 
 ### FR-4: Route Protection
+
 - Unauthenticated users cannot access `/profile`
 - Unauthenticated users are redirected to sign-in
 - Authenticated users accessing `/login` or `/signup` are redirected to `/profile`
 
 ### FR-5: Profile Management
+
 - User can view their profile information
 - User can update: phone, address fields
 - User can enroll in Exchange membership
@@ -209,12 +225,14 @@ enum OrderStatus {
 - Profile updates sync to Sanity CMS
 
 ### FR-6: Order Creation
+
 - Authenticated users can place orders linked to their profile
 - Guest users can place orders with email only
 - Orders are stored in Prisma with all required fields
 - Order confirmation displays order number
 
 ### FR-7: Guest Checkout
+
 - Users can checkout without creating an account
 - Guest orders require email address
 - Guest orders have `profileId: null` and `guestEmail: <email>`
@@ -224,21 +242,25 @@ enum OrderStatus {
 ## Non-Functional Requirements
 
 ### NFR-1: Performance
+
 - Auth checks must not block page rendering
 - Database queries should use proper indexes
 - Prisma connection pooling for serverless environment
 
 ### NFR-2: Security
+
 - All auth handled by Clerk (no custom password handling)
 - Webhook endpoints validate signatures
 - Server Actions validate user ownership before mutations
 
 ### NFR-3: Reliability
+
 - Application must build successfully on Vercel
 - Type errors must be resolved before deployment
 - Failed webhook deliveries should not break user flows
 
 ### NFR-4: Developer Experience
+
 - Clear error messages during development
 - Prisma Studio available for database inspection
 - Environment variables documented

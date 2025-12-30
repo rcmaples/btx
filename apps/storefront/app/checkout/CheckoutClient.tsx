@@ -6,7 +6,7 @@ import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
 import {OrderSummary} from '@/components/checkout/OrderSummary'
 import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {useCart} from '@/lib/hooks/useCart'
 import type {ShippingAddress} from '@/lib/types/checkout'
 
@@ -40,7 +40,7 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
   // Track page view (conditional based on success state)
-  usePageTracking(successOrderNumber ? 'Order Confirmation' : 'Checkout')
+  usePageName(successOrderNumber ? 'Order Confirmation' : 'Checkout')
 
   // Guest email (only for non-authenticated users)
   const [guestEmail, setGuestEmail] = useState('')

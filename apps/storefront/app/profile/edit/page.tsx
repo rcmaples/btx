@@ -1,7 +1,6 @@
+import {auth} from '@clerk/nextjs/server'
 import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
-
-import {auth} from '@clerk/nextjs/server'
 
 import {getProfile} from '@/lib/prisma'
 

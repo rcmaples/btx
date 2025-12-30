@@ -70,6 +70,9 @@ export function clearCartFromStorage(): void {
 
   try {
     localStorage.removeItem(CART_STORAGE_KEY)
+    // Dispatch event with empty cart to sync all components
+    const emptyCart = createEmptyCart()
+    window.dispatchEvent(new CustomEvent(CART_UPDATED_EVENT, {detail: emptyCart}))
   } catch (error) {
     console.error('Failed to clear cart from storage:', error)
   }

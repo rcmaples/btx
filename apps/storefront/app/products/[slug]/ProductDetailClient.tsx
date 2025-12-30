@@ -7,7 +7,7 @@ import {ProductDescription} from '@/components/product/ProductDescription'
 import {ProductImage} from '@/components/product/ProductImage'
 import {PurchaseOptionSelector} from '@/components/product/PurchaseOptionSelector'
 import {SubscriptionConfigurator} from '@/components/subscription/SubscriptionConfigurator'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {centsToReal, trackAddToCart} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {Product, PurchaseSelection} from '@/lib/types'
@@ -25,7 +25,7 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
   const [addToCartSuccess, setAddToCartSuccess] = useState(false)
 
   // Track page view
-  usePageTracking('Product Detail', product.name)
+  usePageName('PDP', product.name)
 
   const handleAddToCart = async () => {
     if (!selectedPurchaseOption) return

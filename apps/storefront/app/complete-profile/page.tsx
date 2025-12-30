@@ -1,8 +1,8 @@
+import {auth} from '@clerk/nextjs/server'
 import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
 
-import {auth} from '@clerk/nextjs/server'
-
+import {FSPageName} from '@/components/common/FSPageName'
 import {hasProfile} from '@/lib/prisma'
 
 import {ProfileCompletionForm} from './ProfileCompletionForm'
@@ -51,14 +51,17 @@ export default async function CompleteProfilePage({
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <div className="text-center mb-xl">
-        <h1 className="text-4xl font-black tracking-tighter mb-sm">Complete Your Profile</h1>
-        <p className="text-text-secondary">
-          Add your shipping address to complete your account setup
-        </p>
+    <>
+      <FSPageName pageName="Profile Completion Page" />
+      <div className="max-w-md mx-auto">
+        <div className="text-center mb-xl">
+          <h1 className="text-4xl font-black tracking-tighter mb-sm">Complete Your Profile</h1>
+          <p className="text-text-secondary">
+            Add your shipping address to complete your account setup
+          </p>
+        </div>
+        <ProfileCompletionForm redirectUrl={redirectUrl} />
       </div>
-      <ProfileCompletionForm redirectUrl={redirectUrl} />
-    </div>
+    </>
   )
 }

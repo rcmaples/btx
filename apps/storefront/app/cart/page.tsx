@@ -6,7 +6,7 @@ import {CartLineItem} from '@/components/cart/CartLineItem'
 import {CartSummary} from '@/components/cart/CartSummary'
 import {EmptyCart} from '@/components/cart/EmptyCart'
 import {PromoCodeInput} from '@/components/cart/PromoCodeInput'
-import {usePageTracking} from '@/lib/fullstory/hooks'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {centsToReal, trackCheckoutInitiated} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 
@@ -24,7 +24,7 @@ export default function CartPage() {
   } = useCart()
 
   // Track page view
-  usePageTracking('Shopping Cart')
+  usePageName('Shopping Cart')
 
   const handleCheckout = () => {
     // Track before navigation

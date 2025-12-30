@@ -2,8 +2,8 @@
 
 import {auth} from '@clerk/nextjs/server'
 
-import {prisma, getProfile} from '@/lib/prisma'
 import {Prisma} from '@/generated/prisma/client'
+import {getProfile, prisma} from '@/lib/prisma'
 import type {CheckoutResult, CreateOrderRequest} from '@/lib/types/checkout'
 
 // Generate unique order number

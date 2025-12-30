@@ -4,11 +4,14 @@ import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 
 import {MembershipEnrollment} from '@/components/membership/MembershipEnrollment'
+import {usePageName} from '@/lib/fullstory/hooks'
 import {useMembership} from '@/lib/hooks/useMembership'
 
 export function MembershipClient() {
   const router = useRouter()
   const {isMember, mounted, isEnrolling, enrollMembership, isLoggedIn, hasProfile} = useMembership()
+
+  usePageName('Exchange Membership')
 
   const handleEnroll = async () => {
     if (!isLoggedIn) {
@@ -63,6 +66,10 @@ export function MembershipClient() {
   }
 
   return (
-    <MembershipEnrollment onEnroll={handleEnroll} isEnrolling={isEnrolling} isLoggedIn={isLoggedIn} />
+    <MembershipEnrollment
+      onEnroll={handleEnroll}
+      isEnrolling={isEnrolling}
+      isLoggedIn={isLoggedIn}
+    />
   )
 }

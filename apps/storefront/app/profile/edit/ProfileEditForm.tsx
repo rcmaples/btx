@@ -4,7 +4,7 @@ import Link from 'next/link'
 import {useRouter} from 'next/navigation'
 import {useState} from 'react'
 
-import {updateProfile, type ProfileFormData} from '@/lib/actions/profile'
+import {type ProfileFormData, updateProfile} from '@/lib/actions/profile'
 
 const US_STATES = [
   {value: 'AL', label: 'Alabama'},

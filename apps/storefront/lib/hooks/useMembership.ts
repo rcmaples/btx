@@ -3,7 +3,7 @@
 import {useUser} from '@clerk/nextjs'
 import {useCallback, useState} from 'react'
 
-import {enrollInExchange, cancelExchangeMembership} from '@/lib/actions/profile'
+import {cancelExchangeMembership, enrollInExchange} from '@/lib/actions/profile'
 import {useProfile} from '@/lib/hooks/useProfile'
 
 /**

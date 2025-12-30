@@ -4,7 +4,11 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 import {revalidatePath} from 'next/cache'
 
 import {prisma} from '@/lib/prisma'
-import {upsertCustomer, updateCustomerProfile, updateCustomerMembership} from '@/lib/sanity/write-client'
+import {
+  updateCustomerMembership,
+  updateCustomerProfile,
+  upsertCustomer,
+} from '@/lib/sanity/write-client'
 
 export type ProfileFormData = {
   phone?: string

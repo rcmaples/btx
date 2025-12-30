@@ -42,6 +42,7 @@ export const baseConfig = [
             'NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL',
             'NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL',
             'DATABASE_URL',
+            'DIRECT_URL',
             'VERCEL_ENV',
           ],
         },

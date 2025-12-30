@@ -2,7 +2,7 @@
 
 import {useState} from 'react'
 
-import {enrollInExchange, cancelExchangeMembership} from '@/lib/actions/profile'
+import {cancelExchangeMembership, enrollInExchange} from '@/lib/actions/profile'
 
 type Props = {
   isExchangeMember: boolean

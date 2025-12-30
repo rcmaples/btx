@@ -2,17 +2,18 @@
 
 ## Technology Stack
 
-| Layer | Current | Target |
-|-------|---------|--------|
-| Authentication | Supabase Auth (`@supabase/ssr`, `@supabase/supabase-js`) | Clerk (`@clerk/nextjs`) |
-| Database | Supabase Postgres | Prisma Postgres (hosted) |
-| ORM | Supabase Client | Prisma Client (`@prisma/client`) |
-| Session Storage | Cookies (Supabase managed) | Cookies (Clerk managed) |
-| Middleware | Custom Supabase middleware | Clerk `clerkMiddleware()` |
+| Layer           | Current                                                  | Target                           |
+| --------------- | -------------------------------------------------------- | -------------------------------- |
+| Authentication  | Supabase Auth (`@supabase/ssr`, `@supabase/supabase-js`) | Clerk (`@clerk/nextjs`)          |
+| Database        | Supabase Postgres                                        | Prisma Postgres (hosted)         |
+| ORM             | Supabase Client                                          | Prisma Client (`@prisma/client`) |
+| Session Storage | Cookies (Supabase managed)                               | Cookies (Clerk managed)          |
+| Middleware      | Custom Supabase middleware                               | Clerk `clerkMiddleware()`        |
 
 ## Architecture Decisions
 
 ### AD-1: Clerk Integration Pattern
+
 - Use `@clerk/nextjs` App Router integration
 - Wrap app in `<ClerkProvider>` at root layout
 - Use `clerkMiddleware()` for route protection
@@ -21,12 +22,14 @@
 - Custom sign-in/sign-up pages (not Clerk's hosted pages) to match existing UI
 
 ### AD-2: Prisma Setup
+
 - Initialize Prisma in `apps/storefront/prisma/`
 - Use Prisma Postgres (managed hosting via Prisma Console)
 - Connection string via `DATABASE_URL` environment variable
 - Use Prisma Accelerate for connection pooling in serverless
 
 ### AD-3: Profile Creation Strategy (Sign-Up Flow)
+
 - **Profiles are created during sign-up, not lazily**
 - Use Clerk's multi-step sign-up flow:
   1. Step 1: Clerk handles email/password or OAuth authentication
@@ -36,11 +39,13 @@
 - Middleware checks for profile existence; incomplete profiles redirected to `/complete-profile`
 
 ### AD-4: Auth Context Replacement
+
 - Remove custom `AuthProvider` entirely
 - Replace `useAuth()` custom hook with Clerk's `useUser()` / `useAuth()`
 - Profile data fetched separately via React Query or Server Components
 
 ### AD-5: Middleware Strategy
+
 - Use Clerk's `clerkMiddleware()` with `createRouteMatcher()`
 - Protected routes: `/profile(.*)`, `/account(.*)`
 - Public routes: everything else (Clerk allows by default)
@@ -52,6 +57,7 @@
 ## Implementation Phases
 
 ### Phase 0: Preparation
+
 **Goal**: Set up infrastructure without breaking existing functionality
 
 1. Provision Prisma Postgres database
@@ -67,6 +73,7 @@
 ---
 
 ### Phase 1: Remove Supabase (Clean Slate)
+
 **Goal**: Remove all Supabase code to create a clean foundation
 
 1. Remove Supabase packages from `package.json`
@@ -82,6 +89,7 @@
 ---
 
 ### Phase 2: Clerk Authentication
+
 **Goal**: Implement authentication with Clerk
 
 1. Add `<ClerkProvider>` to root layout
@@ -101,6 +109,7 @@
 ---
 
 ### Phase 3: Prisma Database Integration
+
 **Goal**: Connect application to Prisma database
 
 1. Create Prisma client singleton (`lib/prisma.ts`)
@@ -117,6 +126,7 @@
 ---
 
 ### Phase 4: Profile Data Provider
+
 **Goal**: Provide profile data to components that need it
 
 1. Create `ProfileProvider` context (simpler than old AuthProvider)
@@ -130,6 +140,7 @@
 ---
 
 ### Phase 5: Sanity Webhook Integration
+
 **Goal**: Sync profile changes to Sanity CMS
 
 1. Create Clerk webhook endpoint (`app/api/webhooks/clerk/route.ts`)
@@ -145,6 +156,7 @@
 ---
 
 ### Phase 6: Cleanup & Verification
+
 **Goal**: Final polish and verification
 
 1. Remove any remaining Supabase references
@@ -163,6 +175,7 @@
 ## Sign-Up Flow Detail
 
 ### Email/Password Sign-Up
+
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
 │  Sign Up Page   │────▶│ Profile Form     │────▶│  /profile   │
@@ -179,6 +192,7 @@
 ```
 
 ### OAuth Sign-Up (Google/GitHub)
+
 ```
 ┌─────────────────┐     ┌──────────────────┐     ┌─────────────┐
 │  Sign Up Page   │────▶│ /complete-profile│────▶│  /profile   │
@@ -196,21 +210,23 @@
 ```
 
 ### Required Profile Fields at Sign-Up
-| Field | Required | Notes |
-|-------|----------|-------|
-| Phone | Optional | Can add later |
-| Street Address | Required | For shipping |
-| Street Address 2 | Optional | Apt/Suite |
-| City | Required | |
-| State | Required | |
-| Postal Code | Required | |
-| Country | Required | Default: "US" |
+
+| Field            | Required | Notes         |
+| ---------------- | -------- | ------------- |
+| Phone            | Optional | Can add later |
+| Street Address   | Required | For shipping  |
+| Street Address 2 | Optional | Apt/Suite     |
+| City             | Required |               |
+| State            | Required |               |
+| Postal Code      | Required |               |
+| Country          | Required | Default: "US" |
 
 ---
 
 ## File Changes Summary
 
 ### Files to Delete
+
 ```
 apps/storefront/lib/supabase/client.ts
 apps/storefront/lib/supabase/server.ts
@@ -223,6 +239,7 @@ apps/storefront/middleware.ts (replace, not delete)
 ```
 
 ### Files to Create
+
 ```
 apps/storefront/prisma/schema.prisma
 apps/storefront/lib/prisma.ts
@@ -234,6 +251,7 @@ apps/storefront/middleware.ts (new implementation)
 ```
 
 ### Files to Modify
+
 ```
 apps/storefront/package.json (dependencies)
 apps/storefront/app/layout.tsx (ClerkProvider)
@@ -252,6 +270,7 @@ apps/storefront/components/Header.tsx (Clerk UI)
 ## Environment Variables
 
 ### Remove (Supabase)
+
 ```
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -259,6 +278,7 @@ SUPABASE_WEBHOOK_SECRET
 ```
 
 ### Add (Clerk)
+
 ```
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 CLERK_SECRET_KEY
@@ -270,6 +290,7 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/complete-profile
 ```
 
 ### Add (Prisma)
+
 ```
 DATABASE_URL (Prisma Postgres connection string)
 ```
@@ -279,18 +300,23 @@ DATABASE_URL (Prisma Postgres connection string)
 ## Risk Mitigation
 
 ### Risk: Clerk webhook fails silently
+
 **Mitigation**: Implement logging, monitor Clerk webhook dashboard, add Sanity sync retry logic
 
 ### Risk: Prisma connection issues in serverless
+
 **Mitigation**: Use Prisma Accelerate for connection pooling, test thoroughly on Vercel
 
 ### Risk: Breaking changes during migration
+
 **Mitigation**: Phase-based approach with checkpoints, can revert to Supabase branch if needed
 
 ### Risk: Missing edge cases in auth flows
+
 **Mitigation**: Manual testing checklist for each auth scenario
 
 ### Risk: OAuth users bypass profile completion
+
 **Mitigation**: Middleware enforces profile check; no access to protected routes without profile
 
 ---
@@ -298,15 +324,17 @@ DATABASE_URL (Prisma Postgres connection string)
 ## Dependencies
 
 ### NPM Packages to Add
+
 ```json
 {
   "@clerk/nextjs": "^6.x",
   "@prisma/client": "^6.x",
-  "svix": "^1.x"  // For webhook signature verification
+  "svix": "^1.x" // For webhook signature verification
 }
 ```
 
 ### NPM Packages to Remove
+
 ```json
 {
   "@supabase/ssr": "remove",
@@ -315,6 +343,7 @@ DATABASE_URL (Prisma Postgres connection string)
 ```
 
 ### Dev Dependencies to Add
+
 ```json
 {
   "prisma": "^6.x"
@@ -326,17 +355,20 @@ DATABASE_URL (Prisma Postgres connection string)
 ## Post-Migration Notes
 
 ### FullStory Update Required
+
 After migration is complete, update FullStory identification:
 
 **Before (Supabase)**:
+
 ```typescript
-FS.identify(user.id, { email: user.email })
+FS.identify(user.id, {email: user.email})
 // user.id = UUID format: "123e4567-e89b-12d3-a456-426614174000"
 ```
 
 **After (Clerk)**:
+
 ```typescript
-FS.identify(user.id, { email: user.primaryEmailAddress?.emailAddress })
+FS.identify(user.id, {email: user.primaryEmailAddress?.emailAddress})
 // user.id = Clerk format: "user_2NNEqL2nrIRdJ194ndJqAHwEfxC"
 ```
 
