@@ -42,3 +42,6 @@ dist/
 .DS_Store
 .Spotlight-V100
 .Trashes
+
+# Session simulator logs
+apps/storefront/scripts/session-simulator/logs/*.json
