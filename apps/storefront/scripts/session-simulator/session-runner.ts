@@ -1,6 +1,7 @@
-import {writeFileSync, mkdirSync} from 'node:fs'
-import {join, dirname} from 'node:path'
+import {mkdirSync, writeFileSync} from 'node:fs'
+import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
+
 import {type Browser, type BrowserContext, chromium} from 'playwright'
 
 import {captureFullStoryUrl, randomPick, waitForPageReady} from './behaviors.js'
@@ -29,12 +30,12 @@ function getFilteredPersonas(filter?: string): SessionPersona[] {
     case 'guest':
     case 'unauthenticated':
       return SESSION_PERSONAS.filter((p) => !p.requiresAuth)
-    default:
-      // Try to match specific persona type
+    default: {
       const matchedPersona = SESSION_PERSONAS.find(
         (p) => p.type.toLowerCase() === filter.toLowerCase(),
       )
       return matchedPersona ? [matchedPersona] : SESSION_PERSONAS
+    }
   }
 }
 
