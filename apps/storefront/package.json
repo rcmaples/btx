@@ -10,7 +10,11 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "simulate:sessions": "tsx scripts/session-simulator/index.ts",
+    "simulate:sessions:headed": "tsx scripts/session-simulator/index.ts --headed",
+    "simulate:setup-accounts": "tsx scripts/session-simulator/setup-test-accounts.ts",
+    "playwright:install": "playwright install chromium"
   },
   "packageManager": "pnpm@10.26.1",
   "dependencies": {
@@ -35,16 +39,20 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@workspace/eslint-config": "workspace:*",
     "autoprefixer": "^10.4.23",
+    "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
+    "playwright": "^1.57.0",
     "prisma": "^7.2.0",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
