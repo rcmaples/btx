@@ -6,8 +6,7 @@ import Link from 'next/link'
 export function SignupForm() {
   return (
     <div className="space-y-lg">
-      <div className="flex justify-center">
-        <SignUp
+      <SignUp
           appearance={{
             elements: {
               rootBox: 'w-full',
@@ -29,7 +28,6 @@ export function SignupForm() {
           signInUrl="/login"
           fallbackRedirectUrl="/complete-profile"
         />
-      </div>
 
       <p className="text-center text-text-secondary">
         Already have an account?{' '}

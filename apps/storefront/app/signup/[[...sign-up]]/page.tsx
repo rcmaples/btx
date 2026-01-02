@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <div className="max-w-md mx-auto">
+    <div className="flex flex-col items-center">
       <FSPageName pageName="Sign up" />
       <div className="text-center mb-xl">
         <h1 className="text-4xl font-black tracking-tighter mb-sm">Create Account</h1>
