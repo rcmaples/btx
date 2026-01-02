@@ -15,6 +15,8 @@ import {QueryProvider} from '@/lib/providers/QueryProvider'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -39,8 +41,15 @@ export default function RootLayout({children}: {children: ReactNode}) {
   return (
     <ClerkProvider>
       <html lang="en" className={inter.variable}>
-        <SpeedInsights />
-        <FullStoryCapture />
+        <head>
+          {/* Resource hints for third-party domains */}
+          <link rel="preconnect" href="https://clerk.accounts.dev" />
+          <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://rs.fullstory.com" />
+          <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
+          <SpeedInsights />
+          <FullStoryCapture />
+        </head>
         <body className="min-h-screen flex flex-col">
           <QueryProvider>
             <FullStoryAuth />
