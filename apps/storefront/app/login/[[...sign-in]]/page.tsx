@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="max-w-md mx-auto">
+    <div className="flex flex-col items-center">
       <FSPageName pageName="Sign In" />
       <div className="text-center mb-xl">
         <h1 className="text-4xl font-black tracking-tighter mb-sm">Sign In</h1>
