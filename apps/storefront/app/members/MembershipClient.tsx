@@ -55,7 +55,7 @@ export function MembershipClient() {
             products and drops.
           </p>
           <Link
-            href="/products"
+            href="/products?exclusiveOnly=true"
             className="inline-block bg-primary text-background px-lg py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold no-underline"
           >
             Browse Exclusive Products
