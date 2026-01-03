@@ -1,4 +1,5 @@
 import {describe, expect, it} from 'vitest'
+
 import {generateCartItemId} from '@/lib/types'
 
 describe('generateCartItemId', () => {

@@ -1,10 +1,12 @@
 import {describe, expect, it} from 'vitest'
+
 import {
   addOrUpdateLineItem,
   calculateCartTotals,
   removeLineItem,
   updateLineItemQuantity,
 } from '@/lib/services/cart/storage'
+
 import {mockLineItem, mockLineItem2} from '../fixtures'
 
 describe('calculateCartTotals', () => {

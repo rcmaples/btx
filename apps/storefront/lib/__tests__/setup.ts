@@ -50,4 +50,4 @@ beforeEach(() => {
   dispatchEventMock.mockClear()
 })
 
-export {localStorageMock, dispatchEventMock}
+export {dispatchEventMock, localStorageMock}

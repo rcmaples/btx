@@ -1,4 +1,5 @@
 import {vi} from 'vitest'
+
 import type {Promotion} from '@/lib/types'
 
 /**
