@@ -18,7 +18,7 @@
     },
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/rc.maples/github"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "~/github"]
     }
   }
 }

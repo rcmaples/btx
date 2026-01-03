@@ -24,6 +24,8 @@ export const baseConfig = [
         {
           cwd: '../../',
           allowList: [
+            'BASE_URL',
+            'CI',
             'CLERK_SECRET_KEY',
             'CLERK_LOCAL_WEBHOOK_SECRET',
             'CLERK_WEBHOOK_SECRET',
