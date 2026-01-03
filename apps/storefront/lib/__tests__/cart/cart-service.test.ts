@@ -1,4 +1,5 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {mockBundle, mockPurchaseSelection} from '../fixtures'
 
 // Mock Sanity queries before importing cart service

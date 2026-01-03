@@ -48,15 +48,16 @@ const components: PortableTextComponents = {
         {children}
       </code>
     ),
+    strong: ({children}) => <span className="text-text">{children}</span>,
   },
   block: {
     h1: ({children}) => (
-      <h1 className="text-3xl font-black tracking-tighter mt-xl mb-md">{children}</h1>
+      <h1 className="text-3xl font-black tracking-tighter mt-xl mb-md text-text">{children}</h1>
     ),
-    h2: ({children}) => <h2 className="text-2xl font-bold mt-lg mb-sm">{children}</h2>,
-    h3: ({children}) => <h3 className="text-xl font-bold mt-lg mb-sm">{children}</h3>,
-    h4: ({children}) => <h4 className="text-lg font-bold mt-md mb-sm">{children}</h4>,
-    normal: ({children}) => <p className="mb-md leading-relaxed">{children}</p>,
+    h2: ({children}) => <h2 className="text-2xl font-bold mt-lg mb-sm text-text">{children}</h2>,
+    h3: ({children}) => <h3 className="text-xl font-bold mt-lg mb-sm text-text">{children}</h3>,
+    h4: ({children}) => <h4 className="text-lg font-bold mt-md mb-sm text-text">{children}</h4>,
+    normal: ({children}) => <p className="mb-md leading-relaxed text-text">{children}</p>,
     blockquote: ({children}) => (
       <blockquote className="border-l-4 border-primary pl-md my-lg italic text-text-secondary">
         {children}

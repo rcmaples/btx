@@ -2,33 +2,34 @@ import typography from '@tailwindcss/typography'
 import type {Config} from 'tailwindcss'
 
 export default {
+  darkMode: 'class',
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './sanity/**/*.{ts,tsx}'],
   theme: {
     extend: {
-      // Colors from src/styles/tokens.css.ts - Brutalist editorial palette
+      // Colors from CSS custom properties - supports light/dark mode
       colors: {
-        primary: '#000000',
-        'primary-dark': '#0a0a0a',
-        secondary: '#1a1a1a',
-        background: '#ffffff',
-        'background-alt': '#f5f5f5',
-        'background-secondary': '#fafafa',
-        text: '#000000',
-        'text-muted': '#666666',
-        'text-secondary': '#444444',
-        'text-tertiary': '#999999',
-        border: '#000000',
-        'border-light': '#e0e0e0',
-        error: '#d32f2f',
-        success: '#2e7d32',
-        'success-light': '#e8f5e9',
-        warning: '#ed6c02',
-        'warning-light': '#fff3e0',
-        danger: '#d32f2f',
-        'danger-light': '#ffebee',
-        'danger-dark': '#b71c1c',
-        focus: '#000000',
-        disabled: '#cccccc',
+        primary: 'var(--color-primary)',
+        'primary-dark': 'var(--color-primary-dark)',
+        secondary: 'var(--color-secondary)',
+        background: 'var(--color-background)',
+        'background-alt': 'var(--color-background-alt)',
+        'background-secondary': 'var(--color-background-secondary)',
+        text: 'var(--color-text)',
+        'text-muted': 'var(--color-text-muted)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'text-tertiary': 'var(--color-text-tertiary)',
+        border: 'var(--color-border)',
+        'border-light': 'var(--color-border-light)',
+        error: 'var(--color-error)',
+        success: 'var(--color-success)',
+        'success-light': 'var(--color-success-light)',
+        warning: 'var(--color-warning)',
+        'warning-light': 'var(--color-warning-light)',
+        danger: 'var(--color-danger)',
+        'danger-light': 'var(--color-danger-light)',
+        'danger-dark': 'var(--color-danger-dark)',
+        focus: 'var(--color-focus)',
+        disabled: 'var(--color-disabled)',
       },
       // Spacing from tokens
       spacing: {
@@ -105,7 +106,7 @@ export default {
         DEFAULT: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
         md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        brutal: '4px 4px 0 0 rgba(0, 0, 0, 1)',
+        brutal: '4px 4px 0 0 var(--color-primary)',
       },
       // Transitions from tokens
       transitionDuration: {

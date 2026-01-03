@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import {useEffect, useState} from 'react'
 
+import {ThemeToggle} from '@/components/common/ThemeToggle'
 import {useCart} from '@/lib/hooks/useCart'
 
 export const Navigation = () => {
@@ -100,6 +101,8 @@ export const Navigation = () => {
               {link.label}
             </Link>
           ))}
+
+          <ThemeToggle />
 
           <Link
             href="/cart"
@@ -271,6 +274,12 @@ export const Navigation = () => {
                 Sign In
               </Link>
             )}
+
+            {/* Theme toggle */}
+            <div className="mt-lg pt-lg border-t border-border/30 flex items-center gap-md">
+              <span className="text-sm text-text-muted">Theme</span>
+              <ThemeToggle />
+            </div>
           </div>
         </nav>
       </div>

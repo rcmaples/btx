@@ -1,5 +1,7 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
+
 import {InvalidPromoCodeError, PromoMinimumNotMetError} from '@/lib/types'
+
 import {
   mockAutoPromo,
   mockExpiredPromo,
