@@ -69,7 +69,7 @@ export function MembershipEnrollment({
 
       <div className="p-xl bg-background-secondary border-2 border-border text-center">
         {!isLoggedIn && (
-          <div className="p-md bg-blue-50 border border-info text-sm mb-lg">
+          <div className="p-md bg-warning-light border border-warning text-sm mb-lg">
             <strong>Note:</strong> You&apos;ll need to{' '}
             <Link href="/login?redirect=/members" className="text-primary underline">
               log in
@@ -83,7 +83,7 @@ export function MembershipEnrollment({
         )}
 
         {error && (
-          <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
+          <div className="p-md bg-danger-light border border-danger text-danger mb-lg" role="alert">
             {error}
           </div>
         )}

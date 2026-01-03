@@ -66,7 +66,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           <select
             id="roast-filter"
             data-fs-element="roast-level-filter"
-            className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
+            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.roastLevel || ''}
             onChange={(e) => handleFilterChange('roastLevel', e.target.value || undefined)}
           >
@@ -86,7 +86,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           <select
             id="origin-filter"
             data-fs-element="origin-filter"
-            className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
+            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.origin || ''}
             onChange={(e) => handleFilterChange('origin', e.target.value || undefined)}
           >
@@ -106,7 +106,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           <select
             id="process-filter"
             data-fs-element="process-method-filter"
-            className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
+            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.processMethod || ''}
             onChange={(e) => handleFilterChange('processMethod', e.target.value || undefined)}
           >
@@ -125,7 +125,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
           </label>
           <select
             id="best-for-filter"
-            className="w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
+            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
             value={filters.bestFor || ''}
             onChange={(e) => handleFilterChange('bestFor', e.target.value || undefined)}
           >
@@ -143,7 +143,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
             <label className="flex items-center gap-sm cursor-pointer">
               <input
                 type="checkbox"
-                className="w-[18px] h-[18px] border-2 border-border accent-primary cursor-pointer"
+                className="fs-unmask w-[18px] h-[18px] border-2 border-border accent-primary cursor-pointer"
                 checked={filters.exclusiveOnly || false}
                 onChange={(e) => handleExclusiveToggle(e.target.checked)}
                 aria-describedby="exclusive-description"

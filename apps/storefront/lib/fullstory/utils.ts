@@ -17,6 +17,12 @@ export interface CheckoutInitiatedEvent {
   promotion_code?: string
 }
 
+export interface ThemeToggleEvent {
+  previous_theme: string
+  new_theme: string
+  resolved_theme: string
+}
+
 // Helper to convert cents to dollars for  fields
 export function centsToReal(cents: number): number {
   return Number((cents / 100).toFixed(2))
@@ -25,7 +31,7 @@ export function centsToReal(cents: number): number {
 // Safe tracking wrapper
 function safeTrackEvent(
   eventName: string,
-  properties: AddToCartEvent | CheckoutInitiatedEvent,
+  properties: AddToCartEvent | CheckoutInitiatedEvent | ThemeToggleEvent,
 ): void {
   if (typeof window !== 'undefined' && FS) {
     try {
@@ -46,6 +52,10 @@ export function trackAddToCart(params: AddToCartEvent): void {
 
 export function trackCheckoutInitiated(params: CheckoutInitiatedEvent): void {
   safeTrackEvent('Checkout Initiated', params)
+}
+
+export function trackThemeToggle(params: ThemeToggleEvent): void {
+  safeTrackEvent('Theme Toggle', params)
 }
 
 // User identification functions
