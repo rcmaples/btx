@@ -1,0 +1,32 @@
+# Node modules and build artifacts
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+coverage/
+
+# Large directories not needed for simulator
+public/
+src/
+app/
+components/
+lib/
+prisma/
+generated/
+e2e/
+
+# IDE and local config
+.vscode/
+.idea/
+*.log
+.env
+.env.*
+.DS_Store
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Simulator logs (not needed in build)
+scripts/session-simulator/logs/

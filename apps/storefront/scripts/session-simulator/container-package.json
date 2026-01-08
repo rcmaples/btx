@@ -1,0 +1,19 @@
+{
+  "name": "btx-session-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BTX Session Simulator for Cloud Run Jobs",
+  "scripts": {
+    "start": "tsx scripts/session-simulator/index.ts",
+    "simulate": "tsx scripts/session-simulator/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "playwright": "1.57.0",
+    "tsx": "^4.21.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
