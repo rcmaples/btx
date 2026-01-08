@@ -12,6 +12,10 @@
       "type": "http",
       "url": "https://mcp.prisma.io/mcp"
     },
+    "cloud-run": {
+      "command": "npx",
+      "args": ["-y", "@google-cloud/cloud-run-mcp"]
+    },
     "next-devtools": {
       "command": "npx",
       "args": ["-y", "next-devtools-mcp@latest"]
