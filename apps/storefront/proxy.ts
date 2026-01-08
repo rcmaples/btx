@@ -26,6 +26,8 @@ export const config = {
     '/profile/:path*',
     '/account/:path*',
     '/complete-profile',
+    // Checkout needs middleware for auth() but is not protected
+    '/checkout',
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
