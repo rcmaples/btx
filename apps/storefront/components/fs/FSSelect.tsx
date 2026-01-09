@@ -54,6 +54,7 @@ export function FSSelect({
       <select
         id={fieldId}
         className={`${privacyClass} ${baseSelectClass}`.trim()}
+        data-fs-element={`Form Select: ${label}`}
         {...selectProps}
       >
         <option value="">{placeholder}</option>

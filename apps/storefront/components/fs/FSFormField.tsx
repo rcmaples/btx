@@ -45,6 +45,7 @@ export function FSFormField({
       <input
         id={fieldId}
         className={`${privacyClass} ${baseInputClass}`.trim()}
+        data-fs-element={`Form Field: ${label}`}
         {...inputProps}
       />
       {error && <p className="text-sm text-error mt-xs">{error}</p>}
