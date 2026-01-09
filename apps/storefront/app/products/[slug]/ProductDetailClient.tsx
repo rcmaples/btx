@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import {ProductDescription} from '@/components/product/ProductDescription'
 import {ProductImage} from '@/components/product/ProductImage'
 import {PurchaseOptionSelector} from '@/components/product/PurchaseOptionSelector'
 import {SubscriptionConfigurator} from '@/components/subscription/SubscriptionConfigurator'
 import {usePageName} from '@/lib/fullstory/hooks'
-import {centsToReal, trackAddToCart} from '@/lib/fullstory/utils'
+import {centsToReal, trackAddToCart, trackProductViewed} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {Product, PurchaseSelection} from '@/lib/types'
 
@@ -26,6 +26,26 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
 
   // Track page view
   usePageName('PDP', product.name)
+
+  // Track Product Viewed event
+  useEffect(() => {
+    const basePrice = product.pricing?.[0]?.priceInCents
+      ? product.pricing[0].priceInCents / 100
+      : 0
+
+    trackProductViewed({
+      product_id: product._id,
+      product_name: product.name,
+      roast_level: product.roastLevel,
+      origin: product.origin,
+      product_type: product.productType,
+      base_price: basePrice,
+      flavor_profile: product.flavorProfile?.join(', ') || '',
+      process_method: product.processMethod,
+      is_exclusive_drop: product.isExclusiveDrop ?? false,
+      best_for: product.bestFor?.join(', ') || '',
+    })
+  }, [product])
 
   const handleAddToCart = async () => {
     if (!selectedPurchaseOption) return

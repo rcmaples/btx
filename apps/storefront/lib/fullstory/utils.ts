@@ -23,6 +23,19 @@ export interface ThemeToggleEvent {
   resolved_theme: string
 }
 
+export interface ProductViewedEvent {
+  product_id: string
+  product_name: string
+  roast_level: string
+  origin: string
+  product_type: string
+  base_price: number
+  flavor_profile: string
+  process_method: string
+  is_exclusive_drop: boolean
+  best_for: string
+}
+
 // Helper to convert cents to dollars for  fields
 export function centsToReal(cents: number): number {
   return Number((cents / 100).toFixed(2))
@@ -31,7 +44,7 @@ export function centsToReal(cents: number): number {
 // Safe tracking wrapper
 function safeTrackEvent(
   eventName: string,
-  properties: AddToCartEvent | CheckoutInitiatedEvent | ThemeToggleEvent,
+  properties: AddToCartEvent | CheckoutInitiatedEvent | ThemeToggleEvent | ProductViewedEvent,
 ): void {
   if (typeof window !== 'undefined' && FS) {
     try {
@@ -56,6 +69,10 @@ export function trackCheckoutInitiated(params: CheckoutInitiatedEvent): void {
 
 export function trackThemeToggle(params: ThemeToggleEvent): void {
   safeTrackEvent('Theme Toggle', params)
+}
+
+export function trackProductViewed(params: ProductViewedEvent): void {
+  safeTrackEvent('Product Viewed', params)
 }
 
 // User identification functions
