@@ -1,5 +1,6 @@
 import {auth, currentUser} from '@clerk/nextjs/server'
 
+import {FSPageName} from '@/components/common/FSPageName'
 import {getProfile} from '@/lib/prisma'
 
 import {CheckoutClient} from './CheckoutClient'
@@ -31,5 +32,10 @@ export default async function CheckoutPage() {
     }
   }
 
-  return <CheckoutClient initialUser={user} initialProfile={profile} />
+  return (
+    <>
+      <FSPageName pageName="Checkout" />
+      <CheckoutClient initialUser={user} initialProfile={profile} />
+    </>
+  )
 }
