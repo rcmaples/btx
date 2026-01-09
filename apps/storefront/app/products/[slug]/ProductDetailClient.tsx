@@ -159,6 +159,12 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
             }
             data-fs-selected-size-str={selectedPurchaseOption?.sizeName}
             data-fs-selected-grind-str={selectedPurchaseOption?.grind}
+            data-fs-properties-schema={JSON.stringify({
+              'data-fs-product-id-str': {type: 'str', name: 'productId'},
+              'data-fs-price-real': {type: 'real', name: 'price'},
+              'data-fs-selected-size-str': {type: 'str', name: 'selectedSize'},
+              'data-fs-selected-grind-str': {type: 'str', name: 'selectedGrind'},
+            })}
             disabled={!selectedPurchaseOption || isAddingToCart}
             className="w-full py-md bg-primary text-background border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
           >
