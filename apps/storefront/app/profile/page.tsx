@@ -2,6 +2,7 @@ import {auth, currentUser} from '@clerk/nextjs/server'
 import type {Metadata} from 'next'
 import {redirect} from 'next/navigation'
 
+import {FSPageName} from '@/components/common/FSPageName'
 import {getProfile} from '@/lib/prisma'
 
 import {ExchangeMembershipSection} from './ExchangeMembershipSection'
@@ -32,6 +33,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <FSPageName pageName="Profile" />
       <div className="flex items-center justify-between mb-xl">
         <h1 className="text-4xl font-black tracking-tighter">My Profile</h1>
         <a
@@ -49,12 +51,14 @@ export default async function ProfilePage() {
           <div className="space-y-md">
             <div>
               <span className="text-text-secondary text-sm">Email</span>
-              <p className="text-text font-medium">{user?.primaryEmailAddress?.emailAddress}</p>
+              <p className="fs-mask text-text font-medium">
+                {user?.primaryEmailAddress?.emailAddress}
+              </p>
             </div>
             {profile.phone && (
               <div>
                 <span className="text-text-secondary text-sm">Phone</span>
-                <p className="text-text font-medium">{profile.phone}</p>
+                <p className="fs-mask text-text font-medium">{profile.phone}</p>
               </div>
             )}
           </div>
@@ -63,7 +67,7 @@ export default async function ProfilePage() {
         {/* Shipping Address */}
         <section className="bg-background-secondary border-2 border-border p-xl">
           <h2 className="text-xl font-bold mb-lg">Shipping Address</h2>
-          <address className="not-italic text-text">
+          <address className="fs-mask not-italic text-text">
             <p>{profile.streetAddress}</p>
             {profile.streetAddress2 && <p>{profile.streetAddress2}</p>}
             <p>
