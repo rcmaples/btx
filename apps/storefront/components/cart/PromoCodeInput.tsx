@@ -59,6 +59,10 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
       data-fs-element="promo-code-section"
       data-fs-promo-applied-bool={hasPromotion}
       data-fs-promo-code-str={appliedPromotion?.code}
+      data-fs-properties-schema={JSON.stringify({
+        'data-fs-promo-applied-bool': {type: 'bool', name: 'promoApplied'},
+        'data-fs-promo-code-str': {type: 'str', name: 'promoCode'},
+      })}
     >
       <h3 className="text-base font-bold mb-md text-text">Have a promo code?</h3>
 
