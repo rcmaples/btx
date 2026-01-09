@@ -1,6 +1,8 @@
 import type {Metadata} from 'next'
 import Link from 'next/link'
 
+import {FSPageName} from '@/components/common/FSPageName'
+
 export const metadata: Metadata = {
   title: 'Batch Theory - Specialty Coffee',
   description:
@@ -10,6 +12,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="w-full max-w-4xl mx-auto">
+      <FSPageName pageName="Home" />
       {/* Hero Section */}
       <section className="text-center py-huge">
         <h1 className="text-5xl font-black tracking-tighter mb-md">Batch Theory</h1>

@@ -11,16 +11,47 @@ export interface AddToCartEvent {
 }
 
 export interface CheckoutInitiatedEvent {
-  cart_value: number
-  item_count: number
-  has_promotion: boolean
-  promotion_code?: string
+  entry_point: string
+  // cart_value, item_count, has_promotion, promotion_code are now page-level context
 }
 
 export interface ThemeToggleEvent {
   previous_theme: string
   new_theme: string
   resolved_theme: string
+}
+
+export interface ProductViewedEvent {
+  product_id: string
+  product_name: string
+  // Extended properties are now at page level (proper data scoping)
+  // They're available for queries via page context, not duplicated in event
+}
+
+export interface ProductRemovedEvent {
+  product_id: string
+  product_name: string
+  quantity: number
+  price: number
+  size: string
+  grind: string
+}
+
+export interface OrderCompletedEvent {
+  order_id: string
+  revenue: number
+  shipping: number
+  currency: string
+  // item_count, has_promotion, promotion_code are now page-level context
+}
+
+// CartViewedEvent - no properties needed, cart context is at page level
+export type CartViewedEvent = Record<string, never>
+
+export interface ProductsFilteredEvent {
+  filter_type: string
+  filter_value: string
+  results_count: number
 }
 
 // Helper to convert cents to dollars for  fields
@@ -31,13 +62,24 @@ export function centsToReal(cents: number): number {
 // Safe tracking wrapper
 function safeTrackEvent(
   eventName: string,
-  properties: AddToCartEvent | CheckoutInitiatedEvent | ThemeToggleEvent,
+  properties?:
+    | AddToCartEvent
+    | CheckoutInitiatedEvent
+    | ThemeToggleEvent
+    | ProductViewedEvent
+    | ProductRemovedEvent
+    | OrderCompletedEvent
+    | CartViewedEvent
+    | ProductsFilteredEvent,
 ): void {
   if (typeof window !== 'undefined' && FS) {
     try {
       FS('trackEvent', {
         name: eventName,
-        properties: properties as unknown as Record<string, unknown>,
+        properties:
+          properties && Object.keys(properties).length > 0
+            ? (properties as unknown as Record<string, unknown>)
+            : {},
       })
     } catch (error) {
       console.warn('FullStory tracking error:', error)
@@ -56,6 +98,26 @@ export function trackCheckoutInitiated(params: CheckoutInitiatedEvent): void {
 
 export function trackThemeToggle(params: ThemeToggleEvent): void {
   safeTrackEvent('Theme Toggle', params)
+}
+
+export function trackProductViewed(params: ProductViewedEvent): void {
+  safeTrackEvent('Product Viewed', params)
+}
+
+export function trackProductRemoved(params: ProductRemovedEvent): void {
+  safeTrackEvent('Product Removed', params)
+}
+
+export function trackOrderCompleted(params: OrderCompletedEvent): void {
+  safeTrackEvent('Order Completed', params)
+}
+
+export function trackCartViewed(): void {
+  safeTrackEvent('Cart Viewed')
+}
+
+export function trackProductsFiltered(params: ProductsFilteredEvent): void {
+  safeTrackEvent('Products Filtered', params)
 }
 
 // User identification functions

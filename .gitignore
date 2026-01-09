@@ -47,3 +47,6 @@ dist/
 apps/storefront/scripts/session-simulator/logs/*.json
 # Playwright reports
 apps/storefront/playwright-report/
+
+# Claude
+.claude/plans/

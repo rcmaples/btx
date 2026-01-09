@@ -20,7 +20,7 @@ export function OrderSummary({cart, shippingCost, isMember}: OrderSummaryProps) 
 
   return (
     <div
-      className="p-lg border-2 border-border bg-background-secondary"
+      className="fs-unmask p-lg border-2 border-border bg-background-secondary"
       role="region"
       aria-label="Order summary"
       data-fs-element="checkout-order-summary"

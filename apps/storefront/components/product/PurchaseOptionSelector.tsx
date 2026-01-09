@@ -82,6 +82,12 @@ export function PurchaseOptionSelector({product, onSelect}: PurchaseOptionSelect
                 data-fs-size-name-str={priceEntry.sizeName}
                 data-fs-price-real={priceEntry.priceInCents / 100}
                 data-fs-is-selected-bool={isSelected}
+                data-fs-properties-schema={JSON.stringify({
+                  'data-fs-size-key-str': {type: 'str', name: 'sizeKey'},
+                  'data-fs-size-name-str': {type: 'str', name: 'sizeName'},
+                  'data-fs-price-real': {type: 'real', name: 'price'},
+                  'data-fs-is-selected-bool': {type: 'bool', name: 'isSelected'},
+                })}
                 className={`p-md border-2 transition-all duration-fast text-center ${
                   isSelected
                     ? 'border-primary bg-primary text-background'
@@ -116,6 +122,10 @@ export function PurchaseOptionSelector({product, onSelect}: PurchaseOptionSelect
                 data-fs-element="grind-selector-button"
                 data-fs-grind-str={grind}
                 data-fs-is-selected-bool={isSelected}
+                data-fs-properties-schema={JSON.stringify({
+                  'data-fs-grind-str': {type: 'str', name: 'grind'},
+                  'data-fs-is-selected-bool': {type: 'bool', name: 'isSelected'},
+                })}
                 className={`p-md border-2 transition-all duration-fast text-center ${
                   isSelected
                     ? 'border-primary bg-primary text-background'

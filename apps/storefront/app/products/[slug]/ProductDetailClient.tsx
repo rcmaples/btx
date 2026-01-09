@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import {useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 import {ProductDescription} from '@/components/product/ProductDescription'
 import {ProductImage} from '@/components/product/ProductImage'
 import {PurchaseOptionSelector} from '@/components/product/PurchaseOptionSelector'
 import {SubscriptionConfigurator} from '@/components/subscription/SubscriptionConfigurator'
-import {usePageName} from '@/lib/fullstory/hooks'
-import {centsToReal, trackAddToCart} from '@/lib/fullstory/utils'
+import {usePageProperties} from '@/lib/fullstory/hooks'
+import {centsToReal, trackAddToCart, trackProductViewed} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {Product, PurchaseSelection} from '@/lib/types'
 
@@ -24,8 +24,38 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
   )
   const [addToCartSuccess, setAddToCartSuccess] = useState(false)
 
-  // Track page view
-  usePageName('PDP', product.name)
+  // Calculate base price once
+  const basePrice = useMemo(() => {
+    return product.pricing?.[0]?.priceInCents ? product.pricing[0].priceInCents / 100 : 0
+  }, [product.pricing])
+
+  // Set page-level product context (proper data scoping)
+  // This context is available for all analytics queries on this page view
+  const pageProperties = useMemo(
+    () => ({
+      pageName: `PDP: ${product.name}`,
+      productId: product._id,
+      productName: product.name,
+      roastLevel: product.roastLevel,
+      origin: product.origin,
+      productType: product.productType,
+      basePrice: basePrice,
+      flavorProfile: product.flavorProfile?.join(', ') || '',
+      processMethod: product.processMethod,
+      isExclusiveDrop: product.isExclusiveDrop ?? false,
+      bestFor: product.bestFor?.join(', ') || '',
+    }),
+    [product, basePrice],
+  )
+  usePageProperties(pageProperties)
+
+  // Track Product Viewed event (discrete action - page context inherited)
+  useEffect(() => {
+    trackProductViewed({
+      product_id: product._id,
+      product_name: product.name,
+    })
+  }, [product._id, product.name])
 
   const handleAddToCart = async () => {
     if (!selectedPurchaseOption) return
@@ -159,6 +189,12 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
             }
             data-fs-selected-size-str={selectedPurchaseOption?.sizeName}
             data-fs-selected-grind-str={selectedPurchaseOption?.grind}
+            data-fs-properties-schema={JSON.stringify({
+              'data-fs-product-id-str': {type: 'str', name: 'productId'},
+              'data-fs-price-real': {type: 'real', name: 'price'},
+              'data-fs-selected-size-str': {type: 'str', name: 'selectedSize'},
+              'data-fs-selected-grind-str': {type: 'str', name: 'selectedGrind'},
+            })}
             disabled={!selectedPurchaseOption || isAddingToCart}
             className="w-full py-md bg-primary text-background border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg"
           >

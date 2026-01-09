@@ -1,5 +1,6 @@
 'use client'
 
+import {centsToReal, trackProductRemoved} from '@/lib/fullstory/utils'
 import type {CartLineItem as CartLineItemType} from '@/lib/types'
 
 interface CartLineItemProps {
@@ -15,6 +16,14 @@ export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemPro
   }
 
   const handleRemove = () => {
+    trackProductRemoved({
+      product_id: item.productId,
+      product_name: item.productName,
+      quantity: item.quantity,
+      price: centsToReal(item.pricePerUnit),
+      size: item.sizeName,
+      grind: item.grind,
+    })
     onRemove(item.id)
   }
 
@@ -40,6 +49,19 @@ export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemPro
       className={`flex flex-col gap-md p-md border-b border-border md:flex-row md:justify-between md:items-center ${
         isSubscription ? 'bg-background-alt border-l-4 border-l-primary' : ''
       }`}
+      data-fs-element={`cart-item-${item.productId}`}
+      data-fs-product-id-str={item.productId}
+      data-fs-product-name-str={item.productName}
+      data-fs-price-real={centsToReal(item.pricePerUnit)}
+      data-fs-quantity-int={item.quantity}
+      data-fs-item-type-str={item.itemType}
+      data-fs-properties-schema={JSON.stringify({
+        'data-fs-product-id-str': {type: 'str', name: 'productId'},
+        'data-fs-product-name-str': {type: 'str', name: 'productName'},
+        'data-fs-price-real': {type: 'real', name: 'price'},
+        'data-fs-quantity-int': {type: 'int', name: 'quantity'},
+        'data-fs-item-type-str': {type: 'str', name: 'itemType'},
+      })}
     >
       <div className="flex-1">
         <div className="flex items-center gap-sm mb-xs flex-wrap">
@@ -79,6 +101,7 @@ export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemPro
               Qty:
             </label>
             <select
+              data-fs-element="cart-item-quantity"
               id={`quantity-${item.id}`}
               value={item.quantity}
               onChange={handleQuantityChange}
@@ -109,6 +132,7 @@ export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemPro
           onClick={handleRemove}
           className="px-md py-sm border border-border bg-transparent cursor-pointer text-sm font-medium transition-all duration-fast hover:bg-danger hover:border-danger hover:text-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           aria-label={`Remove ${item.productName} from cart`}
+          data-fs-element="cart-item-remove-button"
         >
           Remove
         </button>

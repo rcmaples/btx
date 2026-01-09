@@ -2,7 +2,7 @@
 
 export function PaymentForm() {
   return (
-    <div className="space-y-lg">
+    <div className="fs-exclude space-y-lg">
       <h2 className="text-xl font-bold">Payment Information</h2>
 
       {/* Test Mode Banner */}
