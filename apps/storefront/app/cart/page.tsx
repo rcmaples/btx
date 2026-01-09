@@ -1,13 +1,13 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
-import {useEffect} from 'react'
+import {useEffect, useMemo} from 'react'
 
 import {CartLineItem} from '@/components/cart/CartLineItem'
 import {CartSummary} from '@/components/cart/CartSummary'
 import {EmptyCart} from '@/components/cart/EmptyCart'
 import {PromoCodeInput} from '@/components/cart/PromoCodeInput'
-import {usePageName} from '@/lib/fullstory/hooks'
+import {usePageProperties} from '@/lib/fullstory/hooks'
 import {centsToReal, trackCartViewed, trackCheckoutInitiated} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 
@@ -24,27 +24,31 @@ export default function CartPage() {
     error,
   } = useCart()
 
-  // Track page view
-  usePageName('Shopping Cart')
+  // Set page-level cart context (proper data scoping)
+  // Cart context is available for all analytics queries on this page view
+  const pageProperties = useMemo(
+    () => ({
+      pageName: 'Shopping Cart',
+      cartValue: centsToReal(cart.total),
+      itemCount: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
+      hasPromotion: cart.appliedPromotion !== null,
+      promotionCode: cart.appliedPromotion?.code,
+    }),
+    [cart],
+  )
+  usePageProperties(pageProperties)
 
-  // Track Cart Viewed event
+  // Track Cart Viewed event (discrete action - cart context inherited from page)
   useEffect(() => {
     if (mounted && cart.lineItems.length > 0) {
-      trackCartViewed({
-        cart_value: centsToReal(cart.total),
-        item_count: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
-        has_promotion: cart.appliedPromotion !== null,
-      })
+      trackCartViewed()
     }
-  }, [mounted, cart.total, cart.lineItems, cart.appliedPromotion])
+  }, [mounted, cart.lineItems.length])
 
   const handleCheckout = () => {
-    // Track before navigation
+    // Track before navigation (cart context inherited from page)
     trackCheckoutInitiated({
-      cart_value: centsToReal(cart.total),
-      item_count: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
-      has_promotion: cart.appliedPromotion !== null,
-      promotion_code: cart.appliedPromotion?.code,
+      entry_point: 'cart_page',
     })
 
     router.push('/checkout')

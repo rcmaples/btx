@@ -6,7 +6,7 @@ import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
 import {OrderSummary} from '@/components/checkout/OrderSummary'
 import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
-import {usePageName} from '@/lib/fullstory/hooks'
+import {usePageProperties} from '@/lib/fullstory/hooks'
 import {centsToReal, trackOrderCompleted} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {ShippingAddress} from '@/lib/types/checkout'
@@ -40,8 +40,31 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
   const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
-  // Track page view (conditional based on success state)
-  usePageName(successOrderNumber ? 'Order Confirmation' : 'Checkout')
+  // Calculate shipping cost
+  const shippingCost = useMemo(() => {
+    // Free shipping for Exchange members
+    if (initialUser && initialProfile?.isExchangeMember) {
+      return 0
+    }
+    // $5 flat rate for everyone else
+    return 500 // cents
+  }, [initialUser, initialProfile])
+
+  // Set page-level checkout context (proper data scoping)
+  // Cart context is available for all analytics queries on this page view
+  const pageProperties = useMemo(
+    () => ({
+      pageName: successOrderNumber ? 'Order Confirmation' : 'Checkout',
+      cartValue: centsToReal(cart.total),
+      itemCount: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
+      hasPromotion: cart.appliedPromotion !== null,
+      promotionCode: cart.appliedPromotion?.code,
+      shippingCost: centsToReal(shippingCost),
+      isMember: initialProfile?.isExchangeMember ?? false,
+    }),
+    [successOrderNumber, cart, shippingCost, initialProfile],
+  )
+  usePageProperties(pageProperties)
 
   // Guest email (only for non-authenticated users)
   const [guestEmail, setGuestEmail] = useState('')
@@ -72,16 +95,6 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
       }))
     }
   }, [initialProfile])
-
-  // Calculate shipping cost
-  const shippingCost = useMemo(() => {
-    // Free shipping for Exchange members
-    if (initialUser && initialProfile?.isExchangeMember) {
-      return 0
-    }
-    // $5 flat rate for everyone else
-    return 500 // cents
-  }, [initialUser, initialProfile])
 
   const handleAddressChange = (field: keyof ShippingAddress, value: string) => {
     setShippingAddress((prev) => ({...prev, [field]: value}))
@@ -158,15 +171,12 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
       })
 
       if (result.success && result.orderNumber) {
-        // Track order completion BEFORE clearing cart
+        // Track order completion (cart context inherited from page properties)
         trackOrderCompleted({
           order_id: result.orderNumber,
           revenue: centsToReal(cart.total + shippingCost),
           shipping: centsToReal(shippingCost),
           currency: 'USD',
-          item_count: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
-          has_promotion: cart.appliedPromotion !== null,
-          promotion_code: cart.appliedPromotion?.code,
         })
         // Clear cart
         clearCart()

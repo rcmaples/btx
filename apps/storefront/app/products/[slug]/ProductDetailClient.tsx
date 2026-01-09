@@ -1,13 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 
 import {ProductDescription} from '@/components/product/ProductDescription'
 import {ProductImage} from '@/components/product/ProductImage'
 import {PurchaseOptionSelector} from '@/components/product/PurchaseOptionSelector'
 import {SubscriptionConfigurator} from '@/components/subscription/SubscriptionConfigurator'
-import {usePageName} from '@/lib/fullstory/hooks'
+import {usePageProperties} from '@/lib/fullstory/hooks'
 import {centsToReal, trackAddToCart, trackProductViewed} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {Product, PurchaseSelection} from '@/lib/types'
@@ -24,28 +24,38 @@ export function ProductDetailClient({product}: ProductDetailClientProps) {
   )
   const [addToCartSuccess, setAddToCartSuccess] = useState(false)
 
-  // Track page view
-  usePageName('PDP', product.name)
+  // Calculate base price once
+  const basePrice = useMemo(() => {
+    return product.pricing?.[0]?.priceInCents ? product.pricing[0].priceInCents / 100 : 0
+  }, [product.pricing])
 
-  // Track Product Viewed event
+  // Set page-level product context (proper data scoping)
+  // This context is available for all analytics queries on this page view
+  const pageProperties = useMemo(
+    () => ({
+      pageName: `PDP: ${product.name}`,
+      productId: product._id,
+      productName: product.name,
+      roastLevel: product.roastLevel,
+      origin: product.origin,
+      productType: product.productType,
+      basePrice: basePrice,
+      flavorProfile: product.flavorProfile?.join(', ') || '',
+      processMethod: product.processMethod,
+      isExclusiveDrop: product.isExclusiveDrop ?? false,
+      bestFor: product.bestFor?.join(', ') || '',
+    }),
+    [product, basePrice],
+  )
+  usePageProperties(pageProperties)
+
+  // Track Product Viewed event (discrete action - page context inherited)
   useEffect(() => {
-    const basePrice = product.pricing?.[0]?.priceInCents
-      ? product.pricing[0].priceInCents / 100
-      : 0
-
     trackProductViewed({
       product_id: product._id,
       product_name: product.name,
-      roast_level: product.roastLevel,
-      origin: product.origin,
-      product_type: product.productType,
-      base_price: basePrice,
-      flavor_profile: product.flavorProfile?.join(', ') || '',
-      process_method: product.processMethod,
-      is_exclusive_drop: product.isExclusiveDrop ?? false,
-      best_for: product.bestFor?.join(', ') || '',
     })
-  }, [product])
+  }, [product._id, product.name])
 
   const handleAddToCart = async () => {
     if (!selectedPurchaseOption) return

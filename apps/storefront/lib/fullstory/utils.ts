@@ -11,10 +11,8 @@ export interface AddToCartEvent {
 }
 
 export interface CheckoutInitiatedEvent {
-  cart_value: number
-  item_count: number
-  has_promotion: boolean
-  promotion_code?: string
+  entry_point: string
+  // cart_value, item_count, has_promotion, promotion_code are now page-level context
 }
 
 export interface ThemeToggleEvent {
@@ -26,14 +24,8 @@ export interface ThemeToggleEvent {
 export interface ProductViewedEvent {
   product_id: string
   product_name: string
-  roast_level: string
-  origin: string
-  product_type: string
-  base_price: number
-  flavor_profile: string
-  process_method: string
-  is_exclusive_drop: boolean
-  best_for: string
+  // Extended properties are now at page level (proper data scoping)
+  // They're available for queries via page context, not duplicated in event
 }
 
 export interface ProductRemovedEvent {
@@ -50,16 +42,11 @@ export interface OrderCompletedEvent {
   revenue: number
   shipping: number
   currency: string
-  item_count: number
-  has_promotion: boolean
-  promotion_code?: string
+  // item_count, has_promotion, promotion_code are now page-level context
 }
 
-export interface CartViewedEvent {
-  cart_value: number
-  item_count: number
-  has_promotion: boolean
-}
+// CartViewedEvent - no properties needed, cart context is at page level
+export type CartViewedEvent = Record<string, never>
 
 export interface ProductsFilteredEvent {
   filter_type: string
@@ -75,7 +62,7 @@ export function centsToReal(cents: number): number {
 // Safe tracking wrapper
 function safeTrackEvent(
   eventName: string,
-  properties:
+  properties?:
     | AddToCartEvent
     | CheckoutInitiatedEvent
     | ThemeToggleEvent
@@ -89,7 +76,10 @@ function safeTrackEvent(
     try {
       FS('trackEvent', {
         name: eventName,
-        properties: properties as unknown as Record<string, unknown>,
+        properties:
+          properties && Object.keys(properties).length > 0
+            ? (properties as unknown as Record<string, unknown>)
+            : {},
       })
     } catch (error) {
       console.warn('FullStory tracking error:', error)
@@ -122,8 +112,8 @@ export function trackOrderCompleted(params: OrderCompletedEvent): void {
   safeTrackEvent('Order Completed', params)
 }
 
-export function trackCartViewed(params: CartViewedEvent): void {
-  safeTrackEvent('Cart Viewed', params)
+export function trackCartViewed(): void {
+  safeTrackEvent('Cart Viewed')
 }
 
 export function trackProductsFiltered(params: ProductsFilteredEvent): void {
