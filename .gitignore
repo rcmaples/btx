@@ -45,3 +45,5 @@ dist/
 
 # Session simulator logs
 apps/storefront/scripts/session-simulator/logs/*.json
+# Playwright reports
+apps/storefront/playwright-report/
