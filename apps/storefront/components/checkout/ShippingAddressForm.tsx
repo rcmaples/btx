@@ -88,7 +88,7 @@ export function ShippingAddressForm({
             type="email"
             value={guestEmail || ''}
             onChange={(e) => onEmailChange(e.target.value)}
-            className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+            className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
             placeholder="you@example.com"
             required
           />
@@ -107,7 +107,7 @@ export function ShippingAddressForm({
             type="text"
             value={address.firstName}
             onChange={(e) => onAddressChange('firstName', e.target.value)}
-            className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+            className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
             placeholder="John"
             required
           />
@@ -123,7 +123,7 @@ export function ShippingAddressForm({
             type="text"
             value={address.lastName}
             onChange={(e) => onAddressChange('lastName', e.target.value)}
-            className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+            className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
             placeholder="Doe"
             required
           />
@@ -141,7 +141,7 @@ export function ShippingAddressForm({
           type="text"
           value={address.streetAddress}
           onChange={(e) => onAddressChange('streetAddress', e.target.value)}
-          className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+          className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
           placeholder="123 Main St"
           required
         />
@@ -158,7 +158,7 @@ export function ShippingAddressForm({
           type="text"
           value={address.streetAddress2 || ''}
           onChange={(e) => onAddressChange('streetAddress2', e.target.value)}
-          className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+          className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
           placeholder="Apt 4B"
         />
       </div>
@@ -174,7 +174,7 @@ export function ShippingAddressForm({
             type="text"
             value={address.city}
             onChange={(e) => onAddressChange('city', e.target.value)}
-            className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+            className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
             placeholder="City"
             required
           />
@@ -214,7 +214,7 @@ export function ShippingAddressForm({
             type="text"
             value={address.postalCode}
             onChange={(e) => onAddressChange('postalCode', e.target.value)}
-            className="w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
+            className="fs-mask w-full px-md py-sm border-2 border-border bg-background text-text focus:border-primary focus:outline-none transition-colors"
             placeholder="12345"
             pattern="[0-9]{5}(-[0-9]{4})?"
             required

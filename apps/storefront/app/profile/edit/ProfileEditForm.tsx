@@ -137,7 +137,7 @@ export function ProfileEditForm({profile}: Props) {
           id="phone"
           name="phone"
           defaultValue={profile.phone || ''}
-          className="w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
+          className="fs-mask w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
           placeholder="(555) 555-5555"
         />
       </div>
@@ -152,7 +152,7 @@ export function ProfileEditForm({profile}: Props) {
           name="streetAddress"
           defaultValue={profile.streetAddress || ''}
           required
-          className="w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
+          className="fs-mask w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
           placeholder="123 Main St"
         />
       </div>
@@ -166,7 +166,7 @@ export function ProfileEditForm({profile}: Props) {
           id="streetAddress2"
           name="streetAddress2"
           defaultValue={profile.streetAddress2 || ''}
-          className="w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
+          className="fs-mask w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
           placeholder="Apt 4B"
         />
       </div>
@@ -182,7 +182,7 @@ export function ProfileEditForm({profile}: Props) {
             name="city"
             defaultValue={profile.city || ''}
             required
-            className="w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
+            className="fs-mask w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
             placeholder="City"
           />
         </div>
@@ -219,7 +219,7 @@ export function ProfileEditForm({profile}: Props) {
           defaultValue={profile.postalCode || ''}
           required
           pattern="[0-9]{5}(-[0-9]{4})?"
-          className="w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
+          className="fs-mask w-full px-md py-sm border-2 border-border focus:border-primary focus:outline-none bg-background text-text"
           placeholder="12345"
         />
       </div>
