@@ -1,5 +1,6 @@
 'use client'
 
+import {centsToReal, trackProductRemoved} from '@/lib/fullstory/utils'
 import type {CartLineItem as CartLineItemType} from '@/lib/types'
 
 interface CartLineItemProps {
@@ -15,6 +16,14 @@ export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemPro
   }
 
   const handleRemove = () => {
+    trackProductRemoved({
+      product_id: item.productId,
+      product_name: item.productName,
+      quantity: item.quantity,
+      price: centsToReal(item.pricePerUnit),
+      size: item.sizeName,
+      grind: item.grind,
+    })
     onRemove(item.id)
   }
 
@@ -79,6 +88,7 @@ export function CartLineItem({item, onUpdateQuantity, onRemove}: CartLineItemPro
               Qty:
             </label>
             <select
+              data-fs-element="cart-item-quantity"
               id={`quantity-${item.id}`}
               value={item.quantity}
               onChange={handleQuantityChange}

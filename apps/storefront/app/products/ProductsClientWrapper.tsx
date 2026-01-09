@@ -6,6 +6,7 @@ import {useEffect, useState} from 'react'
 import {ProductCard} from '@/components/product/ProductCard'
 import {ProductFilters} from '@/components/product/ProductFilters'
 import {usePageName} from '@/lib/fullstory/hooks'
+import {trackProductsFiltered} from '@/lib/fullstory/utils'
 import {useMembership} from '@/lib/hooks/useMembership'
 import {useProducts} from '@/lib/hooks/useProducts'
 import type {ProductFilters as Filters} from '@/lib/types'
@@ -44,6 +45,18 @@ export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperPro
   }, [filters, router])
 
   const handleFilterChange = (newFilters: Filters) => {
+    // Track which filter changed
+    const filterKeys = ['roastLevel', 'origin', 'processMethod', 'bestFor', 'exclusiveOnly'] as const
+    for (const key of filterKeys) {
+      if (newFilters[key] !== filters[key] && newFilters[key]) {
+        trackProductsFiltered({
+          filter_type: key,
+          filter_value: String(newFilters[key]),
+          results_count: displayProducts.length,
+        })
+        break // Only track one change per interaction
+      }
+    }
     setFilters(newFilters)
   }
 

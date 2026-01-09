@@ -1,13 +1,14 @@
 'use client'
 
 import {useRouter} from 'next/navigation'
+import {useEffect} from 'react'
 
 import {CartLineItem} from '@/components/cart/CartLineItem'
 import {CartSummary} from '@/components/cart/CartSummary'
 import {EmptyCart} from '@/components/cart/EmptyCart'
 import {PromoCodeInput} from '@/components/cart/PromoCodeInput'
 import {usePageName} from '@/lib/fullstory/hooks'
-import {centsToReal, trackCheckoutInitiated} from '@/lib/fullstory/utils'
+import {centsToReal, trackCartViewed, trackCheckoutInitiated} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 
 export default function CartPage() {
@@ -25,6 +26,17 @@ export default function CartPage() {
 
   // Track page view
   usePageName('Shopping Cart')
+
+  // Track Cart Viewed event
+  useEffect(() => {
+    if (mounted && cart.lineItems.length > 0) {
+      trackCartViewed({
+        cart_value: centsToReal(cart.total),
+        item_count: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
+        has_promotion: cart.appliedPromotion !== null,
+      })
+    }
+  }, [mounted, cart.total, cart.lineItems, cart.appliedPromotion])
 
   const handleCheckout = () => {
     // Track before navigation

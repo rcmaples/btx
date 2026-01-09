@@ -36,6 +36,37 @@ export interface ProductViewedEvent {
   best_for: string
 }
 
+export interface ProductRemovedEvent {
+  product_id: string
+  product_name: string
+  quantity: number
+  price: number
+  size: string
+  grind: string
+}
+
+export interface OrderCompletedEvent {
+  order_id: string
+  revenue: number
+  shipping: number
+  currency: string
+  item_count: number
+  has_promotion: boolean
+  promotion_code?: string
+}
+
+export interface CartViewedEvent {
+  cart_value: number
+  item_count: number
+  has_promotion: boolean
+}
+
+export interface ProductsFilteredEvent {
+  filter_type: string
+  filter_value: string
+  results_count: number
+}
+
 // Helper to convert cents to dollars for  fields
 export function centsToReal(cents: number): number {
   return Number((cents / 100).toFixed(2))
@@ -44,7 +75,15 @@ export function centsToReal(cents: number): number {
 // Safe tracking wrapper
 function safeTrackEvent(
   eventName: string,
-  properties: AddToCartEvent | CheckoutInitiatedEvent | ThemeToggleEvent | ProductViewedEvent,
+  properties:
+    | AddToCartEvent
+    | CheckoutInitiatedEvent
+    | ThemeToggleEvent
+    | ProductViewedEvent
+    | ProductRemovedEvent
+    | OrderCompletedEvent
+    | CartViewedEvent
+    | ProductsFilteredEvent,
 ): void {
   if (typeof window !== 'undefined' && FS) {
     try {
@@ -73,6 +112,22 @@ export function trackThemeToggle(params: ThemeToggleEvent): void {
 
 export function trackProductViewed(params: ProductViewedEvent): void {
   safeTrackEvent('Product Viewed', params)
+}
+
+export function trackProductRemoved(params: ProductRemovedEvent): void {
+  safeTrackEvent('Product Removed', params)
+}
+
+export function trackOrderCompleted(params: OrderCompletedEvent): void {
+  safeTrackEvent('Order Completed', params)
+}
+
+export function trackCartViewed(params: CartViewedEvent): void {
+  safeTrackEvent('Cart Viewed', params)
+}
+
+export function trackProductsFiltered(params: ProductsFilteredEvent): void {
+  safeTrackEvent('Products Filtered', params)
 }
 
 // User identification functions

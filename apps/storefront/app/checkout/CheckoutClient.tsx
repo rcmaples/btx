@@ -7,6 +7,7 @@ import {OrderSummary} from '@/components/checkout/OrderSummary'
 import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
 import {usePageName} from '@/lib/fullstory/hooks'
+import {centsToReal, trackOrderCompleted} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {ShippingAddress} from '@/lib/types/checkout'
 
@@ -157,6 +158,16 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
       })
 
       if (result.success && result.orderNumber) {
+        // Track order completion BEFORE clearing cart
+        trackOrderCompleted({
+          order_id: result.orderNumber,
+          revenue: centsToReal(cart.total + shippingCost),
+          shipping: centsToReal(shippingCost),
+          currency: 'USD',
+          item_count: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
+          has_promotion: cart.appliedPromotion !== null,
+          promotion_code: cart.appliedPromotion?.code,
+        })
         // Clear cart
         clearCart()
         // Show success message
