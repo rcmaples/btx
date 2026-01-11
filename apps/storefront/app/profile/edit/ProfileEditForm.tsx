@@ -64,13 +64,13 @@ export function ProfileEditForm({profile}: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-lg">
       {error && (
-        <div className="p-md bg-red-50 border border-error text-error" role="alert">
+        <div className="p-md bg-red-50 dark:bg-red-950/30 border border-error text-error" role="alert">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-md bg-green-50 border border-success text-success" role="status">
+        <div className="p-md bg-green-50 dark:bg-green-950/30 border border-success text-success" role="status">
           Profile updated successfully! Redirecting...
         </div>
       )}
@@ -102,7 +102,7 @@ export function ProfileEditForm({profile}: Props) {
         optional
       />
 
-      <div className="grid grid-cols-2 gap-md">
+      <div className="grid grid-cols-1 gap-md md:grid-cols-2">
         <FSFormField
           label="City"
           type="text"
@@ -131,17 +131,17 @@ export function ProfileEditForm({profile}: Props) {
         required
       />
 
-      <div className="flex gap-md">
+      <div className="flex gap-md pt-md">
         <Link
           href="/profile"
-          className="flex-1 text-center bg-background text-text font-bold py-md px-lg border-2 border-border hover:bg-background-secondary transition-colors"
+          className="flex-1 text-center bg-background text-text font-semibold py-sm px-md border-2 border-border hover:bg-background-secondary transition-colors"
         >
           Cancel
         </Link>
         <button
           type="submit"
           disabled={isLoading || success}
-          className="flex-1 bg-primary text-background font-bold py-md px-lg border-2 border-primary hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-primary text-background font-semibold py-sm px-md border-2 border-primary hover:bg-primary-dark hover:border-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Saving...' : 'Save Changes'}
         </button>
