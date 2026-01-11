@@ -48,7 +48,7 @@ export function MembershipClient() {
   if (isMember) {
     return (
       <div className="w-full text-center py-xxl">
-        <div className="w-full max-w-xl mx-auto p-xl bg-green-50 border-2 border-success">
+        <div className="w-full max-w-xl mx-auto p-xl bg-green-50 dark:bg-green-950/30 border-2 border-success">
           <h1 className="text-4xl font-black mb-md">You&apos;re an Exchange Member</h1>
           <p className="text-text-secondary mb-lg">
             Thank you for being part of The Exchange. You now have access to all member-exclusive
