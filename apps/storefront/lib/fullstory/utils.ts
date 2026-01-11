@@ -45,6 +45,12 @@ export interface OrderCompletedEvent {
   // item_count, has_promotion, promotion_code are now page-level context
 }
 
+export interface CheckoutFormSubmittedEvent {
+  checkout_step: string // e.g., 'order_placement'
+  has_guest_email: boolean
+  shipping_country: string
+}
+
 // CartViewedEvent - no properties needed, cart context is at page level
 export type CartViewedEvent = Record<string, never>
 
@@ -69,6 +75,7 @@ function safeTrackEvent(
     | ProductViewedEvent
     | ProductRemovedEvent
     | OrderCompletedEvent
+    | CheckoutFormSubmittedEvent
     | CartViewedEvent
     | ProductsFilteredEvent,
 ): void {
@@ -110,6 +117,10 @@ export function trackProductRemoved(params: ProductRemovedEvent): void {
 
 export function trackOrderCompleted(params: OrderCompletedEvent): void {
   safeTrackEvent('Order Completed', params)
+}
+
+export function trackCheckoutFormSubmitted(params: CheckoutFormSubmittedEvent): void {
+  safeTrackEvent('Checkout Form Submitted', params)
 }
 
 export function trackCartViewed(): void {
