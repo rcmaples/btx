@@ -8,7 +8,13 @@ import {CartSummary} from '@/components/cart/CartSummary'
 import {EmptyCart} from '@/components/cart/EmptyCart'
 import {PromoCodeInput} from '@/components/cart/PromoCodeInput'
 import {usePageProperties} from '@/lib/fullstory/hooks'
-import {centsToReal, trackCartViewed, trackCheckoutInitiated} from '@/lib/fullstory/utils'
+import {
+  centsToReal,
+  trackCartViewed,
+  trackCheckoutInitiated,
+  trackPromoCodeApplied,
+  trackPromoCodeRemoved,
+} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 
 export default function CartPage() {
@@ -90,7 +96,18 @@ export default function CartPage() {
           <div className="mt-lg border-border">
             <PromoCodeInput
               onApply={async (code) => {
+                const cartValueBefore = cart.total
                 await applyPromoCode(code)
+                // Track successful promo code application
+                // Note: cart state will update after this, so we compute discount manually
+                const discountAmount = cartValueBefore - (cart.total - cart.discount)
+                trackPromoCodeApplied({
+                  promo_code: code,
+                  discount_amount: centsToReal(discountAmount > 0 ? discountAmount : cart.discount),
+                  discount_type: 'fixed', // Default type since we don't have this info
+                  cart_value_before: centsToReal(cartValueBefore),
+                  cart_value_after: centsToReal(cart.total),
+                })
               }}
               appliedPromotion={cart.appliedPromotion}
               disabled={isLoading}
@@ -103,7 +120,13 @@ export default function CartPage() {
           <div className="sticky top-md">
             <CartSummary
               cart={cart}
-              onRemovePromotion={removePromotion}
+              onRemovePromotion={() => {
+                const promoCode = cart.appliedPromotion?.code
+                if (promoCode) {
+                  trackPromoCodeRemoved({promo_code: promoCode})
+                }
+                removePromotion()
+              }}
               showCheckoutButton={true}
               onCheckout={handleCheckout}
             />
