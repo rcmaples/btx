@@ -6,7 +6,7 @@ export function PaymentForm() {
       <h2 className="text-xl font-bold">Payment Information</h2>
 
       {/* Test Mode Banner */}
-      <div className="p-md bg-yellow-50 dark:bg-yellow-950/30 border-2 border-warning">
+      <div className="p-md bg-warning-light border-2 border-warning">
         <p className="font-bold text-warning mb-xs">Test Mode Payment</p>
         <p className="text-sm text-text-secondary">
           This is a test transaction. No real payment will be processed. The following test card

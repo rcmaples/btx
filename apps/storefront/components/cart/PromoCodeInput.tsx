@@ -2,6 +2,7 @@
 
 import {type FormEvent, useState} from 'react'
 
+import {fsLog, trackPromoCodeFailed} from '@/lib/fullstory/utils'
 import type {Promotion} from '@/lib/types'
 import {InvalidPromoCodeError, PromoMinimumNotMetError} from '@/lib/types'
 
@@ -36,14 +37,31 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
+      const submittedCode = code.trim().toUpperCase()
+
       if (err instanceof InvalidPromoCodeError) {
         setError('Invalid or expired promo code. Please check and try again.')
+        trackPromoCodeFailed({
+          promo_code: submittedCode,
+          error_type: 'invalid',
+        })
       } else if (err instanceof PromoMinimumNotMetError) {
         setError(err.message)
+        trackPromoCodeFailed({
+          promo_code: submittedCode,
+          error_type: 'minimum_not_met',
+        })
       } else if (err instanceof Error) {
         setError(err.message)
+        fsLog('error', 'Promo code application failed', {
+          promoCode: submittedCode,
+          errorMessage: err.message,
+        })
       } else {
         setError('Failed to apply promo code. Please try again.')
+        fsLog('error', 'Promo code application failed with unknown error', {
+          promoCode: submittedCode,
+        })
       }
     } finally {
       setIsApplying(false)
@@ -74,7 +92,7 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
             onChange={(e) => setCode(e.target.value)}
             data-fs-element="promo-code-input"
             placeholder="Enter code"
-            className="flex-1 min-w-0 p-sm text-base border border-border bg-background text-text font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-60 placeholder:normal-case placeholder:tracking-normal"
+            className="fs-unmask flex-1 min-w-0 px-md py-sm text-base border-2 border-border bg-background text-text font-mono uppercase tracking-wider focus:outline-none focus:border-primary transition-colors disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-60 placeholder:normal-case placeholder:tracking-normal"
             disabled={isDisabled}
             aria-label="Promo code"
             aria-describedby={error ? 'promo-error' : undefined}
@@ -82,7 +100,7 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
           <button
             type="submit"
             disabled={isDisabled || !code.trim()}
-            className="px-md py-sm md:px-lg text-base font-bold bg-primary text-background border-none cursor-pointer whitespace-nowrap transition-opacity duration-200 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="px-md py-sm md:px-lg text-base font-bold bg-primary text-background border-2 border-primary cursor-pointer whitespace-nowrap transition-all duration-fast hover:bg-primary-dark hover:border-primary-dark disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label="Apply promo code"
           >
             {isApplying ? 'Applying...' : 'Apply'}
@@ -103,7 +121,7 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
       )}
 
       {hasPromotion && (
-        <div className="mt-md p-md bg-success-light border border-success">
+        <div className="mt-md p-md bg-success-light border-2 border-success">
           <p className="text-base text-text mb-xs flex items-center gap-xs">
             <strong>{appliedPromotion.name}</strong>
             {appliedPromotion.code && (

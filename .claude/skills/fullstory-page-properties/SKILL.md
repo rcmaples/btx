@@ -16,6 +16,7 @@ related_skills:
 Fullstory's Page Properties API allows developers to capture contextual information about the current page that enriches sessions for search, filtering, segmentation, and journey analysis. Unlike user properties that persist across sessions, page properties are session-scoped and reset when the URL path changes.
 
 Key use cases:
+
 - **Page Naming**: Define semantic page names that enrich ALL events on that page across Fullstory (Search, Segments, Funnels, Journeys, Metrics)
 - **Search Context**: Capture search terms and filters on results pages
 - **Checkout State**: Track cart value, step number, coupon codes
@@ -34,21 +35,21 @@ Page Load  →  setProperties(page)  →  Properties Active  →  URL Change  �
 
 ### Key Behaviors
 
-| Behavior | Description |
-|----------|-------------|
-| **Session-scoped** | Properties persist for the current page until URL path changes |
-| **Merge on repeat calls** | Multiple calls on same page merge properties |
-| **Reset on navigation** | Properties clear when URL host or path changes |
-| **pageName special field** | Creates named Pages for use in Journeys |
+| Behavior                   | Description                                                    |
+| -------------------------- | -------------------------------------------------------------- |
+| **Session-scoped**         | Properties persist for the current page until URL path changes |
+| **Merge on repeat calls**  | Multiple calls on same page merge properties                   |
+| **Reset on navigation**    | Properties clear when URL host or path changes                 |
+| **pageName special field** | Creates named Pages for use in Journeys                        |
 
 ### Page Properties vs Other Property Types
 
-| Type | Scope | Persists | Best For |
-|------|-------|----------|----------|
-| User Properties | User | Across sessions | User attributes, plan, role |
-| Page Properties | Page | Until URL change | Page context, search, filters |
-| Element Properties | Element | Interaction | Click-level context |
-| Event Properties | Event | One event | Action-specific data |
+| Type               | Scope   | Persists         | Best For                      |
+| ------------------ | ------- | ---------------- | ----------------------------- |
+| User Properties    | User    | Across sessions  | User attributes, plan, role   |
+| Page Properties    | Page    | Until URL change | Page context, search, filters |
+| Element Properties | Element | Interaction      | Click-level context           |
+| Event Properties   | Event   | One event        | Action-specific data          |
 
 ### ⚠️ Critical: Use Properties to Stay Within the 1,000 Page Limit
 
@@ -71,13 +72,13 @@ Fullstory limits you to **1,000 unique `pageName` values**. Once exceeded, addit
    + productPrice: 1199
 ```
 
-| Scenario | ❌ Wrong (unique pageName) | ✅ Right (generic + properties) |
-|----------|---------------------------|--------------------------------|
-| Product pages | `"iPhone 15 Pro Detail"` | `pageName: "Product Detail"` + `productName` property |
-| User profiles | `"John Smith's Profile"` | `pageName: "User Profile"` + `profileUserId` property |
-| Article pages | `"How to Cook Pasta"` | `pageName: "Article"` + `articleTitle`, `articleCategory` properties |
-| Search results | `"Search: blue shoes"` | `pageName: "Search Results"` + `searchTerm` property |
-| Category pages | `"Men's Running Shoes"` | `pageName: "Category"` + `categoryName`, `categoryPath` properties |
+| Scenario       | ❌ Wrong (unique pageName) | ✅ Right (generic + properties)                                      |
+| -------------- | -------------------------- | -------------------------------------------------------------------- |
+| Product pages  | `"iPhone 15 Pro Detail"`   | `pageName: "Product Detail"` + `productName` property                |
+| User profiles  | `"John Smith's Profile"`   | `pageName: "User Profile"` + `profileUserId` property                |
+| Article pages  | `"How to Cook Pasta"`      | `pageName: "Article"` + `articleTitle`, `articleCategory` properties |
+| Search results | `"Search: blue shoes"`     | `pageName: "Search Results"` + `searchTerm` property                 |
+| Category pages | `"Men's Running Shoes"`    | `pageName: "Category"` + `categoryName`, `categoryPath` properties   |
 
 > **Think of it this way**: `pageName` defines the **type** of page (e.g., "Product Detail", "Checkout", "Search Results"). Properties describe the **specific instance** (which product, what search term, etc.). This gives you unlimited variation tracking while staying well under the 1,000 limit.
 
@@ -90,36 +91,36 @@ Fullstory limits you to **1,000 unique `pageName` values**. Once exceeded, addit
 ```javascript
 FS('setProperties', {
   type: 'page',
-  properties: object     // Required: Key/value pairs
-});
+  properties: object, // Required: Key/value pairs
+})
 ```
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `type` | string | **Yes** | Must be `'page'` for page properties |
-| `properties` | object | **Yes** | Key/value pairs of page data |
+| Parameter    | Type   | Required | Description                          |
+| ------------ | ------ | -------- | ------------------------------------ |
+| `type`       | string | **Yes**  | Must be `'page'` for page properties |
+| `properties` | object | **Yes**  | Key/value pairs of page data         |
 
 ### Special Fields
 
-| Field | Behavior |
-|-------|----------|
+| Field      | Behavior                                                                                                                                                     |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `pageName` | Creates a named Page used **across all of Fullstory** - not just Journeys. Limited to 1,000 unique values. Takes precedence over URL-based page definitions. |
 
 ### Why pageName and Page Properties Matter Across Fullstory
 
 `pageName` and page properties aren't just for Journeys - they enrich **every event** that occurs on that page:
 
-| Fullstory Feature | How Page Properties Help |
-|-------------------|-------------------------|
-| **Search** | Find sessions where `pageName = "Checkout"` AND `cartValue > 500` |
-| **Segments** | Create segments like "Users who visited Product pages with priceRange = 'premium'" |
-| **Funnels** | Build funnels using pageName steps: "Home → Category → Product Detail → Cart → Checkout" |
-| **Journeys** | Map user flows across named pages |
-| **Metrics** | Track conversion rates per page type, filter by page properties |
-| **Dashboards** | Break down metrics by pageName or page properties |
-| **Event Analysis** | Every click, rage click, error on a page carries the page context |
+| Fullstory Feature  | How Page Properties Help                                                                 |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| **Search**         | Find sessions where `pageName = "Checkout"` AND `cartValue > 500`                        |
+| **Segments**       | Create segments like "Users who visited Product pages with priceRange = 'premium'"       |
+| **Funnels**        | Build funnels using pageName steps: "Home → Category → Product Detail → Cart → Checkout" |
+| **Journeys**       | Map user flows across named pages                                                        |
+| **Metrics**        | Track conversion rates per page type, filter by page properties                          |
+| **Dashboards**     | Break down metrics by pageName or page properties                                        |
+| **Event Analysis** | Every click, rage click, error on a page carries the page context                        |
 
 ```javascript
 // When you set page properties...
@@ -129,9 +130,9 @@ FS('setProperties', {
     pageName: 'Product Detail',
     productCategory: 'Electronics',
     productPrice: 999,
-    inStock: true
-  }
-});
+    inStock: true,
+  },
+})
 
 // ...every subsequent event on this page (clicks, errors, custom events)
 // is automatically enriched with this context, enabling queries like:
@@ -165,40 +166,41 @@ function setSearchPageProperties(searchResults) {
     properties: {
       // Page naming for Journeys
       pageName: 'Search Results',
-      
+
       // Search context
       searchTerm: searchResults.query,
-      searchType: searchResults.type,  // 'keyword', 'category', 'tag'
-      
+      searchType: searchResults.type, // 'keyword', 'category', 'tag'
+
       // Results info
       resultsCount: searchResults.total,
       resultsShown: searchResults.items.length,
       hasResults: searchResults.total > 0,
-      
+
       // Filters applied
       activeFilters: Object.keys(searchResults.filters),
       filterCount: Object.keys(searchResults.filters).length,
       priceRangeMin: searchResults.filters.price?.min,
       priceRangeMax: searchResults.filters.price?.max,
       categoryFilter: searchResults.filters.category,
-      
+
       // Sorting
       sortBy: searchResults.sortBy,
       sortOrder: searchResults.sortOrder,
-      
+
       // Pagination
       currentPage: searchResults.page,
-      totalPages: searchResults.totalPages
-    }
-  });
+      totalPages: searchResults.totalPages,
+    },
+  })
 }
 
 // Call when search results load
-const results = await performSearch(query, filters);
-setSearchPageProperties(results);
+const results = await performSearch(query, filters)
+setSearchPageProperties(results)
 ```
 
 **Why this is good:**
+
 - ✅ Named page for Journey mapping
 - ✅ Captures full search context
 - ✅ Records filter state for analysis
@@ -213,44 +215,45 @@ function setProductPageProperties(product) {
     type: 'page',
     properties: {
       pageName: 'Product Detail',
-      
+
       // Product identification
       productId: product.id,
       productSku: product.sku,
       productName: product.name,
-      
+
       // Categorization
       category: product.category,
       subcategory: product.subcategory,
       brand: product.brand,
-      
+
       // Pricing
       price: product.price,
       originalPrice: product.originalPrice,
       onSale: product.price < product.originalPrice,
       discountPercent: product.discountPercent,
       currency: product.currency,
-      
+
       // Inventory
       inStock: product.inStock,
       stockLevel: product.stockQuantity,
-      
+
       // Ratings
       averageRating: product.rating.average,
       reviewCount: product.rating.count,
-      
+
       // Variants
       availableColors: product.variants.colors,
-      availableSizes: product.variants.sizes
-    }
-  });
+      availableSizes: product.variants.sizes,
+    },
+  })
 }
 
 // Call when product page loads
-setProductPageProperties(productData);
+setProductPageProperties(productData)
 ```
 
 **Why this is good:**
+
 - ✅ Full product context for session search
 - ✅ Pricing data for conversion analysis
 - ✅ Inventory context for experience analysis
@@ -261,7 +264,6 @@ setProductPageProperties(productData);
 ```javascript
 // GOOD: Checkout with step and cart context
 class CheckoutPageProperties {
-  
   setCartReviewStep(cart) {
     FS('setProperties', {
       type: 'page',
@@ -269,22 +271,22 @@ class CheckoutPageProperties {
         pageName: 'Checkout',
         checkoutStep: 1,
         checkoutStepName: 'Cart Review',
-        
+
         cartId: cart.id,
         cartValue: cart.subtotal,
         cartItemCount: cart.items.length,
-        
+
         hasCoupon: !!cart.coupon,
         couponCode: cart.coupon,
         discountAmount: cart.discount,
-        
+
         estimatedShipping: cart.shipping.estimate,
         estimatedTax: cart.tax.estimate,
-        estimatedTotal: cart.total
-      }
-    });
+        estimatedTotal: cart.total,
+      },
+    })
   }
-  
+
   setShippingStep(cart, shippingOptions) {
     FS('setProperties', {
       type: 'page',
@@ -292,17 +294,17 @@ class CheckoutPageProperties {
         pageName: 'Checkout',
         checkoutStep: 2,
         checkoutStepName: 'Shipping',
-        
+
         cartValue: cart.subtotal,
         cartItemCount: cart.items.length,
-        
+
         shippingOptionsCount: shippingOptions.length,
         cheapestShipping: shippingOptions[0]?.price,
-        fastestShipping: shippingOptions.find(o => o.fastest)?.name
-      }
-    });
+        fastestShipping: shippingOptions.find((o) => o.fastest)?.name,
+      },
+    })
   }
-  
+
   setPaymentStep(cart, selectedShipping) {
     FS('setProperties', {
       type: 'page',
@@ -310,17 +312,17 @@ class CheckoutPageProperties {
         pageName: 'Checkout',
         checkoutStep: 3,
         checkoutStepName: 'Payment',
-        
+
         cartValue: cart.subtotal,
         shippingMethod: selectedShipping.name,
         shippingCost: selectedShipping.price,
-        
+
         totalBeforePayment: cart.total,
-        paymentMethodsAvailable: getAvailablePaymentMethods()
-      }
-    });
+        paymentMethodsAvailable: getAvailablePaymentMethods(),
+      },
+    })
   }
-  
+
   setConfirmationStep(order) {
     FS('setProperties', {
       type: 'page',
@@ -328,19 +330,20 @@ class CheckoutPageProperties {
         pageName: 'Order Confirmation',
         checkoutStep: 4,
         checkoutStepName: 'Confirmation',
-        
+
         orderId: order.id,
         orderTotal: order.total,
         paymentMethod: order.paymentMethod,
         shippingMethod: order.shippingMethod,
-        estimatedDelivery: order.estimatedDelivery
-      }
-    });
+        estimatedDelivery: order.estimatedDelivery,
+      },
+    })
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Same pageName groups checkout steps
 - ✅ Step numbers enable drop-off analysis
 - ✅ Cart value context throughout
@@ -352,82 +355,83 @@ class CheckoutPageProperties {
 // GOOD: Handle SPA route changes with page properties
 class SPAPagePropertyManager {
   constructor() {
-    this.routeHandlers = new Map();
-    this.setupRouteListener();
+    this.routeHandlers = new Map()
+    this.setupRouteListener()
   }
-  
+
   setupRouteListener() {
     // For React Router, Vue Router, etc.
-    window.addEventListener('popstate', () => this.handleRouteChange());
-    
+    window.addEventListener('popstate', () => this.handleRouteChange())
+
     // Intercept pushState/replaceState
-    const originalPushState = history.pushState;
+    const originalPushState = history.pushState
     history.pushState = (...args) => {
-      originalPushState.apply(history, args);
-      this.handleRouteChange();
-    };
+      originalPushState.apply(history, args)
+      this.handleRouteChange()
+    }
   }
-  
+
   registerRoute(pathPattern, handler) {
-    this.routeHandlers.set(pathPattern, handler);
+    this.routeHandlers.set(pathPattern, handler)
   }
-  
+
   handleRouteChange() {
-    const path = window.location.pathname;
-    
+    const path = window.location.pathname
+
     // Find matching route handler
     for (const [pattern, handler] of this.routeHandlers) {
-      const match = path.match(pattern);
+      const match = path.match(pattern)
       if (match) {
-        const properties = handler(match, path);
+        const properties = handler(match, path)
         if (properties) {
           FS('setProperties', {
             type: 'page',
-            properties
-          });
+            properties,
+          })
         }
-        return;
+        return
       }
     }
-    
+
     // Default page properties
     FS('setProperties', {
       type: 'page',
       properties: {
         pageName: this.inferPageName(path),
-        path: path
-      }
-    });
+        path: path,
+      },
+    })
   }
-  
+
   inferPageName(path) {
-    const segments = path.split('/').filter(Boolean);
-    return segments.length > 0 
-      ? segments.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
-      : 'Home';
+    const segments = path.split('/').filter(Boolean)
+    return segments.length > 0
+      ? segments.map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')
+      : 'Home'
   }
 }
 
 // Setup
-const pageManager = new SPAPagePropertyManager();
+const pageManager = new SPAPagePropertyManager()
 
 pageManager.registerRoute(/^\/products\/([^/]+)$/, (match) => ({
   pageName: 'Product Detail',
-  productSlug: match[1]
-}));
+  productSlug: match[1],
+}))
 
 pageManager.registerRoute(/^\/search$/, () => ({
-  pageName: 'Search Results'
+  pageName: 'Search Results',
   // Additional properties set by search handler
-}));
+}))
 
 pageManager.registerRoute(/^\/checkout\/(.+)$/, (match) => ({
   pageName: 'Checkout',
-  checkoutStepSlug: match[1]
-}));
+  checkoutStepSlug: match[1],
+}))
 ```
 
 **Why this is good:**
+
 - ✅ Handles SPA navigation properly
 - ✅ Consistent page naming
 - ✅ Route-specific properties
@@ -442,37 +446,38 @@ function setDashboardPageProperties(dashboardState) {
     type: 'page',
     properties: {
       pageName: 'Dashboard',
-      
+
       // View configuration
       dashboardView: dashboardState.activeView,
       dateRange: dashboardState.dateRange.label,
       dateRangeStart: dashboardState.dateRange.start,
       dateRangeEnd: dashboardState.dateRange.end,
-      
+
       // Active filters
       segmentFilter: dashboardState.segment,
       channelFilter: dashboardState.channel,
       regionFilter: dashboardState.region,
-      
+
       // Widget state
-      visibleWidgets: dashboardState.widgets.map(w => w.id),
+      visibleWidgets: dashboardState.widgets.map((w) => w.id),
       widgetCount: dashboardState.widgets.length,
-      
+
       // Data state
       dataLoaded: dashboardState.isLoaded,
       hasData: dashboardState.hasData,
-      recordCount: dashboardState.recordCount
-    }
-  });
+      recordCount: dashboardState.recordCount,
+    },
+  })
 }
 
 // Update properties when dashboard state changes
 dashboardStore.subscribe((state) => {
-  setDashboardPageProperties(state);
-});
+  setDashboardPageProperties(state)
+})
 ```
 
 **Why this is good:**
+
 - ✅ Captures dashboard configuration
 - ✅ Tracks filter/segment context
 - ✅ Updates on state changes
@@ -487,44 +492,45 @@ function setArticlePageProperties(article) {
     type: 'page',
     properties: {
       pageName: 'Article',
-      
+
       // Content identification
       articleId: article.id,
       articleSlug: article.slug,
       articleTitle: article.title,
-      
+
       // Categorization
       category: article.category,
       tags: article.tags,
-      contentType: article.type,  // 'blog', 'tutorial', 'news'
-      
+      contentType: article.type, // 'blog', 'tutorial', 'news'
+
       // Author info
       authorId: article.author.id,
       authorName: article.author.name,
-      
+
       // Dates
       publishDate: article.publishedAt,
       lastUpdated: article.updatedAt,
-      
+
       // Content metrics
       wordCount: article.wordCount,
       estimatedReadTime: article.readTime,
       hasVideo: article.hasVideo,
       imageCount: article.images.length,
-      
+
       // Engagement indicators
       commentCount: article.comments.count,
       likeCount: article.likes,
-      shareCount: article.shares
-    }
-  });
+      shareCount: article.shares,
+    },
+  })
 }
 
 // Call when article loads
-setArticlePageProperties(articleData);
+setArticlePageProperties(articleData)
 ```
 
 **Why this is good:**
+
 - ✅ Rich content metadata
 - ✅ Enables content performance analysis
 - ✅ Author attribution for patterns
@@ -542,17 +548,19 @@ FS('setProperties', {
   type: 'page',
   properties: {
     category: 'Electronics',
-    sortBy: 'price'
-  }
-});
+    sortBy: 'price',
+  },
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Page won't appear in Journeys
 - ❌ Hard to identify page type in search
 - ❌ Missing semantic naming
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Include pageName
 FS('setProperties', {
@@ -560,9 +568,9 @@ FS('setProperties', {
   properties: {
     pageName: 'Category Page',
     category: 'Electronics',
-    sortBy: 'price'
-  }
-});
+    sortBy: 'price',
+  },
+})
 ```
 
 ### Example 2: Wrong Type Parameter
@@ -570,29 +578,31 @@ FS('setProperties', {
 ```javascript
 // BAD: Using 'user' type for page data
 FS('setProperties', {
-  type: 'user',  // Wrong type!
+  type: 'user', // Wrong type!
   properties: {
     currentPage: 'Search Results',
-    searchTerm: 'laptops'
-  }
-});
+    searchTerm: 'laptops',
+  },
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Page context becomes user property
 - ❌ Pollutes user profile with transient data
 - ❌ Won't reset on navigation
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use 'page' type
 FS('setProperties', {
   type: 'page',
   properties: {
     pageName: 'Search Results',
-    searchTerm: 'laptops'
-  }
-});
+    searchTerm: 'laptops',
+  },
+})
 ```
 
 ### Example 3: Exceeding pageName Limit
@@ -605,30 +615,32 @@ function setProductPage(product) {
     properties: {
       // BAD: Product name as pageName creates 1000s of unique values
       pageName: product.name,
-      productId: product.id
-    }
-  });
+      productId: product.id,
+    },
+  })
 }
 ```
 
 **Why this is bad:**
+
 - ❌ pageName limited to 1,000 unique values
 - ❌ Will be ignored once limit reached
 - ❌ Pollutes Journey definitions
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Generic pageName, specific properties
 function setProductPage(product) {
   FS('setProperties', {
     type: 'page',
     properties: {
-      pageName: 'Product Detail',  // Generic
-      productName: product.name,   // Specific as property
+      pageName: 'Product Detail', // Generic
+      productName: product.name, // Specific as property
       productId: product.id,
-      category: product.category
-    }
-  });
+      category: product.category,
+    },
+  })
 }
 ```
 
@@ -640,29 +652,31 @@ function updateFilters(filters) {
   FS('setProperties', {
     type: 'page',
     properties: {
-      pageName: `Search - ${filters.category}`,  // BAD: Changes pageName
-      filters: Object.keys(filters)
-    }
-  });
+      pageName: `Search - ${filters.category}`, // BAD: Changes pageName
+      filters: Object.keys(filters),
+    },
+  })
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Later pageName calls are IGNORED
 - ❌ Only first pageName sticks
 - ❌ Creates confusion and missing data
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Set pageName once, update other properties
 function setSearchPage(initialData) {
   FS('setProperties', {
     type: 'page',
     properties: {
-      pageName: 'Search Results',  // Set once
-      searchTerm: initialData.query
-    }
-  });
+      pageName: 'Search Results', // Set once
+      searchTerm: initialData.query,
+    },
+  })
 }
 
 function updateFilters(filters) {
@@ -672,9 +686,9 @@ function updateFilters(filters) {
     properties: {
       activeCategory: filters.category,
       filterCount: Object.keys(filters).length,
-      filters: Object.keys(filters)
-    }
-  });
+      filters: Object.keys(filters),
+    },
+  })
 }
 ```
 
@@ -686,37 +700,39 @@ FS('setProperties', {
   type: 'page',
   properties: {
     pageName: 'Dashboard',
-    userId: user.id,           // BAD: User data
-    userEmail: user.email,     // BAD: User data
-    userPlan: user.plan        // BAD: User data
-  }
-});
+    userId: user.id, // BAD: User data
+    userEmail: user.email, // BAD: User data
+    userPlan: user.plan, // BAD: User data
+  },
+})
 ```
 
 **Why this is bad:**
+
 - ❌ User data should be user properties
 - ❌ Will reset on navigation
 - ❌ Wrong scope for the data
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Separate user and page data
 FS('setIdentity', {
   uid: user.id,
   properties: {
     email: user.email,
-    plan: user.plan
-  }
-});
+    plan: user.plan,
+  },
+})
 
 FS('setProperties', {
   type: 'page',
   properties: {
     pageName: 'Dashboard',
     dashboardView: 'analytics',
-    dateRange: 'last30days'
-  }
-});
+    dateRange: 'last30days',
+  },
+})
 ```
 
 ### Example 6: Not Calling on SPA Navigation
@@ -727,19 +743,21 @@ document.addEventListener('DOMContentLoaded', () => {
   FS('setProperties', {
     type: 'page',
     properties: {
-      pageName: 'Home'
-    }
-  });
+      pageName: 'Home',
+    },
+  })
   // Properties never updated for SPA navigation!
-});
+})
 ```
 
 **Why this is bad:**
+
 - ❌ SPA navigations don't trigger DOMContentLoaded
 - ❌ Page properties become stale
 - ❌ Wrong context after navigation
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Handle SPA navigation
 function setPageProperties(route) {
@@ -747,18 +765,18 @@ function setPageProperties(route) {
     type: 'page',
     properties: {
       pageName: route.name,
-      ...route.properties
-    }
-  });
+      ...route.properties,
+    },
+  })
 }
 
 // Call on initial load
-setPageProperties(getCurrentRoute());
+setPageProperties(getCurrentRoute())
 
 // Call on navigation
 router.on('routeChange', (route) => {
-  setPageProperties(route);
-});
+  setPageProperties(route)
+})
 ```
 
 ---
@@ -771,120 +789,120 @@ router.on('routeChange', (route) => {
 // Centralized page property management
 class PagePropertyManager {
   constructor() {
-    this.currentPageName = null;
-    this.baseProperties = {};
+    this.currentPageName = null
+    this.baseProperties = {}
   }
-  
+
   // Initialize page with base properties
   initialize(pageName, baseProps = {}) {
-    this.currentPageName = pageName;
-    this.baseProperties = baseProps;
-    
+    this.currentPageName = pageName
+    this.baseProperties = baseProps
+
     FS('setProperties', {
       type: 'page',
       properties: {
         pageName,
         ...baseProps,
-        pageLoadTime: new Date().toISOString()
-      }
-    });
+        pageLoadTime: new Date().toISOString(),
+      },
+    })
   }
-  
+
   // Add additional properties (merges with existing)
   addProperties(additionalProps) {
     FS('setProperties', {
       type: 'page',
-      properties: additionalProps
-    });
+      properties: additionalProps,
+    })
   }
-  
+
   // Update specific property
   updateProperty(key, value) {
     FS('setProperties', {
       type: 'page',
       properties: {
-        [key]: value
-      }
-    });
+        [key]: value,
+      },
+    })
   }
 }
 
 // Usage
-const pageProps = new PagePropertyManager();
+const pageProps = new PagePropertyManager()
 
 // On page load
 pageProps.initialize('Product Listing', {
   category: 'Electronics',
-  totalProducts: 150
-});
+  totalProducts: 150,
+})
 
 // When user applies filter
 pageProps.addProperties({
   activeFilters: ['brand:Apple', 'price:500-1000'],
-  filteredCount: 23
-});
+  filteredCount: 23,
+})
 ```
 
 ### Pattern 2: Route-Based Page Properties (React)
 
 ```jsx
 // React component for automatic page properties
-import { useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import {useEffect} from 'react'
+import {useLocation, useParams} from 'react-router-dom'
 
-function PagePropertySetter({ pageName, children, getProperties }) {
-  const location = useLocation();
-  const params = useParams();
-  
+function PagePropertySetter({pageName, children, getProperties}) {
+  const location = useLocation()
+  const params = useParams()
+
   useEffect(() => {
-    const properties = getProperties ? getProperties(params, location) : {};
-    
+    const properties = getProperties ? getProperties(params, location) : {}
+
     FS('setProperties', {
       type: 'page',
       properties: {
         pageName,
         ...properties,
         path: location.pathname,
-        queryParams: Object.fromEntries(new URLSearchParams(location.search))
-      }
-    });
-  }, [pageName, location, params, getProperties]);
-  
-  return children;
+        queryParams: Object.fromEntries(new URLSearchParams(location.search)),
+      },
+    })
+  }, [pageName, location, params, getProperties])
+
+  return children
 }
 
 // Usage
 function App() {
   return (
     <Routes>
-      <Route 
-        path="/products/:category" 
+      <Route
+        path="/products/:category"
         element={
-          <PagePropertySetter 
+          <PagePropertySetter
             pageName="Product Listing"
             getProperties={(params) => ({
-              category: params.category
+              category: params.category,
             })}
           >
             <ProductListingPage />
           </PagePropertySetter>
-        } 
+        }
       />
-      <Route 
-        path="/product/:id" 
+      <Route
+        path="/product/:id"
         element={
-          <PagePropertySetter 
+          <PagePropertySetter
             pageName="Product Detail"
             getProperties={(params) => ({
-              productId: params.id
+              productId: params.id,
             })}
           >
             <ProductDetailPage />
           </PagePropertySetter>
-        } 
+        }
       />
     </Routes>
-  );
+  )
 }
 ```
 
@@ -894,22 +912,22 @@ function App() {
 // Complete search page property management
 class SearchPageProperties {
   constructor() {
-    this.initialized = false;
+    this.initialized = false
   }
-  
+
   initialize() {
     FS('setProperties', {
       type: 'page',
       properties: {
-        pageName: 'Search Results'
-      }
-    });
-    this.initialized = true;
+        pageName: 'Search Results',
+      },
+    })
+    this.initialized = true
   }
-  
+
   setSearchContext(query, results) {
-    if (!this.initialized) this.initialize();
-    
+    if (!this.initialized) this.initialize()
+
     FS('setProperties', {
       type: 'page',
       properties: {
@@ -917,11 +935,11 @@ class SearchPageProperties {
         searchCategory: query.category,
         resultsCount: results.total,
         hasResults: results.total > 0,
-        responseTime: results.timing
-      }
-    });
+        responseTime: results.timing,
+      },
+    })
   }
-  
+
   setFilters(filters) {
     FS('setProperties', {
       type: 'page',
@@ -931,29 +949,29 @@ class SearchPageProperties {
         priceMin: filters.price?.min,
         priceMax: filters.price?.max,
         brandFilters: filters.brands,
-        ratingFilter: filters.minRating
-      }
-    });
+        ratingFilter: filters.minRating,
+      },
+    })
   }
-  
+
   setSorting(sort) {
     FS('setProperties', {
       type: 'page',
       properties: {
         sortField: sort.field,
-        sortDirection: sort.direction
-      }
-    });
+        sortDirection: sort.direction,
+      },
+    })
   }
-  
+
   setPagination(page, total) {
     FS('setProperties', {
       type: 'page',
       properties: {
         currentPage: page,
-        totalPages: total
-      }
-    });
+        totalPages: total,
+      },
+    })
   }
 }
 ```
@@ -970,9 +988,9 @@ FS('setIdentity', {
   uid: user.id,
   properties: {
     plan: 'enterprise',
-    role: 'admin'
-  }
-});
+    role: 'admin',
+  },
+})
 
 // Page properties: where they are and what they're doing
 FS('setProperties', {
@@ -980,9 +998,9 @@ FS('setProperties', {
   properties: {
     pageName: 'Reports Dashboard',
     reportType: 'revenue',
-    dateRange: 'last_quarter'
-  }
-});
+    dateRange: 'last_quarter',
+  },
+})
 ```
 
 ### Page Properties + Events
@@ -994,17 +1012,17 @@ FS('setProperties', {
   properties: {
     pageName: 'Product Detail',
     productId: 'SKU-123',
-    price: 99.99
-  }
-});
+    price: 99.99,
+  },
+})
 
 // Events inherit page context for search
 FS('trackEvent', {
   name: 'Add to Cart',
   properties: {
-    quantity: 2
-  }
-});
+    quantity: 2,
+  },
+})
 // This event is searchable via: "Add to Cart on Product Detail page"
 ```
 
@@ -1017,9 +1035,9 @@ FS('setProperties', {
   properties: {
     pageName: 'Search Results',
     searchTerm: 'laptop',
-    resultsCount: 50
-  }
-});
+    resultsCount: 50,
+  },
+})
 
 // Element-level context (on each product card)
 // data-fs-properties-schema for product-specific data
@@ -1035,11 +1053,13 @@ FS('setProperties', {
 **Symptom**: Pages don't appear in Journey builder
 
 **Common Causes**:
+
 1. ❌ pageName never set
 2. ❌ Exceeded 1,000 unique pageName limit
 3. ❌ Trying to change pageName on same page
 
 **Solutions**:
+
 - ✅ Always set pageName first
 - ✅ Use generic pageName values
 - ✅ Check pageName count in Fullstory
@@ -1049,11 +1069,13 @@ FS('setProperties', {
 **Symptom**: Properties disappear mid-session
 
 **Common Causes**:
+
 1. ❌ URL path changed (SPA navigation)
 2. ❌ Using user type instead of page type
 3. ❌ Properties overwritten, not merged
 
 **Solutions**:
+
 - ✅ Re-set properties after navigation
 - ✅ Verify type: 'page' is used
 - ✅ Properties merge automatically
@@ -1063,11 +1085,13 @@ FS('setProperties', {
 **Symptom**: All SPA pages have same properties
 
 **Common Causes**:
+
 1. ❌ Not calling setProperties on navigation
 2. ❌ Only setting on initial page load
 3. ❌ Route change not detected
 
 **Solutions**:
+
 - ✅ Listen for route changes
 - ✅ Set properties on each navigation
 - ✅ Use router hooks/events
@@ -1077,16 +1101,19 @@ FS('setProperties', {
 ## LIMITS AND CONSTRAINTS
 
 ### pageName Limits
+
 - Maximum 1,000 unique pageName values site-wide
 - Additional pageNames are ignored
 - Use generic names, not dynamic values
 
 ### Property Limits
+
 - 50 unique properties per page
 - 500 unique properties across all pages
 - Property names: alphanumeric, underscores, hyphens
 
 ### Call Frequency
+
 - **Sustained**: 30 calls per page per minute
 - **Burst**: 10 calls per second
 
@@ -1131,5 +1158,4 @@ When helping developers implement Page Properties:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's Page Properties API correctly for web applications.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's Page Properties API correctly for web applications._

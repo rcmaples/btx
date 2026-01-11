@@ -64,13 +64,19 @@ export function ProfileEditForm({profile}: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-lg">
       {error && (
-        <div className="p-md bg-red-50 dark:bg-red-950/30 border border-error text-error" role="alert">
+        <div
+          className="p-md bg-red-50 dark:bg-red-950/30 border border-error text-error"
+          role="alert"
+        >
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-md bg-green-50 dark:bg-green-950/30 border border-success text-success" role="status">
+        <div
+          className="p-md bg-green-50 dark:bg-green-950/30 border border-success text-success"
+          role="status"
+        >
           Profile updated successfully! Redirecting...
         </div>
       )}

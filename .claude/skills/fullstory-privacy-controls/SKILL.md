@@ -20,6 +20,7 @@ related_skills:
 Fullstory's Privacy Controls allow developers to control what data is captured and sent to Fullstory servers. This is implemented through CSS classes that define how elements and their content are treated during session recording.
 
 **Critical Understanding**: Privacy controls operate at the DOM level in the user's browser:
+
 - **Excluded content**: Never leaves the user's device at all - completely ignored
 - **Masked content**: The **actual text never leaves the device**. It is replaced locally (in the browser) with a wireframe approximation before anything is sent to Fullstory's servers. Fullstory only receives the wireframed placeholder, never the original text.
 
@@ -27,11 +28,11 @@ Fullstory's Privacy Controls allow developers to control what data is captured a
 
 ### The Three Privacy Modes
 
-| Mode | CSS Class | Data Leaves Device | Events Captured | Best For |
-|------|-----------|-------------------|-----------------|----------|
-| **Exclude** | `.fs-exclude` | ❌ Nothing | ❌ No | Regulated data, secrets |
-| **Mask** | `.fs-mask` | ⚠️ Structure only (text **never** sent - wireframed locally) | ✅ Yes | PII, names, emails |
-| **Unmask** | `.fs-unmask` | ✅ Everything | ✅ Yes | Public content |
+| Mode        | CSS Class     | Data Leaves Device                                           | Events Captured | Best For                |
+| ----------- | ------------- | ------------------------------------------------------------ | --------------- | ----------------------- |
+| **Exclude** | `.fs-exclude` | ❌ Nothing                                                   | ❌ No           | Regulated data, secrets |
+| **Mask**    | `.fs-mask`    | ⚠️ Structure only (text **never** sent - wireframed locally) | ✅ Yes          | PII, names, emails      |
+| **Unmask**  | `.fs-unmask`  | ✅ Everything                                                | ✅ Yes          | Public content          |
 
 ### Privacy Hierarchy (Most → Least Restrictive)
 
@@ -69,6 +70,7 @@ Fullstory's Privacy Controls allow developers to control what data is captured a
 ### Default Exclusions
 
 Fullstory automatically excludes:
+
 - `input[type=password]` - All password fields
 - `[autocomplete^=cc-]` - Credit card fields (number, CVV, expiry)
 - `input[type=hidden]` - Hidden inputs
@@ -81,10 +83,10 @@ Fullstory offers a **Private by Default** mode that inverts the default capture 
 
 ### How Private by Default Works
 
-| Mode | Default Behavior | When to Use |
-|------|------------------|-------------|
-| **Standard** | Everything captured (unmask) unless excluded/masked | Low-sensitivity applications (marketing sites) |
-| **Private by Default** | Everything masked unless explicitly unmasked | Sensitive applications (banking, healthcare, SaaS) |
+| Mode                   | Default Behavior                                    | When to Use                                        |
+| ---------------------- | --------------------------------------------------- | -------------------------------------------------- |
+| **Standard**           | Everything captured (unmask) unless excluded/masked | Low-sensitivity applications (marketing sites)     |
+| **Private by Default** | Everything masked unless explicitly unmasked        | Sensitive applications (banking, healthcare, SaaS) |
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -113,14 +115,14 @@ Private by Default is enabled via Fullstory Support or during account setup:
 
 ### When to Use Private by Default
 
-| Scenario | Recommendation |
-|----------|---------------|
-| **Healthcare applications** | ✅ Highly recommended |
-| **Banking/financial services** | ✅ Highly recommended |
-| **Applications with heavy PII** | ✅ Highly recommended |
-| **Enterprise SaaS (multi-tenant)** | ⚠️ Recommended |
-| **E-commerce (product pages)** | ⚠️ Consider - may need extensive unmasking |
-| **Marketing/content sites** | ❌ Probably overkill |
+| Scenario                           | Recommendation                             |
+| ---------------------------------- | ------------------------------------------ |
+| **Healthcare applications**        | ✅ Highly recommended                      |
+| **Banking/financial services**     | ✅ Highly recommended                      |
+| **Applications with heavy PII**    | ✅ Highly recommended                      |
+| **Enterprise SaaS (multi-tenant)** | ⚠️ Recommended                             |
+| **E-commerce (product pages)**     | ⚠️ Consider - may need extensive unmasking |
+| **Marketing/content sites**        | ❌ Probably overkill                       |
 
 ### Unmasking Strategy for Private by Default
 
@@ -128,28 +130,31 @@ When Private by Default is enabled, use `.fs-unmask` to reveal safe content:
 
 ```html
 <!-- Private by Default: Must explicitly unmask safe content -->
-<body>  <!-- Everything masked by default -->
-  
+<body>
+  <!-- Everything masked by default -->
+
   <!-- Unmask navigation (no PII) -->
   <nav class="fs-unmask">
     <a href="/products">Products</a>
     <a href="/pricing">Pricing</a>
     <a href="/about">About</a>
   </nav>
-  
+
   <!-- Unmask product info (no PII) -->
   <div class="product-card fs-unmask">
     <h2>Product Name</h2>
     <p class="price">$99.99</p>
     <button>Add to Cart</button>
   </div>
-  
+
   <!-- Customer info stays masked (default) -->
   <div class="customer-details">
-    <p>Name: John Smith</p>  <!-- Masked by default ✓ -->
-    <p>Email: john@example.com</p>  <!-- Masked by default ✓ -->
+    <p>Name: John Smith</p>
+    <!-- Masked by default ✓ -->
+    <p>Email: john@example.com</p>
+    <!-- Masked by default ✓ -->
   </div>
-  
+
   <!-- Payment still excluded (always) -->
   <div class="payment-form fs-exclude">
     <input type="text" name="cardNumber" />
@@ -214,14 +219,15 @@ Modern CSS build tools may remove "unused" classes, breaking privacy controls:
 module.exports = {
   safelist: [
     'fs-exclude',
-    'fs-mask', 
+    'fs-mask',
     'fs-unmask',
-    'fs-block'  // legacy
-  ]
+    'fs-block', // legacy
+  ],
 }
 ```
 
 **Always verify** privacy classes survive your build process by:
+
 1. Inspecting production HTML for `fs-*` classes
 2. Testing in Fullstory to confirm masking/exclusion works
 3. Using CSS selector rules in Settings as backup
@@ -237,20 +243,16 @@ module.exports = {
 <div class="login-form">
   <label for="email">Email</label>
   <input type="email" id="email" name="email" />
-  
+
   <label for="password">Password</label>
-  <input 
-    type="password" 
-    id="password" 
-    name="password" 
-    class="fs-exclude"
-  />
-  
+  <input type="password" id="password" name="password" class="fs-exclude" />
+
   <button type="submit">Login</button>
 </div>
 ```
 
 **Why this is good:**
+
 - ✅ Explicit exclusion (doesn't rely on auto-detection)
 - ✅ Password never leaves device
 - ✅ Login button clicks still captured
@@ -264,16 +266,18 @@ module.exports = {
   <!-- Mask PII but allow click tracking -->
   <div class="profile-header fs-mask">
     <img src="avatar.jpg" alt="User avatar" />
-    <h2>John Smith</h2>  <!-- Masked: appears as "████ █████" -->
-    <p>john.smith@company.com</p>  <!-- Masked -->
+    <h2>John Smith</h2>
+    <!-- Masked: appears as "████ █████" -->
+    <p>john.smith@company.com</p>
+    <!-- Masked -->
   </div>
-  
+
   <!-- Public content - unmask -->
   <div class="profile-actions fs-unmask">
     <button>Edit Profile</button>
     <button>Settings</button>
   </div>
-  
+
   <!-- Sensitive financial data - exclude entirely -->
   <div class="payment-methods fs-exclude">
     <h3>Saved Payment Methods</h3>
@@ -283,6 +287,7 @@ module.exports = {
 ```
 
 **Why this is good:**
+
 - ✅ Name and email masked (visible structure, no text)
 - ✅ Action buttons fully visible for UX analysis
 - ✅ Payment info completely excluded (not even structure)
@@ -298,7 +303,7 @@ module.exports = {
     <legend>Medical History</legend>
     <label>Current Medications</label>
     <textarea name="medications"></textarea>
-    
+
     <label>Medical Conditions</label>
     <div class="condition-checkboxes">
       <label><input type="checkbox" name="diabetes" /> Diabetes</label>
@@ -306,20 +311,20 @@ module.exports = {
       <!-- Even checkbox interactions are excluded -->
     </div>
   </fieldset>
-  
+
   <!-- Appointment preferences can be masked -->
   <fieldset class="fs-mask">
     <legend>Appointment Preferences</legend>
     <label>Preferred Date</label>
     <input type="date" name="preferred_date" />
-    
+
     <label>Preferred Time</label>
     <select name="preferred_time">
       <option>Morning</option>
       <option>Afternoon</option>
     </select>
   </fieldset>
-  
+
   <!-- Navigation elements unmasked -->
   <div class="form-navigation fs-unmask">
     <button type="button">Previous</button>
@@ -329,6 +334,7 @@ module.exports = {
 ```
 
 **Why this is good:**
+
 - ✅ PHI (medications, conditions) completely excluded
 - ✅ HIPAA compliance - no health data leaves device
 - ✅ Non-PHI preferences masked (structure visible)
@@ -349,7 +355,7 @@ module.exports = {
     </div>
     <div class="total">Total: $109.98</div>
   </section>
-  
+
   <!-- Shipping address - mask the details -->
   <section class="shipping-address fs-mask">
     <h2>Shipping To</h2>
@@ -357,7 +363,7 @@ module.exports = {
     <p class="street">123 Main Street</p>
     <p class="city-state">San Francisco, CA 94102</p>
   </section>
-  
+
   <!-- Payment - exclude entirely -->
   <section class="payment-info fs-exclude">
     <h2>Payment Method</h2>
@@ -365,7 +371,7 @@ module.exports = {
     <input type="text" name="expiry" placeholder="MM/YY" />
     <input type="text" name="cvv" placeholder="CVV" />
   </section>
-  
+
   <!-- Action buttons visible -->
   <div class="actions fs-unmask">
     <button>Edit Cart</button>
@@ -375,6 +381,7 @@ module.exports = {
 ```
 
 **Why this is good:**
+
 - ✅ Order details visible (useful for conversion analysis)
 - ✅ Shipping PII masked but structure shows flow
 - ✅ Payment card data completely excluded (PCI compliance)
@@ -390,7 +397,7 @@ module.exports = {
     <span>Results for: "wireless headphones"</span>
     <span>50 results</span>
   </div>
-  
+
   <!-- Product grid - unmask for analysis -->
   <div class="product-grid fs-unmask">
     <div class="product-card">
@@ -401,19 +408,23 @@ module.exports = {
     </div>
     <!-- More products... -->
   </div>
-  
+
   <!-- Customer reviews might contain names -->
   <div class="reviews fs-mask">
     <div class="review">
-      <span class="author">Sarah J.</span>  <!-- Masked -->
-      <span class="text">Great product!</span>  <!-- Masked -->
-      <span class="rating fs-unmask">★★★★★</span>  <!-- Unmasked -->
+      <span class="author">Sarah J.</span>
+      <!-- Masked -->
+      <span class="text">Great product!</span>
+      <!-- Masked -->
+      <span class="rating fs-unmask">★★★★★</span>
+      <!-- Unmasked -->
     </div>
   </div>
 </div>
 ```
 
 **Why this is good:**
+
 - ✅ Search terms visible for search analytics
 - ✅ Product info visible for conversion analysis
 - ✅ Reviewer names/content masked (privacy)
@@ -428,7 +439,7 @@ import React from 'react';
 // Text Input - automatically masked
 export function TextInput({ label, sensitive = false, ...props }) {
   const privacyClass = sensitive ? 'fs-exclude' : 'fs-mask';
-  
+
   return (
     <div className={`form-field ${privacyClass}`}>
       <label>{label}</label>
@@ -452,11 +463,11 @@ export function CreditCardInput({ label, ...props }) {
   return (
     <div className="form-field fs-exclude">
       <label>{label}</label>
-      <input 
-        type="text" 
+      <input
+        type="text"
         inputMode="numeric"
         autoComplete="cc-number"
-        {...props} 
+        {...props}
       />
     </div>
   );
@@ -477,14 +488,14 @@ function CheckoutForm() {
     <form>
       <TextInput label="Full Name" name="name" />  {/* Masked */}
       <TextInput label="Email" name="email" />     {/* Masked */}
-      <TextInput 
-        label="SSN" 
-        name="ssn" 
+      <TextInput
+        label="SSN"
+        name="ssn"
         sensitive={true}  {/* Excluded */}
       />
       <PasswordInput label="Password" />  {/* Excluded */}
       <CreditCardInput label="Card Number" />  {/* Excluded */}
-      
+
       <PublicContent>
         <button type="submit">Submit</button>  {/* Visible */}
       </PublicContent>
@@ -494,6 +505,7 @@ function CheckoutForm() {
 ```
 
 **Why this is good:**
+
 - ✅ Privacy built into component library
 - ✅ Consistent application across app
 - ✅ Sensitive prop for high-risk fields
@@ -512,17 +524,20 @@ function CheckoutForm() {
   <h1>Checkout</h1>
   <div class="items">...</div>
   <div class="payment">...</div>
-  <button>Place Order</button>  <!-- Can't see conversions! -->
+  <button>Place Order</button>
+  <!-- Can't see conversions! -->
 </div>
 ```
 
 **Why this is bad:**
+
 - ❌ No visibility into checkout flow
 - ❌ Can't analyze conversion funnel
 - ❌ Button clicks not captured
 - ❌ Overkill - only payment needs exclusion
 
 **CORRECTED VERSION:**
+
 ```html
 <!-- GOOD: Granular privacy -->
 <div class="checkout-page">
@@ -540,42 +555,30 @@ function CheckoutForm() {
 <form>
   <!-- Not excluded! No password type or autocomplete -->
   <input name="social_security_number" placeholder="SSN" />
-  
+
   <!-- Not excluded! Custom credit card field -->
   <input name="credit_card" placeholder="Card Number" />
-  
+
   <!-- Not excluded! No standard pattern -->
   <input name="secret_pin" placeholder="PIN" />
 </form>
 ```
 
 **Why this is bad:**
+
 - ❌ SSN field not auto-detected (no `type=password`)
 - ❌ Credit card not auto-detected (no `autocomplete=cc-number`)
 - ❌ PIN code sent in clear text
 - ❌ Relying on convention without verification
 
 **CORRECTED VERSION:**
+
 ```html
 <!-- GOOD: Explicit exclusion for all sensitive fields -->
 <form>
-  <input 
-    name="social_security_number" 
-    placeholder="SSN" 
-    class="fs-exclude"
-  />
-  <input 
-    name="credit_card" 
-    placeholder="Card Number" 
-    class="fs-exclude"
-    autocomplete="cc-number"
-  />
-  <input 
-    name="secret_pin" 
-    placeholder="PIN" 
-    type="password"
-    class="fs-exclude"
-  />
+  <input name="social_security_number" placeholder="SSN" class="fs-exclude" />
+  <input name="credit_card" placeholder="Card Number" class="fs-exclude" autocomplete="cc-number" />
+  <input name="secret_pin" placeholder="PIN" type="password" class="fs-exclude" />
 </form>
 ```
 
@@ -584,19 +587,24 @@ function CheckoutForm() {
 ```html
 <!-- BAD: Using mask for highly sensitive data -->
 <div class="account-info fs-mask">
-  <p>SSN: 123-45-6789</p>  <!-- BAD: Should be excluded! -->
-  <p>Bank Account: 12345678</p>  <!-- BAD: Should be excluded! -->
-  <p>Routing: 021000021</p>  <!-- BAD: Should be excluded! -->
+  <p>SSN: 123-45-6789</p>
+  <!-- BAD: Should be excluded! -->
+  <p>Bank Account: 12345678</p>
+  <!-- BAD: Should be excluded! -->
+  <p>Routing: 021000021</p>
+  <!-- BAD: Should be excluded! -->
 </div>
 ```
 
 **Why this is bad:**
+
 - ❌ Mask only hides text, structure is still sent
 - ❌ Financial data should be excluded entirely
 - ❌ Even wireframe could reveal sensitive info format
 - ❌ Regulatory risk (PCI, etc.)
 
 **CORRECTED VERSION:**
+
 ```html
 <!-- GOOD: Exclude highly sensitive financial data -->
 <div class="account-info fs-exclude">
@@ -612,9 +620,11 @@ function CheckoutForm() {
 <!-- BAD: Parent masked but sensitive child needs exclusion -->
 <div class="user-card fs-mask">
   <h3>Account Details</h3>
-  <p>Name: John Smith</p>  <!-- Masked - OK -->
-  <p>Email: john@example.com</p>  <!-- Masked - OK -->
-  
+  <p>Name: John Smith</p>
+  <!-- Masked - OK -->
+  <p>Email: john@example.com</p>
+  <!-- Masked - OK -->
+
   <!-- BAD: Credit card inherits mask, but needs exclude! -->
   <div class="saved-payment">
     <p>Card: **** **** **** 4242</p>
@@ -624,19 +634,21 @@ function CheckoutForm() {
 ```
 
 **Why this is bad:**
+
 - ❌ Payment info only masked, not excluded
 - ❌ Card structure visible
 - ❌ Could infer card type from structure
 - ❌ PCI compliance issue
 
 **CORRECTED VERSION:**
+
 ```html
 <!-- GOOD: Override to exclude payment section -->
 <div class="user-card fs-mask">
   <h3>Account Details</h3>
   <p>Name: John Smith</p>
   <p>Email: john@example.com</p>
-  
+
   <!-- Explicitly exclude payment section -->
   <div class="saved-payment fs-exclude">
     <p>Card: **** **** **** 4242</p>
@@ -657,18 +669,20 @@ function showUserDetails(user) {
       <p>Phone: ${user.phone}</p>
       <p>SSN: ${user.ssn}</p>
     </div>
-  `;
+  `
   // No privacy classes! All content visible
-  document.body.insertAdjacentHTML('beforeend', html);
+  document.body.insertAdjacentHTML('beforeend', html)
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Dynamically created content has no privacy
 - ❌ SSN exposed in plain text
 - ❌ All PII visible in replay
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Apply privacy classes to dynamic content
 function showUserDetails(user) {
@@ -679,8 +693,8 @@ function showUserDetails(user) {
       <p>Phone: ${user.phone}</p>
       <p class="fs-exclude">SSN: ${user.ssn}</p>
     </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', html);
+  `
+  document.body.insertAdjacentHTML('beforeend', html)
 }
 ```
 
@@ -689,30 +703,32 @@ function showUserDetails(user) {
 ```javascript
 // BAD: Logging sensitive data to console (captured by FS)
 function processPayment(cardNumber, cvv) {
-  console.log('Processing payment:', cardNumber, cvv);  // BAD!
-  console.log('User SSN:', user.ssn);  // BAD!
-  
+  console.log('Processing payment:', cardNumber, cvv) // BAD!
+  console.log('User SSN:', user.ssn) // BAD!
+
   // Process payment...
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Console logs are captured by Fullstory
 - ❌ Card number and CVV in console
 - ❌ SSN in console
 - ❌ Privacy classes don't affect console
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Never log sensitive data, or disable console capture
 function processPayment(cardNumber, cvv) {
-  console.log('Processing payment for card ending:', cardNumber.slice(-4));
+  console.log('Processing payment for card ending:', cardNumber.slice(-4))
   // Or use FS.log which you control:
-  FS('log', { 
-    level: 'info', 
-    msg: 'Payment processing initiated' 
-  });
-  
+  FS('log', {
+    level: 'info',
+    msg: 'Payment processing initiated',
+  })
+
   // Process payment...
 }
 
@@ -725,36 +741,36 @@ function processPayment(cardNumber, cvv) {
 
 ### What Gets Captured?
 
-| Content Type | Exclude | Mask | Unmask |
-|--------------|---------|------|--------|
-| Element exists | ❌ | ✅ | ✅ |
-| Element position | ❌ | ✅ | ✅ |
-| Element size | ❌ | ✅ | ✅ |
-| Element type (button, input) | ❌ | ✅ | ✅ |
-| Text content | ❌ | ❌ (never sent - wireframe only) | ✅ |
-| Input values | ❌ | ❌ (never sent - wireframe only) | ✅ |
-| Images | ❌ | ✅ | ✅ |
-| Click events | ❌ | ✅ | ✅ |
-| Form change events | ❌ | ✅ | ✅ |
-| CSS classes | ❌ | ✅ | ✅ |
+| Content Type                 | Exclude | Mask                             | Unmask |
+| ---------------------------- | ------- | -------------------------------- | ------ |
+| Element exists               | ❌      | ✅                               | ✅     |
+| Element position             | ❌      | ✅                               | ✅     |
+| Element size                 | ❌      | ✅                               | ✅     |
+| Element type (button, input) | ❌      | ✅                               | ✅     |
+| Text content                 | ❌      | ❌ (never sent - wireframe only) | ✅     |
+| Input values                 | ❌      | ❌ (never sent - wireframe only) | ✅     |
+| Images                       | ❌      | ✅                               | ✅     |
+| Click events                 | ❌      | ✅                               | ✅     |
+| Form change events           | ❌      | ✅                               | ✅     |
+| CSS classes                  | ❌      | ✅                               | ✅     |
 
 ### When to Use Each Mode
 
-| Use Case | Recommended Mode | Reason |
-|----------|------------------|--------|
-| Passwords | **Exclude** | Never capture credentials |
-| Credit card numbers | **Exclude** | PCI compliance |
-| SSN / Tax IDs | **Exclude** | Regulatory (cannot be masked) |
-| Bank account numbers | **Exclude** | Financial data |
-| Medical conditions | **Exclude** | HIPAA - even structure reveals |
-| User names | Mask | PII but structure useful |
-| Email addresses | Mask | PII but interaction useful |
-| Phone numbers | Mask | PII but structure useful |
-| Street addresses | Mask | PII but form flow useful |
-| Search terms | Unmask | Analytics value, not PII |
-| Product names | Unmask | Business data, not PII |
-| Navigation/buttons | Unmask | UX analysis |
-| Error messages | Unmask | Debugging |
+| Use Case             | Recommended Mode | Reason                         |
+| -------------------- | ---------------- | ------------------------------ |
+| Passwords            | **Exclude**      | Never capture credentials      |
+| Credit card numbers  | **Exclude**      | PCI compliance                 |
+| SSN / Tax IDs        | **Exclude**      | Regulatory (cannot be masked)  |
+| Bank account numbers | **Exclude**      | Financial data                 |
+| Medical conditions   | **Exclude**      | HIPAA - even structure reveals |
+| User names           | Mask             | PII but structure useful       |
+| Email addresses      | Mask             | PII but interaction useful     |
+| Phone numbers        | Mask             | PII but structure useful       |
+| Street addresses     | Mask             | PII but form flow useful       |
+| Search terms         | Unmask           | Analytics value, not PII       |
+| Product names        | Unmask           | Business data, not PII         |
+| Navigation/buttons   | Unmask           | UX analysis                    |
+| Error messages       | Unmask           | Debugging                      |
 
 ---
 
@@ -802,13 +818,13 @@ input
 
 ### Example Rules in Settings
 
-| Selector | Rule Type | Purpose |
-|----------|-----------|---------|
-| `input[type=password]` | Exclude | All password fields |
-| `.pii-field` | Mask | Custom PII class |
-| `.payment-section input` | Exclude | All payment inputs |
-| `[data-fs-privacy="exclude"]` | Exclude | Attribute-based |
-| `.public-content` | Unmask | Public areas |
+| Selector                      | Rule Type | Purpose             |
+| ----------------------------- | --------- | ------------------- |
+| `input[type=password]`        | Exclude   | All password fields |
+| `.pii-field`                  | Mask      | Custom PII class    |
+| `.payment-section input`      | Exclude   | All payment inputs  |
+| `[data-fs-privacy="exclude"]` | Exclude   | Attribute-based     |
+| `.public-content`             | Unmask    | Public areas        |
 
 ---
 
@@ -825,11 +841,11 @@ Fullstory's Form Privacy feature (accounts created after Nov 10, 2021) provides 
 
 ### Form Privacy Modes
 
-| Mode | Behavior |
-|------|----------|
-| Strict | All form inputs masked by default |
-| Standard | Common sensitive fields masked |
-| Off | Rely on manual privacy classes |
+| Mode     | Behavior                          |
+| -------- | --------------------------------- |
+| Strict   | All form inputs masked by default |
+| Standard | Common sensitive fields masked    |
+| Off      | Rely on manual privacy classes    |
 
 ---
 
@@ -840,12 +856,14 @@ Fullstory's Form Privacy feature (accounts created after Nov 10, 2021) provides 
 **Symptom**: Added `.fs-exclude` but content still appears
 
 **Common Causes**:
+
 1. ❌ CSS specificity issue
 2. ❌ Class added after page load
 3. ❌ Rule not propagating to children
 4. ❌ Conflicting unmask rule in Settings
 
 **Solutions**:
+
 - ✅ Check browser DevTools for class
 - ✅ Add class before Fullstory initializes
 - ✅ Check Settings for conflicting rules
@@ -856,10 +874,12 @@ Fullstory's Form Privacy feature (accounts created after Nov 10, 2021) provides 
 **Symptom**: Masking works but clicks missing
 
 **Common Causes**:
+
 1. ❌ Used `.fs-exclude` instead of `.fs-mask`
 2. ❌ Parent is excluded
 
 **Solutions**:
+
 - ✅ Use `.fs-mask` to keep click tracking
 - ✅ Only use `.fs-exclude` when events shouldn't be tracked
 
@@ -868,10 +888,12 @@ Fullstory's Form Privacy feature (accounts created after Nov 10, 2021) provides 
 **Symptom**: AJAX-loaded content visible in replay
 
 **Common Causes**:
+
 1. ❌ No privacy class on dynamic content
 2. ❌ Content rendered before class applied
 
 **Solutions**:
+
 - ✅ Include privacy classes in template
 - ✅ Use CSS selector rules as backup
 - ✅ Apply classes in component library
@@ -921,5 +943,4 @@ When helping developers with Privacy Controls:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's Privacy Controls correctly for compliant session recording.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's Privacy Controls correctly for compliant session recording._

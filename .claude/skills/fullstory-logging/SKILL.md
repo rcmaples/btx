@@ -15,6 +15,7 @@ related_skills:
 Fullstory's Logging API allows developers to send log messages directly to Fullstory sessions without logging to the browser's developer console. These logs appear in the session replay, providing valuable context for debugging user issues, tracking application state, and understanding user workflows.
 
 Key use cases:
+
 - **Error Context**: Log errors with stack traces viewable in replay
 - **Application State**: Record important state changes
 - **Debugging**: Add contextual information during development
@@ -25,31 +26,31 @@ Key use cases:
 
 ### Log Levels
 
-| Level | Use For | Console Equivalent |
-|-------|---------|-------------------|
-| `'log'` | General information | `console.log()` |
-| `'info'` | Informational messages | `console.info()` |
-| `'warn'` | Warning conditions | `console.warn()` |
-| `'error'` | Error conditions | `console.error()` |
-| `'debug'` | Debug information | `console.debug()` |
+| Level     | Use For                | Console Equivalent |
+| --------- | ---------------------- | ------------------ |
+| `'log'`   | General information    | `console.log()`    |
+| `'info'`  | Informational messages | `console.info()`   |
+| `'warn'`  | Warning conditions     | `console.warn()`   |
+| `'error'` | Error conditions       | `console.error()`  |
+| `'debug'` | Debug information      | `console.debug()`  |
 
 ### Key Behaviors
 
-| Behavior | Description |
-|----------|-------------|
+| Behavior                   | Description                                        |
+| -------------------------- | -------------------------------------------------- |
 | **Not in browser console** | Logs only appear in Fullstory, not browser console |
-| **Session context** | Logs viewable in session replay timeline |
-| **Timestamp** | Automatically timestamped by Fullstory |
-| **Searchable** | Can search sessions by log content |
+| **Session context**        | Logs viewable in session replay timeline           |
+| **Timestamp**              | Automatically timestamped by Fullstory             |
+| **Searchable**             | Can search sessions by log content                 |
 
 ### When to Use FS Logging vs Console
 
-| Use FS Logging | Use Console |
-|----------------|-------------|
-| Production errors you want in replay | Development-only debugging |
-| State changes for support context | Verbose tracing during development |
-| User action audit trails | Performance timing logs |
-| Integration errors | Internal debugging |
+| Use FS Logging                       | Use Console                        |
+| ------------------------------------ | ---------------------------------- |
+| Production errors you want in replay | Development-only debugging         |
+| State changes for support context    | Verbose tracing during development |
+| User action audit trails             | Performance timing logs            |
+| Integration errors                   | Internal debugging                 |
 
 ---
 
@@ -59,9 +60,9 @@ Key use cases:
 
 ```javascript
 FS('log', {
-  level: string,    // Optional: Log level (default: 'log')
-  msg: string       // Required: Message to log
-});
+  level: string, // Optional: Log level (default: 'log')
+  msg: string, // Required: Message to log
+})
 ```
 
 ### Async Version
@@ -69,16 +70,16 @@ FS('log', {
 ```javascript
 await FS('logAsync', {
   level: string,
-  msg: string
-});
+  msg: string,
+})
 ```
 
 ### Parameters
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `level` | string | No | `'log'` | Log level: 'log', 'info', 'warn', 'error', 'debug' |
-| `msg` | string | **Yes** | - | Message to log (string only) |
+| Parameter | Type   | Required | Default | Description                                        |
+| --------- | ------ | -------- | ------- | -------------------------------------------------- |
+| `level`   | string | No       | `'log'` | Log level: 'log', 'info', 'warn', 'error', 'debug' |
+| `msg`     | string | **Yes**  | -       | Message to log (string only)                       |
 
 ### Rate Limits
 
@@ -99,33 +100,36 @@ function logError(error, context = {}) {
     `Error: ${error.message}`,
     `Type: ${error.name}`,
     `Context: ${JSON.stringify(context)}`,
-    error.stack ? `Stack:\n${error.stack}` : ''
-  ].filter(Boolean).join('\n');
-  
+    error.stack ? `Stack:\n${error.stack}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+
   // Send to Fullstory
   FS('log', {
     level: 'error',
-    msg: errorDetails
-  });
-  
+    msg: errorDetails,
+  })
+
   // Also send to your error tracking service
   // Sentry, Bugsnag, etc.
 }
 
 // Usage
 try {
-  await processPayment(paymentData);
+  await processPayment(paymentData)
 } catch (error) {
   logError(error, {
     action: 'processPayment',
     paymentMethod: paymentData.method,
-    amount: paymentData.amount
-  });
-  showErrorToUser('Payment failed. Please try again.');
+    amount: paymentData.amount,
+  })
+  showErrorToUser('Payment failed. Please try again.')
 }
 ```
 
 **Why this is good:**
+
 - ✅ Includes error type, message, and stack trace
 - ✅ Adds business context (action, payment details)
 - ✅ Uses appropriate 'error' level
@@ -136,47 +140,48 @@ try {
 ```javascript
 // GOOD: Log API responses for debugging
 async function fetchWithLogging(url, options = {}) {
-  const startTime = Date.now();
-  
+  const startTime = Date.now()
+
   FS('log', {
     level: 'info',
-    msg: `API Request: ${options.method || 'GET'} ${url}`
-  });
-  
+    msg: `API Request: ${options.method || 'GET'} ${url}`,
+  })
+
   try {
-    const response = await fetch(url, options);
-    const duration = Date.now() - startTime;
-    
+    const response = await fetch(url, options)
+    const duration = Date.now() - startTime
+
     if (!response.ok) {
       FS('log', {
         level: 'warn',
-        msg: `API Error: ${response.status} ${response.statusText} - ${url} (${duration}ms)`
-      });
+        msg: `API Error: ${response.status} ${response.statusText} - ${url} (${duration}ms)`,
+      })
     } else {
       FS('log', {
         level: 'log',
-        msg: `API Success: ${response.status} - ${url} (${duration}ms)`
-      });
+        msg: `API Success: ${response.status} - ${url} (${duration}ms)`,
+      })
     }
-    
-    return response;
+
+    return response
   } catch (error) {
-    const duration = Date.now() - startTime;
-    
+    const duration = Date.now() - startTime
+
     FS('log', {
       level: 'error',
-      msg: `API Failed: ${error.message} - ${url} (${duration}ms)`
-    });
-    
-    throw error;
+      msg: `API Failed: ${error.message} - ${url} (${duration}ms)`,
+    })
+
+    throw error
   }
 }
 
 // Usage
-const response = await fetchWithLogging('/api/users/123');
+const response = await fetchWithLogging('/api/users/123')
 ```
 
 **Why this is good:**
+
 - ✅ Logs request start, success, and failures
 - ✅ Includes timing information
 - ✅ Appropriate log levels (info, warn, error)
@@ -191,48 +196,49 @@ class AuditLogger {
     const message = [
       `Action: ${action}`,
       `Time: ${new Date().toISOString()}`,
-      `Details: ${JSON.stringify(details)}`
-    ].join(' | ');
-    
+      `Details: ${JSON.stringify(details)}`,
+    ].join(' | ')
+
     FS('log', {
       level: 'info',
-      msg: message
-    });
+      msg: message,
+    })
   }
-  
+
   static logNavigation(from, to) {
-    this.log('Navigation', { from, to });
+    this.log('Navigation', {from, to})
   }
-  
+
   static logFormSubmit(formName, success) {
-    this.log('Form Submit', { 
-      formName, 
-      success, 
-      timestamp: Date.now() 
-    });
+    this.log('Form Submit', {
+      formName,
+      success,
+      timestamp: Date.now(),
+    })
   }
-  
+
   static logFeatureUsed(featureName, context = {}) {
-    this.log('Feature Used', { featureName, ...context });
+    this.log('Feature Used', {featureName, ...context})
   }
-  
+
   static logSettingChanged(setting, oldValue, newValue) {
-    this.log('Setting Changed', { 
-      setting, 
-      oldValue: String(oldValue), 
-      newValue: String(newValue) 
-    });
+    this.log('Setting Changed', {
+      setting,
+      oldValue: String(oldValue),
+      newValue: String(newValue),
+    })
   }
 }
 
 // Usage
-AuditLogger.logNavigation('/dashboard', '/settings');
-AuditLogger.logFormSubmit('contact-form', true);
-AuditLogger.logFeatureUsed('export', { format: 'csv', rows: 500 });
-AuditLogger.logSettingChanged('notifications', true, false);
+AuditLogger.logNavigation('/dashboard', '/settings')
+AuditLogger.logFormSubmit('contact-form', true)
+AuditLogger.logFeatureUsed('export', {format: 'csv', rows: 500})
+AuditLogger.logSettingChanged('notifications', true, false)
 ```
 
 **Why this is good:**
+
 - ✅ Consistent log format
 - ✅ Rich context for each action
 - ✅ Easy to search in Fullstory
@@ -243,42 +249,46 @@ AuditLogger.logSettingChanged('notifications', true, false);
 ```javascript
 // GOOD: Log important state changes for debugging
 function createLoggingStore(initialState, storeName) {
-  let state = initialState;
-  
+  let state = initialState
+
   return {
     getState() {
-      return state;
+      return state
     },
-    
+
     setState(updates, actionName = 'unknown') {
-      const prevState = { ...state };
-      state = { ...state, ...updates };
-      
+      const prevState = {...state}
+      state = {...state, ...updates}
+
       // Log the state change
       FS('log', {
         level: 'log',
         msg: `[${storeName}] ${actionName}: ${JSON.stringify({
           changes: Object.keys(updates),
-          newValues: updates
-        })}`
-      });
-      
-      return state;
-    }
-  };
+          newValues: updates,
+        })}`,
+      })
+
+      return state
+    },
+  }
 }
 
 // Usage
-const cartStore = createLoggingStore({ items: [], total: 0 }, 'CartStore');
+const cartStore = createLoggingStore({items: [], total: 0}, 'CartStore')
 
-cartStore.setState({ 
-  items: [...cartStore.getState().items, newItem],
-  total: cartStore.getState().total + newItem.price
-}, 'addItem');
+cartStore.setState(
+  {
+    items: [...cartStore.getState().items, newItem],
+    total: cartStore.getState().total + newItem.price,
+  },
+  'addItem',
+)
 // Logs: [CartStore] addItem: {"changes":["items","total"],"newValues":{...}}
 ```
 
 **Why this is good:**
+
 - ✅ Tracks state changes with context
 - ✅ Includes action name for debugging
 - ✅ Shows what changed
@@ -290,62 +300,63 @@ cartStore.setState({
 // GOOD: Log third-party integration errors
 class IntegrationLogger {
   constructor(integrationName) {
-    this.integrationName = integrationName;
+    this.integrationName = integrationName
   }
-  
+
   logConnectionAttempt() {
     FS('log', {
       level: 'info',
-      msg: `[${this.integrationName}] Attempting connection...`
-    });
+      msg: `[${this.integrationName}] Attempting connection...`,
+    })
   }
-  
+
   logConnected() {
     FS('log', {
       level: 'info',
-      msg: `[${this.integrationName}] Connected successfully`
-    });
+      msg: `[${this.integrationName}] Connected successfully`,
+    })
   }
-  
+
   logDisconnected(reason) {
     FS('log', {
       level: 'warn',
-      msg: `[${this.integrationName}] Disconnected: ${reason}`
-    });
+      msg: `[${this.integrationName}] Disconnected: ${reason}`,
+    })
   }
-  
+
   logError(operation, error) {
     FS('log', {
       level: 'error',
-      msg: `[${this.integrationName}] ${operation} failed: ${error.message}`
-    });
+      msg: `[${this.integrationName}] ${operation} failed: ${error.message}`,
+    })
   }
-  
+
   logTimeout(operation, timeoutMs) {
     FS('log', {
       level: 'warn',
-      msg: `[${this.integrationName}] ${operation} timed out after ${timeoutMs}ms`
-    });
+      msg: `[${this.integrationName}] ${operation} timed out after ${timeoutMs}ms`,
+    })
   }
 }
 
 // Usage
-const stripeLogger = new IntegrationLogger('Stripe');
+const stripeLogger = new IntegrationLogger('Stripe')
 
 async function initializeStripe() {
-  stripeLogger.logConnectionAttempt();
-  
+  stripeLogger.logConnectionAttempt()
+
   try {
-    await stripe.init();
-    stripeLogger.logConnected();
+    await stripe.init()
+    stripeLogger.logConnected()
   } catch (error) {
-    stripeLogger.logError('initialization', error);
-    throw error;
+    stripeLogger.logError('initialization', error)
+    throw error
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Clear integration name prefix
 - ✅ Tracks full lifecycle
 - ✅ Appropriate log levels
@@ -357,60 +368,63 @@ async function initializeStripe() {
 // GOOD: Conditional verbose logging for debugging
 class DebugLogger {
   static isDebugMode() {
-    return localStorage.getItem('fs_debug') === 'true' ||
-           new URLSearchParams(window.location.search).has('debug');
+    return (
+      localStorage.getItem('fs_debug') === 'true' ||
+      new URLSearchParams(window.location.search).has('debug')
+    )
   }
-  
+
   static debug(message, data = null) {
     if (this.isDebugMode()) {
-      const fullMessage = data 
+      const fullMessage = data
         ? `[DEBUG] ${message}\nData: ${JSON.stringify(data, null, 2)}`
-        : `[DEBUG] ${message}`;
-      
+        : `[DEBUG] ${message}`
+
       FS('log', {
         level: 'debug',
-        msg: fullMessage
-      });
-      
+        msg: fullMessage,
+      })
+
       // Also log to console in debug mode
-      console.debug(message, data);
+      console.debug(message, data)
     }
   }
-  
+
   static trace(functionName, args) {
     if (this.isDebugMode()) {
       FS('log', {
         level: 'debug',
-        msg: `[TRACE] ${functionName}(${args.map(a => JSON.stringify(a)).join(', ')})`
-      });
+        msg: `[TRACE] ${functionName}(${args.map((a) => JSON.stringify(a)).join(', ')})`,
+      })
     }
   }
-  
+
   static measure(label, fn) {
     if (!this.isDebugMode()) {
-      return fn();
+      return fn()
     }
-    
-    const start = performance.now();
-    const result = fn();
-    const duration = performance.now() - start;
-    
+
+    const start = performance.now()
+    const result = fn()
+    const duration = performance.now() - start
+
     FS('log', {
       level: 'debug',
-      msg: `[PERF] ${label}: ${duration.toFixed(2)}ms`
-    });
-    
-    return result;
+      msg: `[PERF] ${label}: ${duration.toFixed(2)}ms`,
+    })
+
+    return result
   }
 }
 
 // Usage
-DebugLogger.debug('Processing checkout', { cartId, itemCount });
-DebugLogger.trace('calculateTotal', [items, taxRate, discount]);
-const total = DebugLogger.measure('calculateTotal', () => calculateTotal(items));
+DebugLogger.debug('Processing checkout', {cartId, itemCount})
+DebugLogger.trace('calculateTotal', [items, taxRate, discount])
+const total = DebugLogger.measure('calculateTotal', () => calculateTotal(items))
 ```
 
 **Why this is good:**
+
 - ✅ Conditional logging (only when needed)
 - ✅ Rich debug information
 - ✅ Performance measurement option
@@ -426,33 +440,35 @@ const total = DebugLogger.measure('calculateTotal', () => calculateTotal(items))
 // BAD: Logging sensitive/PII data
 FS('log', {
   level: 'info',
-  msg: `User login: email=${user.email}, password=${user.password}`  // BAD: Password!
-});
+  msg: `User login: email=${user.email}, password=${user.password}`, // BAD: Password!
+})
 
 FS('log', {
   level: 'info',
-  msg: `Payment: card=${user.creditCard}`  // BAD: Credit card!
-});
+  msg: `Payment: card=${user.creditCard}`, // BAD: Credit card!
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Logs PII (email exposed unnecessarily)
 - ❌ Logs secrets (password!)
 - ❌ Logs PCI data (credit card!)
 - ❌ Security and compliance violation
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Sanitize sensitive data
 FS('log', {
   level: 'info',
-  msg: `User login: userId=${user.id}, method=password`
-});
+  msg: `User login: userId=${user.id}, method=password`,
+})
 
 FS('log', {
   level: 'info',
-  msg: `Payment: cardLast4=${user.creditCard.slice(-4)}, type=${user.cardType}`
-});
+  msg: `Payment: cardLast4=${user.creditCard.slice(-4)}, type=${user.cardType}`,
+})
 ```
 
 ### Example 2: Excessive Logging
@@ -460,40 +476,42 @@ FS('log', {
 ```javascript
 // BAD: Logging too much
 document.addEventListener('mousemove', (e) => {
-  FS('log', { 
+  FS('log', {
     level: 'debug',
-    msg: `Mouse: ${e.clientX}, ${e.clientY}` 
-  });  // BAD: Fires hundreds of times per second!
-});
+    msg: `Mouse: ${e.clientX}, ${e.clientY}`,
+  }) // BAD: Fires hundreds of times per second!
+})
 
 for (let i = 0; i < 10000; i++) {
   FS('log', {
     level: 'log',
-    msg: `Processing item ${i}`
-  });  // BAD: 10,000 log calls!
+    msg: `Processing item ${i}`,
+  }) // BAD: 10,000 log calls!
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Will hit rate limits
 - ❌ Drowns out useful logs
 - ❌ Performance impact
 - ❌ Makes sessions hard to analyze
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Log significant events only
 FS('log', {
   level: 'info',
-  msg: `Processing started: 10000 items`
-});
+  msg: `Processing started: 10000 items`,
+})
 
 // ... process items ...
 
 FS('log', {
   level: 'info',
-  msg: `Processing complete: 10000 items in ${duration}ms`
-});
+  msg: `Processing complete: 10000 items in ${duration}ms`,
+})
 ```
 
 ### Example 3: Non-String Messages
@@ -502,32 +520,34 @@ FS('log', {
 // BAD: Passing objects instead of strings
 FS('log', {
   level: 'error',
-  msg: { error: 'Something failed', code: 500 }  // BAD: Object!
-});
+  msg: {error: 'Something failed', code: 500}, // BAD: Object!
+})
 
 FS('log', {
   level: 'log',
-  msg: ['item1', 'item2', 'item3']  // BAD: Array!
-});
+  msg: ['item1', 'item2', 'item3'], // BAD: Array!
+})
 ```
 
 **Why this is bad:**
+
 - ❌ msg must be a string
 - ❌ Objects/arrays won't display properly
 - ❌ May cause errors or [object Object]
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Stringify objects
 FS('log', {
   level: 'error',
-  msg: JSON.stringify({ error: 'Something failed', code: 500 })
-});
+  msg: JSON.stringify({error: 'Something failed', code: 500}),
+})
 
 FS('log', {
   level: 'log',
-  msg: `Items: ${['item1', 'item2', 'item3'].join(', ')}`
-});
+  msg: `Items: ${['item1', 'item2', 'item3'].join(', ')}`,
+})
 ```
 
 ### Example 4: Missing Error Details
@@ -535,30 +555,32 @@ FS('log', {
 ```javascript
 // BAD: Vague error logging
 try {
-  await doSomething();
+  await doSomething()
 } catch (error) {
   FS('log', {
     level: 'error',
-    msg: 'An error occurred'  // BAD: No useful information!
-  });
+    msg: 'An error occurred', // BAD: No useful information!
+  })
 }
 ```
 
 **Why this is bad:**
+
 - ❌ No information about what failed
 - ❌ No error message or stack
 - ❌ Impossible to debug
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Detailed error logging
 try {
-  await doSomething();
+  await doSomething()
 } catch (error) {
   FS('log', {
     level: 'error',
-    msg: `doSomething failed: ${error.message}\nStack: ${error.stack}`
-  });
+    msg: `doSomething failed: ${error.message}\nStack: ${error.stack}`,
+  })
 }
 ```
 
@@ -568,33 +590,35 @@ try {
 // BAD: Misusing log levels
 FS('log', {
   level: 'error',
-  msg: 'User clicked button'  // BAD: Not an error!
-});
+  msg: 'User clicked button', // BAD: Not an error!
+})
 
 FS('log', {
   level: 'debug',
-  msg: 'Database connection failed!'  // BAD: This is an error!
-});
+  msg: 'Database connection failed!', // BAD: This is an error!
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Error level for normal events
 - ❌ Debug level for critical errors
 - ❌ Makes triage difficult
 - ❌ Misleading in session analysis
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Appropriate log levels
 FS('log', {
   level: 'info',
-  msg: 'User clicked button: submit-form'
-});
+  msg: 'User clicked button: submit-form',
+})
 
 FS('log', {
   level: 'error',
-  msg: 'Database connection failed: timeout after 30s'
-});
+  msg: 'Database connection failed: timeout after 30s',
+})
 ```
 
 ### Example 6: Logging Instead of Events
@@ -603,33 +627,35 @@ FS('log', {
 // BAD: Using logs for analytics instead of events
 FS('log', {
   level: 'info',
-  msg: 'Purchase completed: $99.99, order_id: ORD-123'
-});
+  msg: 'Purchase completed: $99.99, order_id: ORD-123',
+})
 // Missing: FS('trackEvent', ...) for proper analytics!
 ```
 
 **Why this is bad:**
+
 - ❌ Logs aren't searchable like events
 - ❌ Can't segment by purchase amount
 - ❌ Doesn't appear in event analytics
 - ❌ Misuse of logging API
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use events for analytics, logs for debugging
 FS('trackEvent', {
   name: 'Order Completed',
   properties: {
     orderId: 'ORD-123',
-    revenue: 99.99
-  }
-});
+    revenue: 99.99,
+  },
+})
 
 // Log additional debugging context if needed
 FS('log', {
   level: 'info',
-  msg: 'Order ORD-123 processed successfully'
-});
+  msg: 'Order ORD-123 processed successfully',
+})
 ```
 
 ---
@@ -642,56 +668,56 @@ FS('log', {
 // Centralized logging utility
 const AppLogger = {
   _formatMessage(prefix, message, data) {
-    let formatted = `[${prefix}] ${message}`;
+    let formatted = `[${prefix}] ${message}`
     if (data) {
-      formatted += `\nData: ${JSON.stringify(data)}`;
+      formatted += `\nData: ${JSON.stringify(data)}`
     }
-    return formatted;
+    return formatted
   },
-  
+
   log(message, data) {
     if (typeof FS !== 'undefined') {
-      FS('log', { level: 'log', msg: this._formatMessage('LOG', message, data) });
+      FS('log', {level: 'log', msg: this._formatMessage('LOG', message, data)})
     }
   },
-  
+
   info(message, data) {
     if (typeof FS !== 'undefined') {
-      FS('log', { level: 'info', msg: this._formatMessage('INFO', message, data) });
+      FS('log', {level: 'info', msg: this._formatMessage('INFO', message, data)})
     }
   },
-  
+
   warn(message, data) {
     if (typeof FS !== 'undefined') {
-      FS('log', { level: 'warn', msg: this._formatMessage('WARN', message, data) });
+      FS('log', {level: 'warn', msg: this._formatMessage('WARN', message, data)})
     }
   },
-  
+
   error(message, error, data) {
     if (typeof FS !== 'undefined') {
-      let errorMsg = this._formatMessage('ERROR', message, data);
+      let errorMsg = this._formatMessage('ERROR', message, data)
       if (error) {
-        errorMsg += `\nError: ${error.message}\nStack: ${error.stack}`;
+        errorMsg += `\nError: ${error.message}\nStack: ${error.stack}`
       }
-      FS('log', { level: 'error', msg: errorMsg });
+      FS('log', {level: 'error', msg: errorMsg})
     }
   },
-  
+
   debug(message, data) {
     if (typeof FS !== 'undefined' && this._isDebugEnabled()) {
-      FS('log', { level: 'debug', msg: this._formatMessage('DEBUG', message, data) });
+      FS('log', {level: 'debug', msg: this._formatMessage('DEBUG', message, data)})
     }
   },
-  
+
   _isDebugEnabled() {
-    return localStorage.getItem('fs_debug') === 'true';
-  }
-};
+    return localStorage.getItem('fs_debug') === 'true'
+  },
+}
 
 // Usage
-AppLogger.info('Page loaded', { path: window.location.pathname });
-AppLogger.warn('Slow API response', { endpoint: '/api/data', duration: 5000 });
-AppLogger.error('Checkout failed', error, { cartId: '123' });
+AppLogger.info('Page loaded', {path: window.location.pathname})
+AppLogger.warn('Slow API response', {endpoint: '/api/data', duration: 5000})
+AppLogger.error('Checkout failed', error, {cartId: '123'})
 ```
 
 ### Pattern 2: Scoped Logger Factory
@@ -703,36 +729,36 @@ function createScopedLogger(scope) {
     log(message, data) {
       FS('log', {
         level: 'log',
-        msg: `[${scope}] ${message}${data ? ` | ${JSON.stringify(data)}` : ''}`
-      });
+        msg: `[${scope}] ${message}${data ? ` | ${JSON.stringify(data)}` : ''}`,
+      })
     },
     info(message, data) {
       FS('log', {
         level: 'info',
-        msg: `[${scope}] ${message}${data ? ` | ${JSON.stringify(data)}` : ''}`
-      });
+        msg: `[${scope}] ${message}${data ? ` | ${JSON.stringify(data)}` : ''}`,
+      })
     },
     warn(message, data) {
       FS('log', {
         level: 'warn',
-        msg: `[${scope}] ${message}${data ? ` | ${JSON.stringify(data)}` : ''}`
-      });
+        msg: `[${scope}] ${message}${data ? ` | ${JSON.stringify(data)}` : ''}`,
+      })
     },
     error(message, error) {
       FS('log', {
         level: 'error',
-        msg: `[${scope}] ${message}${error ? ` | ${error.message}` : ''}`
-      });
-    }
-  };
+        msg: `[${scope}] ${message}${error ? ` | ${error.message}` : ''}`,
+      })
+    },
+  }
 }
 
 // Usage in different modules
-const authLogger = createScopedLogger('Auth');
-authLogger.info('Login attempt', { method: 'password' });
+const authLogger = createScopedLogger('Auth')
+authLogger.info('Login attempt', {method: 'password'})
 
-const paymentLogger = createScopedLogger('Payment');
-paymentLogger.error('Payment failed', new Error('Insufficient funds'));
+const paymentLogger = createScopedLogger('Payment')
+paymentLogger.error('Payment failed', new Error('Insufficient funds'))
 ```
 
 ### Pattern 3: Request/Response Logger Middleware
@@ -740,42 +766,42 @@ paymentLogger.error('Payment failed', new Error('Insufficient funds'));
 ```javascript
 // Fetch wrapper with automatic logging
 function createLoggingFetch() {
-  const originalFetch = window.fetch;
-  
+  const originalFetch = window.fetch
+
   return async function loggingFetch(url, options = {}) {
-    const requestId = Math.random().toString(36).substr(2, 9);
-    const method = options.method || 'GET';
-    const startTime = Date.now();
-    
+    const requestId = Math.random().toString(36).substr(2, 9)
+    const method = options.method || 'GET'
+    const startTime = Date.now()
+
     FS('log', {
       level: 'info',
-      msg: `[HTTP:${requestId}] → ${method} ${url}`
-    });
-    
+      msg: `[HTTP:${requestId}] → ${method} ${url}`,
+    })
+
     try {
-      const response = await originalFetch(url, options);
-      const duration = Date.now() - startTime;
-      
-      const level = response.ok ? 'info' : 'warn';
+      const response = await originalFetch(url, options)
+      const duration = Date.now() - startTime
+
+      const level = response.ok ? 'info' : 'warn'
       FS('log', {
         level,
-        msg: `[HTTP:${requestId}] ← ${response.status} ${method} ${url} (${duration}ms)`
-      });
-      
-      return response;
+        msg: `[HTTP:${requestId}] ← ${response.status} ${method} ${url} (${duration}ms)`,
+      })
+
+      return response
     } catch (error) {
-      const duration = Date.now() - startTime;
+      const duration = Date.now() - startTime
       FS('log', {
         level: 'error',
-        msg: `[HTTP:${requestId}] ✕ ${method} ${url} - ${error.message} (${duration}ms)`
-      });
-      throw error;
+        msg: `[HTTP:${requestId}] ✕ ${method} ${url} - ${error.message} (${duration}ms)`,
+      })
+      throw error
     }
-  };
+  }
 }
 
 // Apply globally
-window.fetch = createLoggingFetch();
+window.fetch = createLoggingFetch()
 ```
 
 ---
@@ -787,12 +813,14 @@ window.fetch = createLoggingFetch();
 **Symptom**: FS('log') called but logs not in session replay
 
 **Common Causes**:
+
 1. ❌ Fullstory not initialized
 2. ❌ Session not being recorded
 3. ❌ Page excluded from capture
 4. ❌ FS blocked by ad blocker
 
 **Solutions**:
+
 - ✅ Verify FS is defined before logging
 - ✅ Check Fullstory is recording
 - ✅ Verify page isn't excluded
@@ -803,10 +831,12 @@ window.fetch = createLoggingFetch();
 **Symptom**: Long messages appear cut off
 
 **Common Causes**:
+
 1. ❌ Message too long
 2. ❌ JSON stringification issues
 
 **Solutions**:
+
 - ✅ Keep messages concise
 - ✅ Summarize large data structures
 - ✅ Log key fields only
@@ -851,5 +881,4 @@ When helping developers with Logging API:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's Logging API correctly for web applications.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's Logging API correctly for web applications._

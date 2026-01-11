@@ -2,6 +2,7 @@
 
 import {useEffect, useRef} from 'react'
 
+import {Button} from '@/components/ui'
 import {centsToReal} from '@/lib/fullstory/utils'
 import type {Cart} from '@/lib/types'
 
@@ -94,14 +95,21 @@ export function CartSummary({
       </div>
 
       {showCheckoutButton && onCheckout && (
-        <button
+        <Button
           onClick={onCheckout}
-          data-fs-element="proceed-to-checkout-button"
+          fullWidth
+          className="mt-lg"
           disabled={cart.lineItems.length === 0}
-          className="w-full py-md px-lg mt-lg bg-primary text-background border-2 border-primary text-base font-semibold cursor-pointer transition-all duration-fast hover:bg-primary-dark hover:border-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 disabled:bg-disabled disabled:border-disabled disabled:cursor-not-allowed disabled:opacity-60"
+          data-fs-element="btn-checkout-cart"
+          data-fs-cart-value-real={centsToReal(cart.total)}
+          data-fs-item-count-int={cart.lineItems.reduce((sum, item) => sum + item.quantity, 0)}
+          data-fs-properties-schema={JSON.stringify({
+            'data-fs-cart-value-real': {type: 'real', name: 'cartValue'},
+            'data-fs-item-count-int': {type: 'int', name: 'itemCount'},
+          })}
         >
           Proceed to Checkout
-        </button>
+        </Button>
       )}
 
       <p className="mt-md p-sm bg-warning-light border border-warning text-sm text-center text-text-secondary">

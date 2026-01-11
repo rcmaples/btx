@@ -38,6 +38,11 @@ export function ThemeToggle() {
       className="w-10 h-10 flex items-center justify-center text-text border border-transparent transition-all duration-fast hover:border-b-border"
       aria-label={`${getLabel()}. Click to change.`}
       title={getLabel()}
+      data-fs-element="btn-theme-toggle"
+      data-fs-current-theme-str={theme}
+      data-fs-properties-schema={JSON.stringify({
+        'data-fs-current-theme-str': {type: 'str', name: 'currentTheme'},
+      })}
     >
       {theme === 'system' ? (
         // Monitor icon for system mode

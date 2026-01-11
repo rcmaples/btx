@@ -2,6 +2,7 @@
 
 import {useState} from 'react'
 
+import {Button} from '@/components/ui'
 import {cancelExchangeMembership, enrollInExchange} from '@/lib/actions/profile'
 
 type Props = {
@@ -61,7 +62,9 @@ export function ExchangeMembershipSection({isExchangeMember, exchangeEnrolledAt}
       {isExchangeMember ? (
         <div className="space-y-xs">
           <div className="flex items-baseline gap-sm flex-wrap">
-            <p className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">Active Member</p>
+            <p className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+              Active Member
+            </p>
             {exchangeEnrolledAt && (
               <p className="text-text-secondary text-sm">
                 since {new Date(exchangeEnrolledAt).toLocaleDateString()}
@@ -71,13 +74,15 @@ export function ExchangeMembershipSection({isExchangeMember, exchangeEnrolledAt}
           <p className="text-text-secondary text-xs italic pb-md">
             Includes free shipping on all orders and access to exclusive products.
           </p>
-          <button
+          <Button
             onClick={handleCancel}
             disabled={isLoading}
-            className="mt-xs px-md py-xs text-xs border border-error text-error font-semibold transition-colors hover:bg-error hover:text-background disabled:opacity-50 disabled:cursor-not-allowed"
+            size="sm"
+            variant="ghost"
+            className="mt-xs border-error text-error hover:bg-error hover:text-background"
           >
             {isLoading ? 'Processing...' : 'Cancel Membership'}
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="space-y-xs">
@@ -85,13 +90,9 @@ export function ExchangeMembershipSection({isExchangeMember, exchangeEnrolledAt}
           <p className="text-text-secondary text-xs">
             Join to get free shipping and access to exclusive products.
           </p>
-          <button
-            onClick={handleEnroll}
-            disabled={isLoading}
-            className="mt-xs px-md py-xs text-xs bg-primary text-background border border-primary font-semibold transition-colors hover:bg-primary-dark hover:border-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <Button onClick={handleEnroll} disabled={isLoading} size="sm" className="mt-xs">
             {isLoading ? 'Processing...' : 'Join the Exchange'}
-          </button>
+          </Button>
         </div>
       )}
     </section>

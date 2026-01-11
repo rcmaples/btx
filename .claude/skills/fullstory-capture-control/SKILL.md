@@ -25,10 +25,10 @@ Fullstory's Capture Control APIs allow developers to programmatically stop and r
 
 ### Shutdown vs Restart
 
-| Method | Effect | Use Case |
-|--------|--------|----------|
+| Method           | Effect                        | Use Case                                 |
+| ---------------- | ----------------------------- | ---------------------------------------- |
 | `FS('shutdown')` | Stops capture, clears session | End recording permanently or temporarily |
-| `FS('restart')` | Resumes capture, new session | Resume after shutdown |
+| `FS('restart')`  | Resumes capture, new session  | Resume after shutdown                    |
 
 ### Session Behavior
 
@@ -42,12 +42,12 @@ Active Session  →  FS('shutdown')  →  Capture Stopped (session ends)
 
 ### Key Points
 
-| Behavior | Description |
-|----------|-------------|
-| **New session on restart** | Restart creates a new session, not continues old one |
-| **Identity preserved** | If identified before shutdown, re-identify after restart |
-| **Properties cleared** | Page/element properties reset on restart |
-| **Async available** | Both have async versions (`shutdownAsync`, `restartAsync`) |
+| Behavior                   | Description                                                |
+| -------------------------- | ---------------------------------------------------------- |
+| **New session on restart** | Restart creates a new session, not continues old one       |
+| **Identity preserved**     | If identified before shutdown, re-identify after restart   |
+| **Properties cleared**     | Page/element properties reset on restart                   |
+| **Async available**        | Both have async versions (`shutdownAsync`, `restartAsync`) |
 
 ---
 
@@ -57,20 +57,20 @@ Active Session  →  FS('shutdown')  →  Capture Stopped (session ends)
 
 ```javascript
 // Stop capture
-FS('shutdown');
+FS('shutdown')
 
 // Async version
-await FS('shutdownAsync');
+await FS('shutdownAsync')
 ```
 
 ### Restart
 
 ```javascript
 // Resume capture (starts new session)
-FS('restart');
+FS('restart')
 
 // Async version
-await FS('restartAsync');
+await FS('restartAsync')
 ```
 
 ### Parameters
@@ -79,10 +79,10 @@ Both methods take no parameters.
 
 ### Return Values
 
-| Method | Sync Return | Async Return |
-|--------|-------------|--------------|
-| `FS('shutdown')` | undefined | Promise (resolves when stopped) |
-| `FS('restart')` | undefined | Promise (resolves when started) |
+| Method           | Sync Return | Async Return                    |
+| ---------------- | ----------- | ------------------------------- |
+| `FS('shutdown')` | undefined   | Promise (resolves when stopped) |
+| `FS('restart')`  | undefined   | Promise (resolves when started) |
 
 ---
 
@@ -94,39 +94,40 @@ Both methods take no parameters.
 // GOOD: Pause capture during performance-intensive operations
 async function processLargeDataset(data) {
   // Pause Fullstory to free up resources
-  await FS('shutdownAsync');
-  
-  console.log('Fullstory paused for data processing');
-  
+  await FS('shutdownAsync')
+
+  console.log('Fullstory paused for data processing')
+
   try {
     // Perform heavy operation
-    const result = await heavyProcessing(data);
-    
-    return result;
+    const result = await heavyProcessing(data)
+
+    return result
   } finally {
     // Always restart, even if processing fails
-    await FS('restartAsync');
-    
+    await FS('restartAsync')
+
     // Re-identify user (identity lost on restart)
-    const user = getCurrentUser();
+    const user = getCurrentUser()
     if (user) {
       FS('setIdentity', {
         uid: user.id,
         properties: {
-          displayName: user.name
-        }
-      });
+          displayName: user.name,
+        },
+      })
     }
-    
-    console.log('Fullstory resumed');
+
+    console.log('Fullstory resumed')
   }
 }
 
 // Usage
-const results = await processLargeDataset(largeDataset);
+const results = await processLargeDataset(largeDataset)
 ```
 
 **Why this is good:**
+
 - ✅ Frees up resources during heavy processing
 - ✅ Uses try/finally to ensure restart
 - ✅ Re-identifies user after restart
@@ -138,81 +139,82 @@ const results = await processLargeDataset(largeDataset);
 // GOOD: Stop capture in sensitive areas
 class PrivacyZoneManager {
   constructor() {
-    this.isInPrivacyZone = false;
-    this.userBeforeShutdown = null;
+    this.isInPrivacyZone = false
+    this.userBeforeShutdown = null
   }
-  
+
   async enterPrivacyZone(zoneName) {
-    if (this.isInPrivacyZone) return;
-    
+    if (this.isInPrivacyZone) return
+
     // Store current user for re-identification later
-    this.userBeforeShutdown = getCurrentUser();
-    
+    this.userBeforeShutdown = getCurrentUser()
+
     // Log entry before shutdown
     FS('log', {
       level: 'info',
-      msg: `Entering privacy zone: ${zoneName}`
-    });
-    
+      msg: `Entering privacy zone: ${zoneName}`,
+    })
+
     // Track the transition
     FS('trackEvent', {
       name: 'Privacy Zone Entered',
-      properties: { zone: zoneName }
-    });
-    
+      properties: {zone: zoneName},
+    })
+
     // Shutdown capture
-    await FS('shutdownAsync');
-    this.isInPrivacyZone = true;
-    
-    console.log(`Entered privacy zone: ${zoneName}`);
+    await FS('shutdownAsync')
+    this.isInPrivacyZone = true
+
+    console.log(`Entered privacy zone: ${zoneName}`)
   }
-  
+
   async exitPrivacyZone(zoneName) {
-    if (!this.isInPrivacyZone) return;
-    
+    if (!this.isInPrivacyZone) return
+
     // Restart capture
-    await FS('restartAsync');
-    this.isInPrivacyZone = false;
-    
+    await FS('restartAsync')
+    this.isInPrivacyZone = false
+
     // Re-identify user
     if (this.userBeforeShutdown) {
       FS('setIdentity', {
         uid: this.userBeforeShutdown.id,
         properties: {
           displayName: this.userBeforeShutdown.name,
-          email: this.userBeforeShutdown.email
-        }
-      });
+          email: this.userBeforeShutdown.email,
+        },
+      })
     }
-    
+
     // Track the transition
     FS('trackEvent', {
       name: 'Privacy Zone Exited',
-      properties: { zone: zoneName }
-    });
-    
+      properties: {zone: zoneName},
+    })
+
     // Log exit
     FS('log', {
       level: 'info',
-      msg: `Exited privacy zone: ${zoneName}`
-    });
-    
-    this.userBeforeShutdown = null;
-    console.log(`Exited privacy zone: ${zoneName}`);
+      msg: `Exited privacy zone: ${zoneName}`,
+    })
+
+    this.userBeforeShutdown = null
+    console.log(`Exited privacy zone: ${zoneName}`)
   }
 }
 
 // Usage
-const privacyManager = new PrivacyZoneManager();
+const privacyManager = new PrivacyZoneManager()
 
 // When navigating to sensitive page
-await privacyManager.enterPrivacyZone('account-settings');
+await privacyManager.enterPrivacyZone('account-settings')
 
 // When leaving sensitive page
-await privacyManager.exitPrivacyZone('account-settings');
+await privacyManager.exitPrivacyZone('account-settings')
 ```
 
 **Why this is good:**
+
 - ✅ Clean API for privacy zones
 - ✅ Preserves user identity for re-identification
 - ✅ Logs and tracks zone transitions
@@ -223,101 +225,102 @@ await privacyManager.exitPrivacyZone('account-settings');
 ```javascript
 // GOOD: Control capture based on route in SPA
 const routeConfig = {
-  '/dashboard': { capture: true },
-  '/settings': { capture: true },
-  '/settings/security': { capture: false },  // Privacy zone
-  '/admin': { capture: false },              // Internal only
-  '/checkout': { capture: true },
-  '/checkout/payment': { capture: false },   // PCI compliance
-};
+  '/dashboard': {capture: true},
+  '/settings': {capture: true},
+  '/settings/security': {capture: false}, // Privacy zone
+  '/admin': {capture: false}, // Internal only
+  '/checkout': {capture: true},
+  '/checkout/payment': {capture: false}, // PCI compliance
+}
 
 class RouteBasedCapture {
   constructor() {
-    this.isCapturing = true;  // Assume capturing on start
-    this.currentUser = null;
-    
-    this.setupRouteListener();
+    this.isCapturing = true // Assume capturing on start
+    this.currentUser = null
+
+    this.setupRouteListener()
   }
-  
+
   setupRouteListener() {
     // For React Router, Vue Router, etc.
-    window.addEventListener('popstate', () => this.handleRouteChange());
-    
+    window.addEventListener('popstate', () => this.handleRouteChange())
+
     // Intercept pushState
-    const originalPushState = history.pushState;
+    const originalPushState = history.pushState
     history.pushState = (...args) => {
-      originalPushState.apply(history, args);
-      this.handleRouteChange();
-    };
-  }
-  
-  async handleRouteChange() {
-    const path = window.location.pathname;
-    const config = this.getRouteConfig(path);
-    
-    if (config.capture && !this.isCapturing) {
-      await this.startCapture();
-    } else if (!config.capture && this.isCapturing) {
-      await this.stopCapture();
+      originalPushState.apply(history, args)
+      this.handleRouteChange()
     }
-    
+  }
+
+  async handleRouteChange() {
+    const path = window.location.pathname
+    const config = this.getRouteConfig(path)
+
+    if (config.capture && !this.isCapturing) {
+      await this.startCapture()
+    } else if (!config.capture && this.isCapturing) {
+      await this.stopCapture()
+    }
+
     // Set page properties if capturing
     if (this.isCapturing && config.pageName) {
       FS('setProperties', {
         type: 'page',
-        properties: { pageName: config.pageName }
-      });
+        properties: {pageName: config.pageName},
+      })
     }
   }
-  
+
   getRouteConfig(path) {
     // Find matching config (exact match or parent)
     for (const [route, config] of Object.entries(routeConfig)) {
       if (path === route || path.startsWith(route + '/')) {
-        return config;
+        return config
       }
     }
-    return { capture: true };  // Default: capture
+    return {capture: true} // Default: capture
   }
-  
+
   async startCapture() {
-    await FS('restartAsync');
-    this.isCapturing = true;
-    
+    await FS('restartAsync')
+    this.isCapturing = true
+
     // Re-identify
-    this.currentUser = this.currentUser || getCurrentUser();
+    this.currentUser = this.currentUser || getCurrentUser()
     if (this.currentUser) {
       FS('setIdentity', {
         uid: this.currentUser.id,
         properties: {
-          displayName: this.currentUser.name
-        }
-      });
+          displayName: this.currentUser.name,
+        },
+      })
     }
-    
-    console.log('Fullstory capture started');
+
+    console.log('Fullstory capture started')
   }
-  
+
   async stopCapture() {
     // Save user before shutdown
-    this.currentUser = getCurrentUser();
-    
-    await FS('shutdownAsync');
-    this.isCapturing = false;
-    
-    console.log('Fullstory capture stopped');
+    this.currentUser = getCurrentUser()
+
+    await FS('shutdownAsync')
+    this.isCapturing = false
+
+    console.log('Fullstory capture stopped')
   }
-  
+
   setUser(user) {
-    this.currentUser = user;
+    this.currentUser = user
   }
 }
 
 // Initialize
-const captureController = new RouteBasedCapture();
+const captureController = new RouteBasedCapture()
 ```
 
 **Why this is good:**
+
 - ✅ Configurable per-route capture
 - ✅ Handles SPA navigation
 - ✅ Re-identifies on restart
@@ -329,62 +332,63 @@ const captureController = new RouteBasedCapture();
 // GOOD: Control capture for testing and development
 const DevCaptureControls = {
   isOverridden: false,
-  
+
   // Disable capture for current session (dev/testing)
   disableForSession() {
-    sessionStorage.setItem('fs_disabled', 'true');
-    FS('shutdown');
-    this.isOverridden = true;
-    console.log('Fullstory disabled for this session');
+    sessionStorage.setItem('fs_disabled', 'true')
+    FS('shutdown')
+    this.isOverridden = true
+    console.log('Fullstory disabled for this session')
   },
-  
+
   // Re-enable capture
   enableForSession() {
-    sessionStorage.removeItem('fs_disabled');
+    sessionStorage.removeItem('fs_disabled')
     if (this.isOverridden) {
-      FS('restart');
-      this.isOverridden = false;
-      console.log('Fullstory re-enabled');
+      FS('restart')
+      this.isOverridden = false
+      console.log('Fullstory re-enabled')
     }
   },
-  
+
   // Check if should capture on page load
   init() {
     if (sessionStorage.getItem('fs_disabled') === 'true') {
-      FS('shutdown');
-      this.isOverridden = true;
-      console.log('Fullstory disabled (session override)');
+      FS('shutdown')
+      this.isOverridden = true
+      console.log('Fullstory disabled (session override)')
     }
-    
+
     // Also check URL param for easy testing
     if (new URLSearchParams(window.location.search).has('no_fullstory')) {
-      this.disableForSession();
+      this.disableForSession()
     }
   },
-  
+
   // Add keyboard shortcut (Ctrl+Shift+F)
   setupKeyboardShortcut() {
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'F') {
         if (this.isOverridden) {
-          this.enableForSession();
+          this.enableForSession()
         } else {
-          this.disableForSession();
+          this.disableForSession()
         }
       }
-    });
-  }
-};
+    })
+  },
+}
 
 // Initialize on page load
-DevCaptureControls.init();
-DevCaptureControls.setupKeyboardShortcut();
+DevCaptureControls.init()
+DevCaptureControls.setupKeyboardShortcut()
 
 // Also expose for console access
-window.DevCaptureControls = DevCaptureControls;
+window.DevCaptureControls = DevCaptureControls
 ```
 
 **Why this is good:**
+
 - ✅ Easy toggle for developers
 - ✅ Session-persistent disable
 - ✅ URL parameter support
@@ -397,61 +401,61 @@ window.DevCaptureControls = DevCaptureControls;
 // GOOD: Only capture for specific user segments
 class ConditionalCapture {
   constructor(captureRules) {
-    this.rules = captureRules;
-    this.isCapturing = false;
+    this.rules = captureRules
+    this.isCapturing = false
   }
-  
+
   async evaluateAndUpdate(user) {
-    const shouldCapture = this.shouldCaptureUser(user);
-    
+    const shouldCapture = this.shouldCaptureUser(user)
+
     if (shouldCapture && !this.isCapturing) {
-      await this.startCapture(user);
+      await this.startCapture(user)
     } else if (!shouldCapture && this.isCapturing) {
-      await this.stopCapture();
+      await this.stopCapture()
     } else if (shouldCapture && this.isCapturing) {
       // Just update identity
-      this.identifyUser(user);
+      this.identifyUser(user)
     }
   }
-  
+
   shouldCaptureUser(user) {
     // Evaluate rules
     for (const rule of this.rules) {
       if (!rule.check(user)) {
-        console.log(`Capture blocked by rule: ${rule.name}`);
-        return false;
+        console.log(`Capture blocked by rule: ${rule.name}`)
+        return false
       }
     }
-    return true;
+    return true
   }
-  
+
   async startCapture(user) {
-    await FS('restartAsync');
-    this.isCapturing = true;
-    this.identifyUser(user);
-    
+    await FS('restartAsync')
+    this.isCapturing = true
+    this.identifyUser(user)
+
     FS('log', {
       level: 'info',
-      msg: `Capture started for user: ${user.id}`
-    });
+      msg: `Capture started for user: ${user.id}`,
+    })
   }
-  
+
   async stopCapture() {
-    await FS('shutdownAsync');
-    this.isCapturing = false;
-    
-    console.log('Capture stopped based on rules');
+    await FS('shutdownAsync')
+    this.isCapturing = false
+
+    console.log('Capture stopped based on rules')
   }
-  
+
   identifyUser(user) {
     FS('setIdentity', {
       uid: user.id,
       properties: {
         displayName: user.name,
         plan: user.plan,
-        role: user.role
-      }
-    });
+        role: user.role,
+      },
+    })
   }
 }
 
@@ -459,31 +463,32 @@ class ConditionalCapture {
 const captureRules = [
   {
     name: 'not_internal',
-    check: (user) => !user.email.endsWith('@ourcompany.com')
+    check: (user) => !user.email.endsWith('@ourcompany.com'),
   },
   {
     name: 'not_bot',
-    check: (user) => !user.isBot
+    check: (user) => !user.isBot,
   },
   {
     name: 'has_consent',
-    check: (user) => user.trackingConsent === true
+    check: (user) => user.trackingConsent === true,
   },
   {
     name: 'paying_customer',
-    check: (user) => user.plan !== 'free'  // Only capture paid users
-  }
-];
+    check: (user) => user.plan !== 'free', // Only capture paid users
+  },
+]
 
-const conditionalCapture = new ConditionalCapture(captureRules);
+const conditionalCapture = new ConditionalCapture(captureRules)
 
 // On user load/change
 authService.on('userChanged', (user) => {
-  conditionalCapture.evaluateAndUpdate(user);
-});
+  conditionalCapture.evaluateAndUpdate(user)
+})
 ```
 
 **Why this is good:**
+
 - ✅ Configurable capture rules
 - ✅ Filters out internal/bot traffic
 - ✅ Respects consent
@@ -496,17 +501,17 @@ authService.on('userChanged', (user) => {
 // GOOD: Clean shutdown on page unload
 class CaptureLifecycleManager {
   constructor() {
-    this.setupUnloadHandler();
-    this.setupVisibilityHandler();
+    this.setupUnloadHandler()
+    this.setupVisibilityHandler()
   }
-  
+
   setupUnloadHandler() {
     window.addEventListener('beforeunload', () => {
       // Use sync version - async may not complete
-      FS('shutdown');
-    });
+      FS('shutdown')
+    })
   }
-  
+
   setupVisibilityHandler() {
     // Optional: pause when tab is hidden (saves resources)
     document.addEventListener('visibilitychange', () => {
@@ -517,17 +522,17 @@ class CaptureLifecycleManager {
         // User returned - could resume
         // FS('restart');  // Uncomment if pausing on hidden
       }
-    });
+    })
   }
-  
+
   // For SPAs: call when app unmounts
   cleanup() {
-    FS('shutdown');
+    FS('shutdown')
   }
 }
 
 // Initialize
-const fsLifecycle = new CaptureLifecycleManager();
+const fsLifecycle = new CaptureLifecycleManager()
 
 // For React apps
 // useEffect(() => {
@@ -536,6 +541,7 @@ const fsLifecycle = new CaptureLifecycleManager();
 ```
 
 **Why this is good:**
+
 - ✅ Clean session end on page close
 - ✅ Optional tab visibility handling
 - ✅ SPA cleanup method
@@ -550,38 +556,40 @@ const fsLifecycle = new CaptureLifecycleManager();
 ```javascript
 // BAD: Forgot to re-identify after restart
 async function pauseAndResume() {
-  await FS('shutdownAsync');
-  
+  await FS('shutdownAsync')
+
   // ... do work ...
-  
-  await FS('restartAsync');
+
+  await FS('restartAsync')
   // BAD: User is now anonymous! Identity was lost on shutdown
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Identity lost on shutdown
 - ❌ New session is anonymous
 - ❌ Can't link sessions together
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Re-identify after restart
 async function pauseAndResume() {
-  const user = getCurrentUser();  // Save before shutdown
-  
-  await FS('shutdownAsync');
-  
+  const user = getCurrentUser() // Save before shutdown
+
+  await FS('shutdownAsync')
+
   // ... do work ...
-  
-  await FS('restartAsync');
-  
+
+  await FS('restartAsync')
+
   // Re-identify
   if (user) {
     FS('setIdentity', {
       uid: user.id,
-      properties: { displayName: user.name }
-    });
+      properties: {displayName: user.name},
+    })
   }
 }
 ```
@@ -591,28 +599,30 @@ async function pauseAndResume() {
 ```javascript
 // BAD: Using shutdown instead of consent API
 function handleConsentDeclined() {
-  FS('shutdown');  // BAD: Wrong approach for consent
+  FS('shutdown') // BAD: Wrong approach for consent
 }
 
 function handleConsentGranted() {
-  FS('restart');  // BAD: Should use consent API
+  FS('restart') // BAD: Should use consent API
 }
 ```
 
 **Why this is bad:**
+
 - ❌ shutdown/restart not designed for consent
 - ❌ Doesn't properly signal consent state
 - ❌ Consent API exists for this purpose
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use consent API for consent
 function handleConsentDeclined() {
-  FS('setIdentity', { consent: false });
+  FS('setIdentity', {consent: false})
 }
 
 function handleConsentGranted() {
-  FS('setIdentity', { consent: true });
+  FS('setIdentity', {consent: true})
 }
 ```
 
@@ -621,34 +631,36 @@ function handleConsentGranted() {
 ```javascript
 // BAD: Shutdown with no way to restart
 function handleSensitiveArea() {
-  FS('shutdown');
+  FS('shutdown')
   // No mechanism to restart when leaving sensitive area!
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Capture permanently stopped
 - ❌ No way to resume
 - ❌ Loses rest of session
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Paired shutdown/restart
-let isShutdown = false;
+let isShutdown = false
 
 function enterSensitiveArea() {
   if (!isShutdown) {
-    FS('shutdown');
-    isShutdown = true;
+    FS('shutdown')
+    isShutdown = true
   }
 }
 
 function leaveSensitiveArea() {
   if (isShutdown) {
-    FS('restart');
-    isShutdown = false;
+    FS('restart')
+    isShutdown = false
     // Re-identify user
-    reidentifyUser();
+    reidentifyUser()
   }
 }
 ```
@@ -658,21 +670,23 @@ function leaveSensitiveArea() {
 ```javascript
 // BAD: Using async in beforeunload (won't complete)
 window.addEventListener('beforeunload', async () => {
-  await FS('shutdownAsync');  // BAD: Won't complete before page unloads
-});
+  await FS('shutdownAsync') // BAD: Won't complete before page unloads
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Async code may not complete before unload
 - ❌ Session may not end cleanly
 - ❌ beforeunload doesn't wait for promises
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use sync version in beforeunload
 window.addEventListener('beforeunload', () => {
-  FS('shutdown');  // Sync version - fires immediately
-});
+  FS('shutdown') // Sync version - fires immediately
+})
 ```
 
 ### Example 5: Rapid Shutdown/Restart Cycles
@@ -681,38 +695,40 @@ window.addEventListener('beforeunload', () => {
 // BAD: Toggling too rapidly
 document.addEventListener('scroll', () => {
   if (isInSensitiveArea()) {
-    FS('shutdown');  // Called on every scroll event!
+    FS('shutdown') // Called on every scroll event!
   } else {
-    FS('restart');   // Creates new session every scroll!
+    FS('restart') // Creates new session every scroll!
   }
-});
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Excessive API calls
 - ❌ Creates many fragmented sessions
 - ❌ Performance impact
 - ❌ Data loss from constant restarts
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Debounced state changes
-let isCapturing = true;
+let isCapturing = true
 
 const updateCaptureState = debounce(() => {
-  const shouldCapture = !isInSensitiveArea();
-  
-  if (shouldCapture && !isCapturing) {
-    FS('restart');
-    reidentifyUser();
-    isCapturing = true;
-  } else if (!shouldCapture && isCapturing) {
-    FS('shutdown');
-    isCapturing = false;
-  }
-}, 500);
+  const shouldCapture = !isInSensitiveArea()
 
-document.addEventListener('scroll', updateCaptureState);
+  if (shouldCapture && !isCapturing) {
+    FS('restart')
+    reidentifyUser()
+    isCapturing = true
+  } else if (!shouldCapture && isCapturing) {
+    FS('shutdown')
+    isCapturing = false
+  }
+}, 500)
+
+document.addEventListener('scroll', updateCaptureState)
 ```
 
 ---
@@ -726,116 +742,116 @@ document.addEventListener('scroll', updateCaptureState);
 const CaptureController = {
   _isCapturing: true,
   _user: null,
-  
+
   isCapturing() {
-    return this._isCapturing;
+    return this._isCapturing
   },
-  
+
   setUser(user) {
-    this._user = user;
+    this._user = user
   },
-  
+
   async pause(reason = 'unspecified') {
-    if (!this._isCapturing) return;
-    
+    if (!this._isCapturing) return
+
     // Log before shutdown
     FS('log', {
       level: 'info',
-      msg: `Capture paused: ${reason}`
-    });
-    
-    await FS('shutdownAsync');
-    this._isCapturing = false;
-    
-    console.log(`FS capture paused: ${reason}`);
+      msg: `Capture paused: ${reason}`,
+    })
+
+    await FS('shutdownAsync')
+    this._isCapturing = false
+
+    console.log(`FS capture paused: ${reason}`)
   },
-  
+
   async resume(reason = 'unspecified') {
-    if (this._isCapturing) return;
-    
-    await FS('restartAsync');
-    this._isCapturing = true;
-    
+    if (this._isCapturing) return
+
+    await FS('restartAsync')
+    this._isCapturing = true
+
     // Re-identify
     if (this._user) {
       FS('setIdentity', {
         uid: this._user.id,
         properties: {
-          displayName: this._user.name
-        }
-      });
+          displayName: this._user.name,
+        },
+      })
     }
-    
+
     // Log after restart
     FS('log', {
       level: 'info',
-      msg: `Capture resumed: ${reason}`
-    });
-    
-    console.log(`FS capture resumed: ${reason}`);
-  }
-};
+      msg: `Capture resumed: ${reason}`,
+    })
+
+    console.log(`FS capture resumed: ${reason}`)
+  },
+}
 
 // Usage
-await CaptureController.pause('entering-payment-form');
-await CaptureController.resume('leaving-payment-form');
+await CaptureController.pause('entering-payment-form')
+await CaptureController.resume('leaving-payment-form')
 ```
 
 ### Pattern 2: React Hook for Capture Control
 
 ```jsx
 // React hook for capture control
-import { useEffect, useRef, useCallback } from 'react';
+import {useEffect, useRef, useCallback} from 'react'
 
 function useCaptureControl() {
-  const isCapturingRef = useRef(true);
-  const userRef = useRef(null);
-  
+  const isCapturingRef = useRef(true)
+  const userRef = useRef(null)
+
   const setUser = useCallback((user) => {
-    userRef.current = user;
-  }, []);
-  
+    userRef.current = user
+  }, [])
+
   const pause = useCallback(async () => {
-    if (!isCapturingRef.current) return;
-    
-    await FS('shutdownAsync');
-    isCapturingRef.current = false;
-  }, []);
-  
+    if (!isCapturingRef.current) return
+
+    await FS('shutdownAsync')
+    isCapturingRef.current = false
+  }, [])
+
   const resume = useCallback(async () => {
-    if (isCapturingRef.current) return;
-    
-    await FS('restartAsync');
-    isCapturingRef.current = true;
-    
+    if (isCapturingRef.current) return
+
+    await FS('restartAsync')
+    isCapturingRef.current = true
+
     if (userRef.current) {
       FS('setIdentity', {
         uid: userRef.current.id,
-        properties: { displayName: userRef.current.name }
-      });
+        properties: {displayName: userRef.current.name},
+      })
     }
-  }, []);
-  
+  }, [])
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      FS('shutdown');
-    };
-  }, []);
-  
-  return { pause, resume, setUser };
+      FS('shutdown')
+    }
+  }, [])
+
+  return {pause, resume, setUser}
 }
 
 // Privacy zone component
-function PrivacyZone({ children }) {
-  const { pause, resume } = useCaptureControl();
-  
+function PrivacyZone({children}) {
+  const {pause, resume} = useCaptureControl()
+
   useEffect(() => {
-    pause();
-    return () => resume();
-  }, [pause, resume]);
-  
-  return children;
+    pause()
+    return () => resume()
+  }, [pause, resume])
+
+  return children
 }
 
 // Usage
@@ -847,7 +863,7 @@ function PaymentForm() {
         <CreditCardInput />
       </form>
     </PrivacyZone>
-  );
+  )
 }
 ```
 
@@ -860,11 +876,13 @@ function PaymentForm() {
 **Symptom**: After restart, no new session created
 
 **Common Causes**:
+
 1. ❌ Fullstory blocked by ad blocker
 2. ❌ Page excluded from capture
 3. ❌ Rate limits hit
 
 **Solutions**:
+
 - ✅ Check browser console for errors
 - ✅ Verify page isn't excluded
 - ✅ Add delay between shutdown/restart
@@ -874,10 +892,12 @@ function PaymentForm() {
 **Symptom**: User is anonymous after restart
 
 **Common Causes**:
+
 1. ❌ Forgot to re-identify
 2. ❌ User data not saved before shutdown
 
 **Solutions**:
+
 - ✅ Always re-identify after restart
 - ✅ Save user data before shutdown
 
@@ -886,11 +906,13 @@ function PaymentForm() {
 **Symptom**: Many short sessions for same user
 
 **Common Causes**:
+
 1. ❌ Too many restart calls
 2. ❌ Shutdown/restart in rapid succession
 3. ❌ Missing debounce
 
 **Solutions**:
+
 - ✅ Minimize shutdown/restart cycles
 - ✅ Add debouncing
 - ✅ Use state tracking
@@ -935,5 +957,4 @@ When helping developers with Capture Control:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's Capture Control APIs correctly for web applications.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's Capture Control APIs correctly for web applications._

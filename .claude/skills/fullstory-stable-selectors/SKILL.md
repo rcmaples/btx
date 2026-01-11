@@ -30,15 +30,15 @@ This skill teaches you how to implement stable selectors in **any framework** wi
 
 ```html
 <!-- What your code looks like -->
-<button className={styles.primaryButton}>Add to Cart</button>
+<button className="{styles.primaryButton}">Add to Cart</button>
 
 <!-- What renders in the browser -->
 <button class="Button_primaryButton__x7Ks2">Add to Cart</button>
-                                    ↑
-                        This hash changes every build!
+↑ This hash changes every build!
 ```
 
 **Dynamic class names come from:**
+
 - ❌ CSS Modules (hash suffixes)
 - ❌ styled-components / Emotion (random class names)
 - ❌ Tailwind CSS (class purging changes the set)
@@ -48,12 +48,12 @@ This skill teaches you how to implement stable selectors in **any framework** wi
 
 **Impact:**
 
-| Tool | Problem |
-|------|---------|
-| **Fullstory** | Searches break, defined elements stop matching, click maps lose continuity |
-| **E2E Testing** | Cypress/Playwright tests become brittle |
-| **AI Agents (CUA)** | Cannot reliably identify interactive elements |
-| **Automation** | Scripts break on every deployment |
+| Tool                | Problem                                                                    |
+| ------------------- | -------------------------------------------------------------------------- |
+| **Fullstory**       | Searches break, defined elements stop matching, click maps lose continuity |
+| **E2E Testing**     | Cypress/Playwright tests become brittle                                    |
+| **AI Agents (CUA)** | Cannot reliably identify interactive elements                              |
+| **Automation**      | Scripts break on every deployment                                          |
 
 ---
 
@@ -85,6 +85,7 @@ Computer User Agents—AI systems that interact with web interfaces—rely on st
 ```
 
 **Stable selectors provide CUAs with:**
+
 - ✅ Consistent element identification across builds
 - ✅ Semantic understanding of element purpose
 - ✅ Hierarchical context (component → element relationship)
@@ -101,7 +102,7 @@ Add stable `data-*` attributes that survive build changes:
 <button class="Button_primaryButton__x7Ks2">Add to Cart</button>
 
 <!-- After: Stable selector -->
-<button 
+<button
   class="Button_primaryButton__x7Ks2"
   data-component="ProductCard"
   data-element="add-to-cart-button"
@@ -111,6 +112,7 @@ Add stable `data-*` attributes that survive build changes:
 ```
 
 **Benefits:**
+
 - ✅ Survives all build changes
 - ✅ Semantic and self-documenting
 - ✅ Works in ANY framework
@@ -126,26 +128,26 @@ Add stable `data-*` attributes that survive build changes:
 
 #### Primary Attributes (Required)
 
-| Attribute | Purpose | Case | Example |
-|-----------|---------|------|---------|
-| `data-component` | Component boundary identifier | PascalCase | `ProductCard`, `CheckoutForm` |
-| `data-element` | Element role within component | kebab-case | `add-to-cart`, `price-display` |
+| Attribute        | Purpose                       | Case       | Example                        |
+| ---------------- | ----------------------------- | ---------- | ------------------------------ |
+| `data-component` | Component boundary identifier | PascalCase | `ProductCard`, `CheckoutForm`  |
+| `data-element`   | Element role within component | kebab-case | `add-to-cart`, `price-display` |
 
 #### Extended Attributes (Recommended for CUA/AI)
 
-| Attribute | Purpose | When to Use |
-|-----------|---------|-------------|
-| `data-action` | Describes what happens on interaction | Buttons, links, toggles |
-| `data-state` | Current state of the element | Expandable, toggleable elements |
-| `data-variant` | Visual or functional variant | A/B tests, feature flags |
-| `data-testid` | Unified test/automation identifier | When aligning with E2E tests |
+| Attribute      | Purpose                               | When to Use                     |
+| -------------- | ------------------------------------- | ------------------------------- |
+| `data-action`  | Describes what happens on interaction | Buttons, links, toggles         |
+| `data-state`   | Current state of the element          | Expandable, toggleable elements |
+| `data-variant` | Visual or functional variant          | A/B tests, feature flags        |
+| `data-testid`  | Unified test/automation identifier    | When aligning with E2E tests    |
 
 #### Development Attributes (Strip in Production)
 
-| Attribute | Purpose |
-|-----------|---------|
+| Attribute          | Purpose                             |
+| ------------------ | ----------------------------------- |
 | `data-source-file` | Source file reference for debugging |
-| `data-source-line` | Line number for debugging |
+| `data-source-line` | Line number for debugging           |
 
 ### Attribute Hierarchy
 
@@ -176,21 +178,12 @@ Many teams already use `data-testid` for Cypress/Playwright. You can unify:
 
 ```html
 <!-- Option 1: Use both (redundant but safe) -->
-<button 
-  data-element="add-to-cart"
-  data-testid="add-to-cart-button"
->Add</button>
+<button data-element="add-to-cart" data-testid="add-to-cart-button">Add</button>
 
 <!-- Option 2: Configure test tools to use data-element -->
-// cypress.config.js
-Cypress.SelectorPlayground.defaults({
-  selectorPriority: ['data-element', 'data-component', 'data-testid', 'id']
-});
-
-// playwright.config.js
-use: {
-  testIdAttribute: 'data-element'
-}
+// cypress.config.js Cypress.SelectorPlayground.defaults({ selectorPriority: ['data-element',
+'data-component', 'data-testid', 'id'] }); // playwright.config.js use: { testIdAttribute:
+'data-element' }
 ```
 
 ### Integration with ARIA (Accessibility + AI)
@@ -209,13 +202,13 @@ Stable selectors complement ARIA attributes—use both:
 </button>
 ```
 
-| Attribute Type | Purpose | Audience |
-|----------------|---------|----------|
-| `data-*` selectors | Stable programmatic targeting | Fullstory, Tests, AI Agents |
+| Attribute Type      | Purpose                          | Audience                         |
+| ------------------- | -------------------------------- | -------------------------------- |
+| `data-*` selectors  | Stable programmatic targeting    | Fullstory, Tests, AI Agents      |
 | `aria-*` attributes | Semantic meaning & relationships | Screen readers, AI understanding |
-| `role` attribute | Element type override | Accessibility, AI categorization |
+| `role` attribute    | Element type override            | Accessibility, AI categorization |
 
-> **CUA Best Practice**: AI agents use BOTH data-* attributes for reliable targeting AND aria-* attributes for understanding element purpose and relationships.
+> **CUA Best Practice**: AI agents use BOTH data-_ attributes for reliable targeting AND aria-_ attributes for understanding element purpose and relationships.
 
 ---
 
@@ -266,19 +259,26 @@ Use **PascalCase** matching your component/class names:
 ```html
 <!-- ✅ GOOD: Matches component names -->
 <div data-component="ProductCard">
-<div data-component="CheckoutForm">
-<div data-component="NavigationHeader">
-<div data-component="UserProfileDropdown">
-
-<!-- ✅ GOOD: Namespaced for micro-frontends -->
-<div data-component="Checkout.PaymentForm">
-<div data-component="Catalog.ProductCard">
-
-<!-- ❌ BAD: Generic names -->
-<div data-component="Container">
-<div data-component="Wrapper">
-<div data-component="Component">
-<div data-component="Box">
+  <div data-component="CheckoutForm">
+    <div data-component="NavigationHeader">
+      <div data-component="UserProfileDropdown">
+        <!-- ✅ GOOD: Namespaced for micro-frontends -->
+        <div data-component="Checkout.PaymentForm">
+          <div data-component="Catalog.ProductCard">
+            <!-- ❌ BAD: Generic names -->
+            <div data-component="Container">
+              <div data-component="Wrapper">
+                <div data-component="Component">
+                  <div data-component="Box"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 ```
 
 ### Element Names (`data-element`)
@@ -288,21 +288,27 @@ Use **kebab-case** describing the element's purpose:
 ```html
 <!-- ✅ GOOD: Describes purpose -->
 <button data-element="add-to-cart">
-<input data-element="email-input">
-<div data-element="product-image">
-<span data-element="price-display">
-<nav data-element="main-navigation">
+  <input data-element="email-input" />
+  <div data-element="product-image">
+    <span data-element="price-display">
+      <nav data-element="main-navigation">
+        <!-- ✅ GOOD: Qualified names for disambiguation -->
+        <input data-element="billing-address-line1" />
+        <input data-element="shipping-address-line1" />
 
-<!-- ✅ GOOD: Qualified names for disambiguation -->
-<input data-element="billing-address-line1">
-<input data-element="shipping-address-line1">
-
-<!-- ❌ BAD: Describes appearance or position -->
-<button data-element="blue-button">
-<button data-element="big-button">
-<button data-element="button-1">
-<button data-element="first-button">
-<div data-element="left-sidebar">
+        <!-- ❌ BAD: Describes appearance or position -->
+        <button data-element="blue-button">
+          <button data-element="big-button">
+            <button data-element="button-1">
+              <button data-element="first-button">
+                <div data-element="left-sidebar"></div>
+              </button>
+            </button>
+          </button>
+        </button></nav
+    ></span>
+  </div>
+</button>
 ```
 
 ### Action Names (`data-action`)
@@ -324,6 +330,7 @@ Use **verb-first kebab-case** describing the outcome:
 ### What to Annotate
 
 **Always annotate:**
+
 - ✅ Buttons and clickable elements
 - ✅ Form inputs (text, select, checkbox, etc.)
 - ✅ Links and navigation items
@@ -332,6 +339,7 @@ Use **verb-first kebab-case** describing the outcome:
 - ✅ Tab and accordion controls
 
 **Skip annotation for:**
+
 - ❌ Pure layout wrappers (unless interactive)
 - ❌ Styling containers
 - ❌ Text-only elements (unless key content)
@@ -344,31 +352,20 @@ Use **verb-first kebab-case** describing the outcome:
 
 ```jsx
 // ProductCard.jsx
-function ProductCard({ product, onAddToCart }) {
+function ProductCard({product, onAddToCart}) {
   return (
-    <div 
-      data-component="ProductCard"
-      data-element="card"
-      className={styles.card}
-    >
-      <img 
-        src={product.image} 
-        alt={product.name}
-        data-element="product-image"
-      />
-      
+    <div data-component="ProductCard" data-element="card" className={styles.card}>
+      <img src={product.image} alt={product.name} data-element="product-image" />
+
       <h3 data-element="product-name">{product.name}</h3>
-      
+
       <span data-element="price">${product.price}</span>
-      
-      <button 
-        data-element="add-to-cart"
-        onClick={() => onAddToCart(product)}
-      >
+
+      <button data-element="add-to-cart" onClick={() => onAddToCart(product)}>
         Add to Cart
       </button>
     </div>
-  );
+  )
 }
 ```
 
@@ -384,18 +381,18 @@ export function useStableSelector(componentName) {
     element: (name) => ({
       'data-element': name,
     }),
-  };
+  }
 }
 
 // Usage
-function ProductCard({ product }) {
-  const sel = useStableSelector('ProductCard');
-  
+function ProductCard({product}) {
+  const sel = useStableSelector('ProductCard')
+
   return (
     <div {...sel.root} {...sel.element('card')}>
       <button {...sel.element('add-to-cart')}>Add to Cart</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -405,27 +402,14 @@ function ProductCard({ product }) {
 
 ```html
 <!-- product-card.component.html -->
-<article 
-  data-component="ProductCard"
-  data-element="card"
-  class="product-card"
->
-  <img 
-    [src]="product.image" 
-    [alt]="product.name"
-    data-element="product-image"
-  />
-  
+<article data-component="ProductCard" data-element="card" class="product-card">
+  <img [src]="product.image" [alt]="product.name" data-element="product-image" />
+
   <h3 data-element="product-name">{{ product.name }}</h3>
-  
+
   <span data-element="price">{{ product.price | currency }}</span>
-  
-  <button 
-    data-element="add-to-cart"
-    (click)="addToCart()"
-  >
-    Add to Cart
-  </button>
+
+  <button data-element="add-to-cart" (click)="addToCart()">Add to Cart</button>
 </article>
 ```
 
@@ -441,9 +425,9 @@ import { Directive, ElementRef, Input, OnInit } from '@angular/core';
 export class StableSelectorDirective implements OnInit {
   @Input() fsComponent: string;
   @Input() fsElement: string;
-  
+
   constructor(private el: ElementRef) {}
-  
+
   ngOnInit() {
     if (this.fsComponent) {
       this.el.nativeElement.setAttribute('data-component', this.fsComponent);
@@ -467,33 +451,20 @@ export class StableSelectorDirective implements OnInit {
 ```vue
 <!-- ProductCard.vue -->
 <template>
-  <article 
-    data-component="ProductCard"
-    data-element="card"
-    class="product-card"
-  >
-    <img 
-      :src="product.image" 
-      :alt="product.name"
-      data-element="product-image"
-    />
-    
+  <article data-component="ProductCard" data-element="card" class="product-card">
+    <img :src="product.image" :alt="product.name" data-element="product-image" />
+
     <h3 data-element="product-name">{{ product.name }}</h3>
-    
+
     <span data-element="price">{{ formatPrice(product.price) }}</span>
-    
-    <button 
-      data-element="add-to-cart"
-      @click="$emit('add-to-cart', product)"
-    >
-      Add to Cart
-    </button>
+
+    <button data-element="add-to-cart" @click="$emit('add-to-cart', product)">Add to Cart</button>
   </article>
 </template>
 
 <script setup>
-defineProps(['product']);
-defineEmits(['add-to-cart']);
+defineProps(['product'])
+defineEmits(['add-to-cart'])
 </script>
 ```
 
@@ -503,14 +474,14 @@ defineEmits(['add-to-cart']);
 // main.js
 app.directive('fs', {
   mounted(el, binding) {
-    const { component, element } = binding.value;
-    if (component) el.setAttribute('data-component', component);
-    if (element) el.setAttribute('data-element', element);
-  }
-});
+    const {component, element} = binding.value
+    if (component) el.setAttribute('data-component', component)
+    if (element) el.setAttribute('data-element', element)
+  },
+})
 
 // Usage in template
-<div v-fs="{ component: 'ProductCard', element: 'card' }">
+;<div v-fs="{ component: 'ProductCard', element: 'card' }">
   <button v-fs="{ element: 'add-to-cart' }">Add to Cart</button>
 </div>
 ```
@@ -521,22 +492,22 @@ app.directive('fs', {
 
 ```svelte
 <!-- ProductCard.svelte -->
-<article 
+<article
   data-component="ProductCard"
   data-element="card"
   class="product-card"
 >
-  <img 
-    src={product.image} 
+  <img
+    src={product.image}
     alt={product.name}
     data-element="product-image"
   />
-  
+
   <h3 data-element="product-name">{product.name}</h3>
-  
+
   <span data-element="price">${product.price}</span>
-  
-  <button 
+
+  <button
     data-element="add-to-cart"
     data-action="add-item"
     on:click={() => dispatch('addToCart', product)}
@@ -560,22 +531,22 @@ Server components work identically—data attributes render to HTML:
 
 ```tsx
 // app/products/[id]/page.tsx (Server Component)
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const product = await getProduct(params.id);
-  
+export default async function ProductPage({params}: {params: {id: string}}) {
+  const product = await getProduct(params.id)
+
   return (
     <main data-component="ProductPage" data-element="page">
       <ProductDetails product={product} />
       <AddToCartButton productId={product.id} />
     </main>
-  );
+  )
 }
 
 // Client component with interactivity
-'use client';
-function AddToCartButton({ productId }: { productId: string }) {
-  const [loading, setLoading] = useState(false);
-  
+;('use client')
+function AddToCartButton({productId}: {productId: string}) {
+  const [loading, setLoading] = useState(false)
+
   return (
     <button
       data-component="AddToCartButton"
@@ -587,7 +558,7 @@ function AddToCartButton({ productId }: { productId: string }) {
     >
       {loading ? 'Adding...' : 'Add to Cart'}
     </button>
-  );
+  )
 }
 ```
 
@@ -601,14 +572,14 @@ function AddToCartButton({ productId }: { productId: string }) {
 const { product } = Astro.props;
 ---
 
-<article 
+<article
   data-component="ProductCard"
   data-element="card"
   data-product-id={product.id}
 >
   <img src={product.image} data-element="product-image" />
   <h3 data-element="product-name">{product.name}</h3>
-  
+
   <!-- Interactive island -->
   <AddToCartButton client:visible productId={product.id} />
 </article>
@@ -620,7 +591,7 @@ const { product } = Astro.props;
 
 ```tsx
 // ProductCard.tsx
-function ProductCard(props: { product: Product }) {
+function ProductCard(props: {product: Product}) {
   return (
     <article data-component="ProductCard" data-element="card">
       <img src={props.product.image} data-element="product-image" />
@@ -633,7 +604,7 @@ function ProductCard(props: { product: Product }) {
         Add to Cart
       </button>
     </article>
-  );
+  )
 }
 ```
 
@@ -647,7 +618,7 @@ Create compile-time safety for your selector values:
 // selectors.ts
 
 // Define your component names as a union type
-type ComponentName = 
+type ComponentName =
   | 'ProductCard'
   | 'CheckoutForm'
   | 'NavigationHeader'
@@ -655,7 +626,7 @@ type ComponentName =
   | 'CartDrawer';
 
 // Define element names per component
-type ElementName<C extends ComponentName> = 
+type ElementName<C extends ComponentName> =
   C extends 'ProductCard' ? 'card' | 'product-image' | 'product-name' | 'price' | 'add-to-cart' :
   C extends 'CheckoutForm' ? 'form' | 'shipping-section' | 'payment-section' | 'submit-button' :
   C extends 'CartDrawer' ? 'drawer' | 'item-list' | 'total' | 'checkout-button' :
@@ -688,7 +659,7 @@ export function createSelectors<C extends ComponentName>(
 // Usage
 function ProductCard({ product }: Props) {
   const sel = createSelectors('ProductCard');
-  
+
   return (
     <div {...sel.root} {...sel.element('card')}>
       {/* TypeScript will error if you use 'invalid-element' */}
@@ -708,8 +679,8 @@ function ProductCard({ product }: Props) {
 // product-card.js
 class ProductCard extends HTMLElement {
   connectedCallback() {
-    const product = JSON.parse(this.getAttribute('product'));
-    
+    const product = JSON.parse(this.getAttribute('product'))
+
     this.innerHTML = `
       <article data-component="ProductCard" data-element="card">
         <img 
@@ -721,14 +692,15 @@ class ProductCard extends HTMLElement {
         <span data-element="price">$${product.price}</span>
         <button data-element="add-to-cart">Add to Cart</button>
       </article>
-    `;
-    
-    this.querySelector('[data-element="add-to-cart"]')
-      .addEventListener('click', () => this.handleAddToCart(product));
+    `
+
+    this.querySelector('[data-element="add-to-cart"]').addEventListener('click', () =>
+      this.handleAddToCart(product),
+    )
   }
 }
 
-customElements.define('product-card', ProductCard);
+customElements.define('product-card', ProductCard)
 ```
 
 ---
@@ -779,19 +751,19 @@ css selector: [data-component="ProductCard"] [data-element="add-to-cart"]
 
 When creating defined elements in Fullstory, use stable selectors:
 
-| Element Name | Selector |
-|--------------|----------|
-| Add to Cart Button | `[data-element="add-to-cart"]` |
-| Product Card | `[data-component="ProductCard"]` |
-| Search Input | `[data-element="search-input"]` |
-| Checkout Submit | `[data-component="CheckoutForm"] [data-element="submit-button"]` |
+| Element Name       | Selector                                                         |
+| ------------------ | ---------------------------------------------------------------- |
+| Add to Cart Button | `[data-element="add-to-cart"]`                                   |
+| Product Card       | `[data-component="ProductCard"]`                                 |
+| Search Input       | `[data-element="search-input"]`                                  |
+| Checkout Submit    | `[data-component="CheckoutForm"] [data-element="submit-button"]` |
 
 ### Combining with Element Properties
 
 Stable selectors and Element Properties work together:
 
 ```html
-<div 
+<div
   data-component="ProductCard"
   data-element="card"
   data-fs-element="Product Card"
@@ -803,12 +775,12 @@ Stable selectors and Element Properties work together:
 </div>
 ```
 
-| Attribute | Purpose |
-|-----------|---------|
-| `data-component` | Stable selector for searching |
-| `data-element` | Stable selector for specific element |
-| `data-fs-element` | Fullstory defined element name |
-| `data-fs-properties-schema` | Fullstory element properties schema |
+| Attribute                   | Purpose                              |
+| --------------------------- | ------------------------------------ |
+| `data-component`            | Stable selector for searching        |
+| `data-element`              | Stable selector for specific element |
+| `data-fs-element`           | Fullstory defined element name       |
+| `data-fs-properties-schema` | Fullstory element properties schema  |
 
 ---
 
@@ -819,7 +791,7 @@ Stable selectors and Element Properties work together:
 ```html
 <section data-component="ProductGrid" data-element="grid">
   <h2 data-element="section-title">Featured Products</h2>
-  
+
   <div data-element="product-list">
     <!-- Each product card -->
     <article data-component="ProductCard" data-element="card">
@@ -834,10 +806,10 @@ Stable selectors and Element Properties work together:
         <button data-element="wishlist">♡</button>
       </div>
     </article>
-    
+
     <!-- More product cards... -->
   </div>
-  
+
   <nav data-element="pagination">
     <button data-element="prev-page">Previous</button>
     <button data-element="next-page">Next</button>
@@ -855,7 +827,7 @@ Stable selectors and Element Properties work together:
     <span data-element="step" data-step="payment">Payment</span>
     <span data-element="step" data-step="review">Review</span>
   </nav>
-  
+
   <!-- Shipping step -->
   <fieldset data-element="shipping-step">
     <div data-element="name-field">
@@ -867,7 +839,7 @@ Stable selectors and Element Properties work together:
       <input type="text" data-element="address-input" />
     </div>
   </fieldset>
-  
+
   <!-- Payment step (with privacy) -->
   <fieldset data-element="payment-step" class="fs-exclude">
     <div data-element="card-field">
@@ -875,7 +847,7 @@ Stable selectors and Element Properties work together:
       <input type="text" data-element="card-input" />
     </div>
   </fieldset>
-  
+
   <!-- Actions -->
   <div data-element="form-actions">
     <button type="button" data-element="back-button">Back</button>
@@ -891,7 +863,7 @@ Stable selectors and Element Properties work together:
   <a href="/" data-element="logo">
     <img src="logo.svg" alt="Company" />
   </a>
-  
+
   <nav data-component="MainNav" data-element="navigation">
     <ul data-element="nav-list">
       <li data-element="nav-item">
@@ -906,12 +878,10 @@ Stable selectors and Element Properties work together:
       </li>
     </ul>
   </nav>
-  
+
   <div data-element="header-actions">
     <button data-element="search-toggle">🔍</button>
-    <a href="/cart" data-element="cart-link">
-      Cart (<span data-element="cart-count">3</span>)
-    </a>
+    <a href="/cart" data-element="cart-link"> Cart (<span data-element="cart-count">3</span>) </a>
     <button data-element="account-menu">Account</button>
   </div>
 </header>
@@ -935,6 +905,7 @@ Stable selectors and Element Properties work together:
 **Why it's bad:** Every component has "image", "text", "button" - searches return everything.
 
 **✅ CORRECTED:**
+
 ```html
 <div data-component="ProductCard">
   <img data-element="product-image" />
@@ -957,6 +928,7 @@ Stable selectors and Element Properties work together:
 **Why it's bad:** If sort order changes, "item-0" is now a different product.
 
 **✅ CORRECTED:**
+
 ```html
 <div data-component="ProductList">
   <div data-element="product-item" data-product-id="SKU-A">First product</div>
@@ -977,6 +949,7 @@ Stable selectors and Element Properties work together:
 **Why it's bad:** If design changes (blue → green, sidebar moves right), names become wrong.
 
 **✅ CORRECTED:**
+
 ```html
 <button data-element="primary-action">Primary Action</button>
 <button data-element="secondary-action">Secondary Action</button>
@@ -993,27 +966,23 @@ For virtualized content where DOM elements are recycled:
 
 ```tsx
 // React with react-window or react-virtualized
-function VirtualizedProductList({ products }) {
+function VirtualizedProductList({products}) {
   return (
     <div data-component="ProductList" data-element="virtual-container">
-      <FixedSizeList
-        height={600}
-        itemCount={products.length}
-        itemSize={120}
-      >
-        {({ index, style }) => (
+      <FixedSizeList height={600} itemCount={products.length} itemSize={120}>
+        {({index, style}) => (
           <div
             style={style}
             data-element="product-row"
             data-row-index={index}
-            data-product-id={products[index].id}  // Stable ID, not position!
+            data-product-id={products[index].id} // Stable ID, not position!
           >
             <ProductCard product={products[index]} />
           </div>
         )}
       </FixedSizeList>
     </div>
-  );
+  )
 }
 ```
 
@@ -1028,15 +997,15 @@ Shadow DOM encapsulates styles but data attributes still work:
 ```javascript
 class ProductCard extends HTMLElement {
   constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
+    super()
+    this.attachShadow({mode: 'open'})
   }
-  
+
   connectedCallback() {
     // Set attributes on the host element (light DOM)
-    this.setAttribute('data-component', 'ProductCard');
-    this.setAttribute('data-element', 'card');
-    
+    this.setAttribute('data-component', 'ProductCard')
+    this.setAttribute('data-element', 'card')
+
     // Shadow DOM content also gets attributes
     this.shadowRoot.innerHTML = `
       <style>/* encapsulated styles */</style>
@@ -1046,7 +1015,7 @@ class ProductCard extends HTMLElement {
           <slot name="button-text">Add to Cart</slot>
         </button>
       </article>
-    `;
+    `
   }
 }
 
@@ -1064,20 +1033,12 @@ When multiple teams own different parts of the UI, namespace your selectors:
 
 ```html
 <!-- Team Checkout owns this -->
-<div 
-  data-component="Checkout.PaymentForm"
-  data-team="checkout"
-  data-element="form"
->
+<div data-component="Checkout.PaymentForm" data-team="checkout" data-element="form">
   <button data-element="submit-payment">Pay</button>
 </div>
 
 <!-- Team Catalog owns this -->
-<div 
-  data-component="Catalog.ProductCard"
-  data-team="catalog"
-  data-element="card"
->
+<div data-component="Catalog.ProductCard" data-team="catalog" data-element="card">
   <button data-element="add-to-cart">Add</button>
 </div>
 ```
@@ -1122,37 +1083,33 @@ Ensure selectors are present when content loads:
 
 ```tsx
 // React with Suspense
-function ProductDetails({ productId }) {
+function ProductDetails({productId}) {
   return (
-    <Suspense 
+    <Suspense
       fallback={
-        <div 
-          data-component="ProductDetails" 
-          data-element="skeleton" 
-          data-state="loading"
-        >
+        <div data-component="ProductDetails" data-element="skeleton" data-state="loading">
           Loading...
         </div>
       }
     >
       <ProductDetailsContent productId={productId} />
     </Suspense>
-  );
+  )
 }
 
-function ProductDetailsContent({ productId }) {
-  const product = use(fetchProduct(productId));
-  
+function ProductDetailsContent({productId}) {
+  const product = use(fetchProduct(productId))
+
   return (
-    <div 
-      data-component="ProductDetails" 
+    <div
+      data-component="ProductDetails"
       data-element="content"
       data-state="loaded"
       data-product-id={productId}
     >
       {/* content */}
     </div>
-  );
+  )
 }
 ```
 
@@ -1166,7 +1123,7 @@ For same-origin iframes, selectors work normally. For cross-origin:
 
 ```html
 <!-- Parent page -->
-<iframe 
+<iframe
   src="https://checkout.example.com/embed"
   data-component="CheckoutEmbed"
   data-element="iframe"
@@ -1186,12 +1143,12 @@ Add annotations as you write components, not as an afterthought:
 
 ```jsx
 // ✅ Good habit: Add annotations as you code
-function ProductCard({ product }) {
+function ProductCard({product}) {
   return (
     <div data-component="ProductCard">
       <button data-element="add-to-cart">Add</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -1203,15 +1160,18 @@ Create a team style guide:
 ## Stable Selector Conventions
 
 ### Component Names
+
 - Use PascalCase: `ProductCard`, `CheckoutForm`
 - Match your component file/class name
 
 ### Element Names
+
 - Use kebab-case: `add-to-cart`, `search-input`
 - Describe purpose, not appearance
 - Be specific: `product-name` not `name`
 
 ### Required Annotations
+
 - All buttons and links
 - All form inputs
 - All cards in lists
@@ -1259,11 +1219,13 @@ Don't over-nest annotations:
 ### Selectors Not Working in Fullstory
 
 **Check in browser DevTools:**
+
 1. Inspect the element
 2. Verify `data-component` and `data-element` attributes exist
 3. Check for typos in attribute names
 
 **Common issues:**
+
 - Framework stripping data attributes in production
 - SSR/hydration mismatch
 - Conditional rendering removing the element
@@ -1273,6 +1235,7 @@ Don't over-nest annotations:
 **Problem:** Searching `[data-element="button"]` returns hundreds of results
 
 **Solution:** Be more specific:
+
 ```
 [data-component="ProductCard"] [data-element="add-to-cart"]
 ```
@@ -1288,9 +1251,9 @@ optimization: {
     new HtmlWebpackPlugin({
       minify: {
         // Keep data-* attributes
-        removeDataAttributes: false
-      }
-    })
+        removeDataAttributes: false,
+      },
+    }),
   ]
 }
 ```
@@ -1309,14 +1272,14 @@ When helping developers implement stable selectors:
 4. **Name by purpose, not appearance**: "add-to-cart" not "blue-button"
 5. **Annotate interactive elements**: Buttons, inputs, links, cards in lists
 6. **Combine with Element Properties**: Stable selectors for search, Element Properties for analytics data
-7. **Combine with ARIA**: Use both data-* and aria-* for maximum AI/accessibility compatibility
+7. **Combine with ARIA**: Use both data-_ and aria-_ for maximum AI/accessibility compatibility
 8. **No plugins required**: Manual annotation works everywhere
 
 ### CUA/AI Agent Considerations
 
 - **`data-action`**: Helps AI understand what interaction will do ("add-item", "submit-form", "toggle-menu")
 - **`data-state`**: Helps AI understand current element state ("loading", "disabled", "expanded")
-- **ARIA integration**: Ensure `aria-label` provides human-readable context alongside data-* targeting
+- **ARIA integration**: Ensure `aria-label` provides human-readable context alongside data-\* targeting
 - **Consistent naming**: AI agents learn patterns—be consistent across your codebase
 
 ### Questions to Ask Developers
@@ -1339,12 +1302,12 @@ Phase 1: Core Implementation
 □ Use specific, purpose-based names (not appearance/position)
 □ Test selectors in browser DevTools
 □ Verify attributes survive production build
-□ Create defined elements in Fullstory using data-* selectors
+□ Create defined elements in Fullstory using data-\* selectors
 
 Phase 2: AI/CUA Readiness (Recommended)
 □ Add data-action to buttons and interactive elements
 □ Add data-state for elements with multiple states
-□ Ensure ARIA attributes complement data-* selectors
+□ Ensure ARIA attributes complement data-\* selectors
 □ Document naming conventions for team consistency
 
 Phase 3: Enterprise Scale (If Applicable)
@@ -1368,21 +1331,26 @@ When you need to change selectors:
 ## REFERENCE LINKS
 
 ### Fullstory Documentation
+
 - **CSS Selectors in Search**: https://help.fullstory.com/hc/en-us/articles/360020623294
 - **Defined Elements**: https://help.fullstory.com/hc/en-us/articles/360020828113
 - **Element Properties Guide**: ../core/fullstory-element-properties/SKILL.md
 
 ### Testing Tool Integration
+
 - **Cypress Best Practices (Selecting Elements)**: https://docs.cypress.io/guides/references/best-practices#Selecting-Elements
 - **Playwright Locators**: https://playwright.dev/docs/locators
 - **Testing Library Queries**: https://testing-library.com/docs/queries/about
 
 ### Accessibility & AI
+
 - **WAI-ARIA Authoring Practices**: https://www.w3.org/WAI/ARIA/apg/
 - **MDN: Using Data Attributes**: https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes
 
 ### Historical Context
+
 These skills consolidate and extend patterns from:
+
 - `fullstorydev/eslint-plugin-annotate-react` (React-specific)
 - `fullstorydev/fullstory-babel-plugin-annotate-react` (Build-time injection)
 
@@ -1390,4 +1358,4 @@ The manual approach in this skill is more flexible and works across all framewor
 
 ---
 
-*This skill provides a universal, future-proof pattern for stable selectors that works in any framework. Optimized for Fullstory analytics, E2E testing, and AI-powered Computer User Agents. No external plugins required.*
+_This skill provides a universal, future-proof pattern for stable selectors that works in any framework. Optimized for Fullstory analytics, E2E testing, and AI-powered Computer User Agents. No external plugins required._

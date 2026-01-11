@@ -28,7 +28,15 @@ export function CheckoutSuccess({orderNumber}: CheckoutSuccessProps) {
   }, [countdown, router])
 
   return (
-    <div className="p-lg bg-green-50 dark:bg-green-950/30 border-2 border-success" role="status">
+    <div
+      className="p-lg bg-green-50 dark:bg-green-950/30 border-2 border-success"
+      role="status"
+      data-fs-element="section-order-confirmation"
+      data-fs-order-number-str={orderNumber}
+      data-fs-properties-schema={JSON.stringify({
+        'data-fs-order-number-str': {type: 'str', name: 'orderNumber'},
+      })}
+    >
       <div className="flex items-start gap-md">
         <div className="flex-shrink-0">
           <svg

@@ -2,6 +2,9 @@
 
 import {useState} from 'react'
 
+import {FSFormField} from '@/components/fs/FSFormField'
+import {Alert, Button} from '@/components/ui'
+
 export interface CheckoutFormData {
   email: string
   fullName: string
@@ -85,122 +88,88 @@ export function CheckoutForm({onSubmit, isSubmitting}: CheckoutFormProps) {
     <form onSubmit={handleSubmit} className="space-y-lg">
       <h2 className="text-2xl font-bold mb-lg">Shipping Information</h2>
 
-      <p className="p-md bg-warning-light border border-warning text-sm">
+      <Alert variant="warning">
         <strong>Test Mode:</strong> Use any information. No real data will be stored or transmitted.
-      </p>
+      </Alert>
 
-      <div className="space-y-md">
-        <label htmlFor="email" className="block text-sm font-medium mb-xs">
-          Email Address <span className="text-danger">*</span>
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-sm border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed"
-          disabled={isSubmitting}
-          placeholder="you@example.com"
-        />
-        {errors.email && <p className="text-sm text-danger mt-xs">{errors.email}</p>}
-      </div>
+      <FSFormField
+        label="Email Address"
+        type="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        disabled={isSubmitting}
+        placeholder="you@example.com"
+        error={errors.email}
+        privacy="mask"
+      />
 
-      <div className="space-y-md">
-        <label htmlFor="fullName" className="block text-sm font-medium mb-xs">
-          Full Name <span className="text-danger">*</span>
-        </label>
-        <input
-          type="text"
-          id="fullName"
-          name="fullName"
-          value={formData.fullName}
-          onChange={handleChange}
-          className="w-full p-sm border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed"
-          disabled={isSubmitting}
-          placeholder="John Doe"
-        />
-        {errors.fullName && <p className="text-sm text-danger mt-xs">{errors.fullName}</p>}
-      </div>
+      <FSFormField
+        label="Full Name"
+        type="text"
+        name="fullName"
+        value={formData.fullName}
+        onChange={handleChange}
+        disabled={isSubmitting}
+        placeholder="John Doe"
+        error={errors.fullName}
+        privacy="mask"
+      />
 
-      <div className="space-y-md">
-        <label htmlFor="addressLine1" className="block text-sm font-medium mb-xs">
-          Address <span className="text-danger">*</span>
-        </label>
-        <input
-          type="text"
-          id="addressLine1"
-          name="addressLine1"
-          value={formData.addressLine1}
-          onChange={handleChange}
-          className="w-full p-sm border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed"
-          disabled={isSubmitting}
-          placeholder="123 Main St"
-        />
-        {errors.addressLine1 && <p className="text-sm text-danger mt-xs">{errors.addressLine1}</p>}
-      </div>
+      <FSFormField
+        label="Address"
+        type="text"
+        name="addressLine1"
+        value={formData.addressLine1}
+        onChange={handleChange}
+        disabled={isSubmitting}
+        placeholder="123 Main St"
+        error={errors.addressLine1}
+        privacy="mask"
+      />
 
       <div className="grid grid-cols-3 gap-md">
-        <div>
-          <label htmlFor="city" className="block text-sm font-medium mb-xs">
-            City <span className="text-danger">*</span>
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            className="w-full p-sm border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed"
-            disabled={isSubmitting}
-            placeholder="San Francisco"
-          />
-          {errors.city && <p className="text-sm text-danger mt-xs">{errors.city}</p>}
-        </div>
+        <FSFormField
+          label="City"
+          type="text"
+          name="city"
+          value={formData.city}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          placeholder="San Francisco"
+          error={errors.city}
+          privacy="mask"
+        />
 
-        <div>
-          <label htmlFor="state" className="block text-sm font-medium mb-xs">
-            State <span className="text-danger">*</span>
-          </label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            value={formData.state}
-            onChange={handleChange}
-            className="w-full p-sm border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed"
-            disabled={isSubmitting}
-            placeholder="CA"
-            maxLength={2}
-          />
-          {errors.state && <p className="text-sm text-danger mt-xs">{errors.state}</p>}
-        </div>
+        <FSFormField
+          label="State"
+          type="text"
+          name="state"
+          value={formData.state}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          placeholder="CA"
+          maxLength={2}
+          error={errors.state}
+          privacy="mask"
+        />
 
-        <div>
-          <label htmlFor="zipCode" className="block text-sm font-medium mb-xs">
-            ZIP Code <span className="text-danger">*</span>
-          </label>
-          <input
-            type="text"
-            id="zipCode"
-            name="zipCode"
-            value={formData.zipCode}
-            onChange={handleChange}
-            className="w-full p-sm border border-border bg-background text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed"
-            disabled={isSubmitting}
-            placeholder="94102"
-          />
-          {errors.zipCode && <p className="text-sm text-danger mt-xs">{errors.zipCode}</p>}
-        </div>
+        <FSFormField
+          label="ZIP Code"
+          type="text"
+          name="zipCode"
+          value={formData.zipCode}
+          onChange={handleChange}
+          disabled={isSubmitting}
+          placeholder="94102"
+          error={errors.zipCode}
+          privacy="mask"
+        />
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full py-md px-lg bg-primary text-background border-2 border-primary text-base font-semibold cursor-pointer transition-all duration-fast hover:bg-primary-dark hover:border-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 disabled:bg-disabled disabled:border-disabled disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <Button type="submit" disabled={isSubmitting} fullWidth>
         {isSubmitting ? 'Processing...' : 'Continue to Payment'}
-      </button>
+      </Button>
     </form>
   )
 }

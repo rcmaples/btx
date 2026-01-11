@@ -2,6 +2,8 @@
 
 import {useEffect} from 'react'
 
+import {Button} from '@/components/ui'
+
 export default function Error({
   error,
   reset,
@@ -20,12 +22,7 @@ export default function Error({
         We encountered an unexpected error. Please try again or contact support if the problem
         persists.
       </p>
-      <button
-        onClick={() => reset()}
-        className="bg-primary text-background px-lg py-sm border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast"
-      >
-        Try again
-      </button>
+      <Button onClick={() => reset()}>Try again</Button>
     </div>
   )
 }

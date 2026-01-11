@@ -2,6 +2,9 @@
 
 import {useEffect, useState} from 'react'
 
+import {FSFormField} from '@/components/fs/FSFormField'
+import {Alert, Button} from '@/components/ui'
+import {centsToReal} from '@/lib/fullstory/utils'
 import {bundleService} from '@/lib/services/bundle/bundle-service'
 import type {BundleProduct, Product} from '@/lib/types'
 
@@ -139,20 +142,16 @@ export function BundleBuilder({products, onAddToCart}: BundleBuilderProps) {
           <div className="p-lg bg-background-secondary border-2 border-border sticky top-lg">
             <h3 className="text-xl font-bold mb-lg">Bundle Summary</h3>
 
-            <div className="mb-lg">
-              <label htmlFor="bundle-name" className="block text-sm font-medium mb-xs">
-                Bundle Name *
-              </label>
-              <input
-                id="bundle-name"
-                type="text"
-                value={bundleName}
-                onChange={(e) => setBundleName(e.target.value)}
-                placeholder="e.g., Morning Blend Collection"
-                className="w-full p-sm border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                maxLength={50}
-              />
-            </div>
+            <FSFormField
+              label="Bundle Name"
+              type="text"
+              id="bundle-name"
+              value={bundleName}
+              onChange={(e) => setBundleName(e.target.value)}
+              placeholder="e.g., Morning Blend Collection"
+              maxLength={50}
+              privacy="unmask"
+            />
 
             <div className="mb-lg">
               <h4 className="text-sm font-bold uppercase tracking-wider mb-sm">
@@ -204,30 +203,31 @@ export function BundleBuilder({products, onAddToCart}: BundleBuilderProps) {
             </div>
 
             {error && (
-              <div
-                className="p-md bg-danger-light border border-danger text-danger text-sm mb-lg"
-                role="alert"
-              >
+              <Alert variant="error" className="mb-lg text-sm">
                 {error}
-              </div>
+              </Alert>
             )}
 
             {success && (
-              <div
-                className="p-md bg-success-light border border-success text-success text-sm mb-lg"
-                role="status"
-              >
+              <Alert variant="success" className="mb-lg text-sm">
                 Bundle added to cart successfully!
-              </div>
+              </Alert>
             )}
 
-            <button
+            <Button
               onClick={handleAddToCart}
               disabled={isAdding || selectedProducts.length < 2 || !bundleName.trim()}
-              className="w-full py-md bg-primary text-background border-2 border-primary font-bold hover:bg-transparent hover:text-primary transition-all duration-fast disabled:opacity-50 disabled:cursor-not-allowed"
+              fullWidth
+              data-fs-element="btn-add-bundle-cart"
+              data-fs-bundle-product-count-int={selectedProducts.length}
+              data-fs-bundle-total-real={centsToReal(totalPrice)}
+              data-fs-properties-schema={JSON.stringify({
+                'data-fs-bundle-product-count-int': {type: 'int', name: 'bundleProductCount'},
+                'data-fs-bundle-total-real': {type: 'real', name: 'bundleTotal'},
+              })}
             >
               {isAdding ? 'Adding to Cart...' : 'Add Bundle to Cart'}
-            </button>
+            </Button>
 
             <p className="text-xs text-text-muted text-center mt-sm">Minimum 2 products required</p>
           </div>

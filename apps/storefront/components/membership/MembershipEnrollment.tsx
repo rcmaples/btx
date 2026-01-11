@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import {useState} from 'react'
 
+import {Button} from '@/components/ui'
+
 interface MembershipEnrollmentProps {
   onEnroll: () => Promise<void>
   isEnrolling: boolean
@@ -88,13 +90,18 @@ export function MembershipEnrollment({
           </div>
         )}
 
-        <button
+        <Button
           onClick={handleEnroll}
           disabled={isEnrolling}
-          className="bg-primary text-background px-xl py-md border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          size="lg"
+          data-fs-element="btn-membership-enroll"
+          data-fs-is-logged-in-bool={isLoggedIn}
+          data-fs-properties-schema={JSON.stringify({
+            'data-fs-is-logged-in-bool': {type: 'bool', name: 'isLoggedIn'},
+          })}
         >
           {isEnrolling ? 'Enrolling...' : isLoggedIn ? 'Join The Exchange' : 'Sign In to Join'}
-        </button>
+        </Button>
       </div>
     </div>
   )
