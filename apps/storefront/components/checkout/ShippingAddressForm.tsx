@@ -38,7 +38,7 @@ export function ShippingAddressForm({
       )}
 
       {/* First and Last Name */}
-      <div className="grid grid-cols-2 gap-md">
+      <div className="grid grid-cols-1 gap-md md:grid-cols-2">
         <FSFormField
           label="First Name"
           type="text"
@@ -81,7 +81,7 @@ export function ShippingAddressForm({
       />
 
       {/* City and State */}
-      <div className="grid grid-cols-2 gap-md">
+      <div className="grid grid-cols-1 gap-md md:grid-cols-2">
         <FSFormField
           label="City"
           type="text"
@@ -103,7 +103,7 @@ export function ShippingAddressForm({
       </div>
 
       {/* Postal Code and Country */}
-      <div className="grid grid-cols-2 gap-md">
+      <div className="grid grid-cols-1 gap-md md:grid-cols-2">
         <FSFormField
           label="Postal Code"
           type="text"
