@@ -4,14 +4,14 @@ import type {SelectHTMLAttributes} from 'react'
 
 type PrivacyLevel = 'mask' | 'exclude' | 'unmask' | 'none'
 
-interface FSSelectOption {
+export interface FSSelectOption {
   value: string
   label: string
 }
 
 interface FSSelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'className'> {
   label: string
-  options: FSSelectOption[]
+  options: readonly FSSelectOption[]
   error?: string
   privacy?: PrivacyLevel
   optional?: boolean
@@ -43,7 +43,7 @@ export function FSSelect({
 
   return (
     <div>
-      <label htmlFor={fieldId} className="block text-sm font-bold mb-xs text-text">
+      <label htmlFor={fieldId} className="block text-sm font-medium mb-xs text-text">
         {label}{' '}
         {optional ? (
           <span className="text-text-secondary">(optional)</span>

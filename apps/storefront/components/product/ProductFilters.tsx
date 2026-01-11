@@ -1,5 +1,6 @@
 'use client'
 
+import {FSSelect} from '@/components/fs/FSSelect'
 import {useFilterOptions} from '@/lib/hooks/useProducts'
 import type {ProductFilters as Filters} from '@/lib/types'
 
@@ -15,7 +16,7 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
   const handleFilterChange = (key: keyof Filters, value: string | undefined) => {
     onChange({
       ...filters,
-      [key]: value,
+      [key]: value || undefined,
     })
   }
 
@@ -59,84 +60,52 @@ export function ProductFilters({filters, onChange, isMember = false}: ProductFil
       </div>
 
       <div className="space-y-md">
-        <div>
-          <label className="block text-sm font-medium mb-xs" htmlFor="roast-filter">
-            Roast Level
-          </label>
-          <select
-            id="roast-filter"
-            data-fs-element="roast-level-filter"
-            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
-            value={filters.roastLevel || ''}
-            onChange={(e) => handleFilterChange('roastLevel', e.target.value || undefined)}
-          >
-            <option value="">All Roasts</option>
-            {options.roastLevels.map((roast) => (
-              <option key={roast} value={roast}>
-                {roast}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FSSelect
+          label="Roast Level"
+          id="roast-filter"
+          data-fs-element="roast-level-filter"
+          value={filters.roastLevel || ''}
+          onChange={(e) => handleFilterChange('roastLevel', e.target.value || undefined)}
+          options={options.roastLevels.map((roast) => ({value: roast, label: roast}))}
+          placeholder="All Roasts"
+          privacy="unmask"
+          optional
+        />
 
-        <div>
-          <label className="block text-sm font-medium mb-xs" htmlFor="origin-filter">
-            Origin
-          </label>
-          <select
-            id="origin-filter"
-            data-fs-element="origin-filter"
-            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
-            value={filters.origin || ''}
-            onChange={(e) => handleFilterChange('origin', e.target.value || undefined)}
-          >
-            <option value="">All Origins</option>
-            {options.origins.map((origin) => (
-              <option key={origin} value={origin}>
-                {origin}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FSSelect
+          label="Origin"
+          id="origin-filter"
+          data-fs-element="origin-filter"
+          value={filters.origin || ''}
+          onChange={(e) => handleFilterChange('origin', e.target.value || undefined)}
+          options={options.origins.map((origin) => ({value: origin, label: origin}))}
+          placeholder="All Origins"
+          privacy="unmask"
+          optional
+        />
 
-        <div>
-          <label className="block text-sm font-medium mb-xs" htmlFor="process-filter">
-            Process Method
-          </label>
-          <select
-            id="process-filter"
-            data-fs-element="process-method-filter"
-            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
-            value={filters.processMethod || ''}
-            onChange={(e) => handleFilterChange('processMethod', e.target.value || undefined)}
-          >
-            <option value="">All Methods</option>
-            {options.processMethods.map((method) => (
-              <option key={method} value={method}>
-                {method}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FSSelect
+          label="Process Method"
+          id="process-filter"
+          data-fs-element="process-method-filter"
+          value={filters.processMethod || ''}
+          onChange={(e) => handleFilterChange('processMethod', e.target.value || undefined)}
+          options={options.processMethods.map((method) => ({value: method, label: method}))}
+          placeholder="All Methods"
+          privacy="unmask"
+          optional
+        />
 
-        <div>
-          <label className="block text-sm font-medium mb-xs" htmlFor="best-for-filter">
-            Best For
-          </label>
-          <select
-            id="best-for-filter"
-            className="fs-unmask w-full p-sm border-2 border-border bg-background focus:outline-none focus:border-primary"
-            value={filters.bestFor || ''}
-            onChange={(e) => handleFilterChange('bestFor', e.target.value || undefined)}
-          >
-            <option value="">All Brewing Methods</option>
-            {options.bestFor.map((method) => (
-              <option key={method} value={method}>
-                {method}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FSSelect
+          label="Best For"
+          id="best-for-filter"
+          value={filters.bestFor || ''}
+          onChange={(e) => handleFilterChange('bestFor', e.target.value || undefined)}
+          options={options.bestFor.map((method) => ({value: method, label: method}))}
+          placeholder="All Brewing Methods"
+          privacy="unmask"
+          optional
+        />
 
         {isMember && (
           <div className="pt-md border-t border-border-light">

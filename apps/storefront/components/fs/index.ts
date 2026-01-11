@@ -1,3 +1,3 @@
+export {COUNTRIES, US_STATES} from './constants'
 export {FSFormField} from './FSFormField'
-export {FSSelect} from './FSSelect'
-export {US_STATES, COUNTRIES} from './constants'
+export {FSSelect, type FSSelectOption} from './FSSelect'
