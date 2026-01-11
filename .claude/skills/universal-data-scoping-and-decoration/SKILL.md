@@ -58,7 +58,8 @@ This meta-skill provides the strategic framework for deciding **where** to captu
 
 ### Rule 1: Capture Data at the Highest Relevant Scope
 
-**Why?** 
+**Why?**
+
 - Reduces duplication
 - Improves searchability
 - Makes data inheritance work correctly
@@ -66,36 +67,39 @@ This meta-skill provides the strategic framework for deciding **where** to captu
 
 **Decision Matrix:**
 
-| Data Characteristic | Scope to Use | API |
-|---------------------|--------------|-----|
-| Same for all user sessions | User Properties | `setIdentity` / `setProperties(user)` |
-| Same for entire page | Page Properties | `setProperties(page)` |
-| Different per element on page | Element Properties | `data-fs-*` attributes |
-| Discrete action/moment | Event | `trackEvent` |
+| Data Characteristic           | Scope to Use       | API                                   |
+| ----------------------------- | ------------------ | ------------------------------------- |
+| Same for all user sessions    | User Properties    | `setIdentity` / `setProperties(user)` |
+| Same for entire page          | Page Properties    | `setProperties(page)`                 |
+| Different per element on page | Element Properties | `data-fs-*` attributes                |
+| Discrete action/moment        | Event              | `trackEvent`                          |
 
 ### Rule 2: Never Duplicate Across Scopes
 
 ❌ **BAD**: Product ID on page AND on every element
+
 ```javascript
 // Page properties
-FS('setProperties', { type: 'page', properties: { productId: 'SKU-123' }});
+FS('setProperties', {type: 'page', properties: {productId: 'SKU-123'}})
 
 // Also on element (REDUNDANT!)
-<button data-product-id="SKU-123">Add to Cart</button>
+;<button data-product-id="SKU-123">Add to Cart</button>
 ```
 
 ✅ **GOOD**: Product ID at page level only
+
 ```javascript
 // Page properties (single source of truth)
-FS('setProperties', { type: 'page', properties: { productId: 'SKU-123' }});
+FS('setProperties', {type: 'page', properties: {productId: 'SKU-123'}})
 
 // Element just has element-specific data
-<button data-fs-element="Add to Cart Button">Add to Cart</button>
+;<button data-fs-element="Add to Cart Button">Add to Cart</button>
 ```
 
 ### Rule 3: Let Inheritance Work
 
 Fullstory's property inheritance:
+
 - **User properties** → Available on all sessions for that user
 - **Page properties** → Available on all elements/events on that page
 - **Element properties** → Inherited by child elements, AND child properties bubble up to parent on interaction
@@ -106,8 +110,10 @@ When a user interacts with a parent element (e.g., clicks a form submit button),
 
 ```html
 <form data-fs-element="CheckoutForm">
-  <select data-fs-element="ShippingMethod" 
-          data-fs-properties-schema='{"value": {"type": "str", "name": "shipping"}}'>
+  <select
+    data-fs-element="ShippingMethod"
+    data-fs-properties-schema='{"value": {"type": "str", "name": "shipping"}}'
+  >
     <option value="standard">Standard</option>
     <option value="express">Express</option>
   </select>
@@ -120,32 +126,32 @@ When a user interacts with a parent element (e.g., clicks a form submit button),
 
 Different scopes have different privacy implications:
 
-| Scope | Privacy Consideration | Recommendation |
-|-------|----------------------|----------------|
-| **User Properties** | Persists across sessions, linked to identity | Hash/tokenize PII; use internal IDs |
-| **Page Properties** | Visible in any session replay on this page | Mask sensitive page context |
-| **Element Properties** | Captured on interaction | Use `fs-exclude` for sensitive inputs |
-| **Events** | Logged with timestamp | Never include PII in event properties |
+| Scope                  | Privacy Consideration                        | Recommendation                        |
+| ---------------------- | -------------------------------------------- | ------------------------------------- |
+| **User Properties**    | Persists across sessions, linked to identity | Hash/tokenize PII; use internal IDs   |
+| **Page Properties**    | Visible in any session replay on this page   | Mask sensitive page context           |
+| **Element Properties** | Captured on interaction                      | Use `fs-exclude` for sensitive inputs |
+| **Events**             | Logged with timestamp                        | Never include PII in event properties |
 
 ```javascript
 // ✅ GOOD: Privacy-conscious scoping
 FS('setIdentity', {
-  uid: 'usr_abc123',  // Internal ID, not email
+  uid: 'usr_abc123', // Internal ID, not email
   properties: {
     plan: 'enterprise',
-    account_age_days: 365
+    account_age_days: 365,
     // NO: email, name, phone
-  }
-});
+  },
+})
 
 FS('setProperties', {
   type: 'page',
   properties: {
     pageName: 'Account Settings',
-    section: 'billing'
+    section: 'billing',
     // NO: account balance, card details
-  }
-});
+  },
+})
 ```
 
 > **Reference**: See `fullstory-privacy-controls` for fs-exclude/fs-mask/fs-unmask and `fullstory-privacy-strategy` for comprehensive privacy guidance.
@@ -161,17 +167,17 @@ FS('setProperties', {
   properties: {
     landing_page: '/pricing',
     referral_source: 'google_ads',
-    campaign: 'spring_promo'
-  }
-});
+    campaign: 'spring_promo',
+  },
+})
 
 // Later, user signs up - properties transfer automatically
 FS('setIdentity', {
   uid: 'usr_newuser123',
   properties: {
-    signup_date: '2024-01-15'
-  }
-});
+    signup_date: '2024-01-15',
+  },
+})
 // Now user has: landing_page, referral_source, campaign, AND signup_date
 ```
 
@@ -206,14 +212,17 @@ FS('setProperties', {
 
 ```javascript
 // ❌ WRONG: Entity data duplicated on elements
-<button 
+<button
   data-fs-element="Add to Cart"
-  data-product-id="SKU-123"       // REDUNDANT - already at page level
-  data-product-name="Wireless..."  // REDUNDANT
->Add to Cart</button>
+  data-product-id="SKU-123" // REDUNDANT - already at page level
+  data-product-name="Wireless..." // REDUNDANT
+>
+  Add to Cart
+</button>
 ```
 
 **Why This Works:**
+
 - All interactions inherit product context
 - Search by "clicks on Product Detail page where price > 100" works
 - No duplication, cleaner implementation
@@ -224,7 +233,8 @@ FS('setProperties', {
 
 **Definition**: Pages showing multiple distinct entities (search results, product grid, job listings).
 
-**Strategy**: 
+**Strategy**:
+
 - Search/filter context → **Page Properties**
 - Individual item context → **Element Properties**
 
@@ -237,14 +247,14 @@ FS('setProperties', {
     searchTerm: 'wireless headphones',
     resultsCount: 50,
     sortBy: 'relevance',
-    activeFilters: ['Electronics', 'In Stock']
-  }
-});
+    activeFilters: ['Electronics', 'In Stock'],
+  },
+})
 ```
 
 ```html
 <!-- ✅ CORRECT: Item-specific data on elements -->
-<div 
+<div
   data-product-id="SKU-123"
   data-product-name="Wireless Headphones"
   data-price="199.99"
@@ -263,7 +273,7 @@ FS('setProperties', {
 
 ```html
 <!-- ❌ WRONG: Search context duplicated on elements -->
-<div 
+<div
   data-product-id="SKU-123"
   data-search-term="wireless headphones"  <!-- REDUNDANT - page level -->
   data-results-count="50"                  <!-- REDUNDANT - page level -->
@@ -288,9 +298,9 @@ FS('setIdentity', {
     plan: 'enterprise',
     role: 'admin',
     companyName: user.company,
-    signupDate: user.createdAt
-  }
-});
+    signupDate: user.createdAt,
+  },
+})
 ```
 
 ```javascript
@@ -298,10 +308,10 @@ FS('setIdentity', {
 FS('setProperties', {
   type: 'page',
   properties: {
-    userPlan: 'enterprise',  // WRONG SCOPE - use user properties
-    userRole: 'admin'        // WRONG SCOPE
-  }
-});
+    userPlan: 'enterprise', // WRONG SCOPE - use user properties
+    userRole: 'admin', // WRONG SCOPE
+  },
+})
 ```
 
 ---
@@ -317,12 +327,12 @@ FS('setProperties', {
 FS('trackEvent', {
   name: 'Product Added to Cart',
   properties: {
-    quantity: 2,              // Action-specific
-    addedFrom: 'quick-view',  // Action-specific
+    quantity: 2, // Action-specific
+    addedFrom: 'quick-view', // Action-specific
     // productId inherited from page properties
     // userId inherited from user properties
-  }
-});
+  },
+})
 ```
 
 ```javascript
@@ -330,11 +340,11 @@ FS('trackEvent', {
 FS('setProperties', {
   type: 'user',
   properties: {
-    lastAddedProduct: 'SKU-123',    // Events shouldn't be properties
+    lastAddedProduct: 'SKU-123', // Events shouldn't be properties
     lastAddedQuantity: 2,
-    lastAddedTime: Date.now()
-  }
-});
+    lastAddedTime: Date.now(),
+  },
+})
 ```
 
 ---
@@ -375,80 +385,80 @@ START: You have data to capture
 
 ### E-commerce (`fullstory-ecommerce`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| User's loyalty tier | User Property | `setIdentity` |
-| Search term | Page Property | `setProperties(page)` |
-| Product ID (on PDP) | Page Property | `setProperties(page)` |
-| Product ID (in grid) | Element Property | `data-fs-*` |
-| Cart value | Page Property | `setProperties(page)` |
-| Purchase completed | Event | `trackEvent` |
+| Data Point           | Scope            | Implementation        |
+| -------------------- | ---------------- | --------------------- |
+| User's loyalty tier  | User Property    | `setIdentity`         |
+| Search term          | Page Property    | `setProperties(page)` |
+| Product ID (on PDP)  | Page Property    | `setProperties(page)` |
+| Product ID (in grid) | Element Property | `data-fs-*`           |
+| Cart value           | Page Property    | `setProperties(page)` |
+| Purchase completed   | Event            | `trackEvent`          |
 
 ### SaaS (`fullstory-saas`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| User role | User Property | `setIdentity` |
-| Team/org ID | User Property | `setIdentity` |
-| Dashboard being viewed | Page Property | `setProperties(page)` |
-| Report ID in list | Element Property | `data-fs-*` |
-| Feature used | Event | `trackEvent` |
-| Setting changed | Event | `trackEvent` |
+| Data Point             | Scope            | Implementation        |
+| ---------------------- | ---------------- | --------------------- |
+| User role              | User Property    | `setIdentity`         |
+| Team/org ID            | User Property    | `setIdentity`         |
+| Dashboard being viewed | Page Property    | `setProperties(page)` |
+| Report ID in list      | Element Property | `data-fs-*`           |
+| Feature used           | Event            | `trackEvent`          |
+| Setting changed        | Event            | `trackEvent`          |
 
 ### Media & Entertainment (`fullstory-media-entertainment`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| Subscriber status | User Property | `setIdentity` |
-| Content category | Page Property | `setProperties(page)` |
-| Content ID (on detail) | Page Property | `setProperties(page)` |
-| Related content IDs | Element Property | `data-fs-*` |
-| Video played | Event | `trackEvent` |
-| Content shared | Event | `trackEvent` |
+| Data Point             | Scope            | Implementation        |
+| ---------------------- | ---------------- | --------------------- |
+| Subscriber status      | User Property    | `setIdentity`         |
+| Content category       | Page Property    | `setProperties(page)` |
+| Content ID (on detail) | Page Property    | `setProperties(page)` |
+| Related content IDs    | Element Property | `data-fs-*`           |
+| Video played           | Event            | `trackEvent`          |
+| Content shared         | Event            | `trackEvent`          |
 
 ### Banking & Finance (`fullstory-banking`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| Account type | User Property | `setIdentity` |
-| Current section | Page Property | `setProperties(page)` |
-| Transaction type | Page Property | `setProperties(page)` |
-| Account selector | Element Property | `data-fs-*` (ID only, mask details) |
-| Transfer completed | Event | `trackEvent` (no amounts) |
-| MFA step | Event | `trackEvent` |
+| Data Point         | Scope            | Implementation                      |
+| ------------------ | ---------------- | ----------------------------------- |
+| Account type       | User Property    | `setIdentity`                       |
+| Current section    | Page Property    | `setProperties(page)`               |
+| Transaction type   | Page Property    | `setProperties(page)`               |
+| Account selector   | Element Property | `data-fs-*` (ID only, mask details) |
+| Transfer completed | Event            | `trackEvent` (no amounts)           |
+| MFA step           | Event            | `trackEvent`                        |
 
 ### Gaming (`fullstory-gaming`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| Player tier (VIP status) | User Property | `setIdentity` |
-| Game lobby section | Page Property | `setProperties(page)` |
-| Active game ID | Page Property | `setProperties(page)` |
-| Game tile in grid | Element Property | `data-fs-*` |
-| Wager placed | Event | `trackEvent` (for compliance) |
-| Game launched | Event | `trackEvent` |
+| Data Point               | Scope            | Implementation                |
+| ------------------------ | ---------------- | ----------------------------- |
+| Player tier (VIP status) | User Property    | `setIdentity`                 |
+| Game lobby section       | Page Property    | `setProperties(page)`         |
+| Active game ID           | Page Property    | `setProperties(page)`         |
+| Game tile in grid        | Element Property | `data-fs-*`                   |
+| Wager placed             | Event            | `trackEvent` (for compliance) |
+| Game launched            | Event            | `trackEvent`                  |
 
 ### Healthcare (`fullstory-healthcare`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| User role (patient/provider) | User Property | `setIdentity` |
-| Section (appointments, records) | Page Property | `setProperties(page)` |
-| Flow step | Page Property | `setProperties(page)` |
-| Form field (non-PHI only) | Element Property | `data-fs-*` + `fs-exclude` |
-| Appointment scheduled | Event | `trackEvent` (no PHI) |
-| Form submitted | Event | `trackEvent` (completion only) |
+| Data Point                      | Scope            | Implementation                 |
+| ------------------------------- | ---------------- | ------------------------------ |
+| User role (patient/provider)    | User Property    | `setIdentity`                  |
+| Section (appointments, records) | Page Property    | `setProperties(page)`          |
+| Flow step                       | Page Property    | `setProperties(page)`          |
+| Form field (non-PHI only)       | Element Property | `data-fs-*` + `fs-exclude`     |
+| Appointment scheduled           | Event            | `trackEvent` (no PHI)          |
+| Form submitted                  | Event            | `trackEvent` (completion only) |
 
 ### Travel & Hospitality (`fullstory-travel`)
 
-| Data Point | Scope | Implementation |
-|------------|-------|----------------|
-| Loyalty tier | User Property | `setIdentity` |
-| Search criteria | Page Property | `setProperties(page)` |
-| Selected flight/hotel | Page Property | `setProperties(page)` |
-| Flight option in results | Element Property | `data-fs-*` |
-| Booking completed | Event | `trackEvent` |
-| Ancillary added | Event | `trackEvent` |
+| Data Point               | Scope            | Implementation        |
+| ------------------------ | ---------------- | --------------------- |
+| Loyalty tier             | User Property    | `setIdentity`         |
+| Search criteria          | Page Property    | `setProperties(page)` |
+| Selected flight/hotel    | Page Property    | `setProperties(page)` |
+| Flight option in results | Element Property | `data-fs-*`           |
+| Booking completed        | Event            | `trackEvent`          |
+| Ancillary added          | Event            | `trackEvent`          |
 
 ---
 
@@ -461,35 +471,35 @@ START: You have data to capture
 FS('setProperties', {
   type: 'user',
   properties: {
-    currentPage: '/checkout',        // Should be page property
-    cartItems: 5,                    // Should be page property
-    lastClickedButton: 'submit'      // Should be event
-  }
-});
+    currentPage: '/checkout', // Should be page property
+    cartItems: 5, // Should be page property
+    lastClickedButton: 'submit', // Should be event
+  },
+})
 ```
 
 ### Anti-Pattern 2: Everything as Events
 
 ```javascript
 // ❌ BAD: State as events
-FS('trackEvent', { name: 'User Is Premium', properties: {} });    // User property
-FS('trackEvent', { name: 'Page Has 5 Results', properties: {} }); // Page property
+FS('trackEvent', {name: 'User Is Premium', properties: {}}) // User property
+FS('trackEvent', {name: 'Page Has 5 Results', properties: {}}) // Page property
 ```
 
 ### Anti-Pattern 3: Duplicating Hierarchy
 
 ```javascript
 // ❌ BAD: Same data at multiple levels
-FS('setIdentity', { uid: '123', properties: { plan: 'premium' }});
-FS('setProperties', { type: 'page', properties: { userPlan: 'premium' }}); // DUP
-FS('trackEvent', { name: 'Click', properties: { userPlan: 'premium' }});   // DUP
+FS('setIdentity', {uid: '123', properties: {plan: 'premium'}})
+FS('setProperties', {type: 'page', properties: {userPlan: 'premium'}}) // DUP
+FS('trackEvent', {name: 'Click', properties: {userPlan: 'premium'}}) // DUP
 ```
 
 ### Anti-Pattern 4: Over-Granular Element Properties
 
 ```javascript
 // ❌ BAD: Too much data on elements when page context would work
-<button 
+<button
   data-page-name="Checkout"          // Should be page property
   data-user-id="123"                 // Should be user property
   data-cart-total="99.99"            // Should be page property
@@ -529,32 +539,32 @@ Before implementing, answer these questions:
 
 ### Core API Skills
 
-| API | Skill Document |
-|-----|----------------|
-| User Identification | `fullstory-identify-users` |
-| User Properties | `fullstory-user-properties` |
-| Page Properties | `fullstory-page-properties` |
-| Element Properties | `fullstory-element-properties` |
-| Events | `fullstory-analytics-events` |
-| Privacy Controls | `fullstory-privacy-controls` |
+| API                 | Skill Document                 |
+| ------------------- | ------------------------------ |
+| User Identification | `fullstory-identify-users`     |
+| User Properties     | `fullstory-user-properties`    |
+| Page Properties     | `fullstory-page-properties`    |
+| Element Properties  | `fullstory-element-properties` |
+| Events              | `fullstory-analytics-events`   |
+| Privacy Controls    | `fullstory-privacy-controls`   |
 
 ### Industry Skills
 
-| Industry | Skill Document |
-|----------|----------------|
-| Banking & Finance | `fullstory-banking` |
-| E-commerce & Retail | `fullstory-ecommerce` |
-| Gaming | `fullstory-gaming` |
-| Healthcare | `fullstory-healthcare` |
-| B2B SaaS | `fullstory-saas` |
-| Travel & Hospitality | `fullstory-travel` |
+| Industry              | Skill Document                  |
+| --------------------- | ------------------------------- |
+| Banking & Finance     | `fullstory-banking`             |
+| E-commerce & Retail   | `fullstory-ecommerce`           |
+| Gaming                | `fullstory-gaming`              |
+| Healthcare            | `fullstory-healthcare`          |
+| B2B SaaS              | `fullstory-saas`                |
+| Travel & Hospitality  | `fullstory-travel`              |
 | Media & Entertainment | `fullstory-media-entertainment` |
 
 ### Strategic Skills
 
-| Topic | Skill Document |
-|-------|----------------|
-| Getting Started | `fullstory-getting-started` |
+| Topic            | Skill Document               |
+| ---------------- | ---------------------------- |
+| Getting Started  | `fullstory-getting-started`  |
 | Privacy Strategy | `fullstory-privacy-strategy` |
 | Stable Selectors | `fullstory-stable-selectors` |
 
@@ -569,7 +579,6 @@ Before implementing, answer these questions:
   - Expanded industry-specific patterns
   - Added explicit anti-patterns section
   - Aligned format with element-properties skill
-  
 - **3.0**
   - Generalized naming and examples
   - Added explicit Good/Bad implementation guides
@@ -619,4 +628,4 @@ When helping developers with data scoping:
 
 ---
 
-*This meta-skill document provides strategic guidance for Fullstory data semantic decoration. Refer to individual API skill documents for detailed implementation examples.*
+_This meta-skill document provides strategic guidance for Fullstory data semantic decoration. Refer to individual API skill documents for detailed implementation examples._

@@ -15,9 +15,10 @@ related_skills:
 
 Fullstory's User Properties API allows developers to capture custom user data that enriches user profiles for search, filtering, segmentation, and analytics. Unlike `setIdentity` which links a session to a known user ID, `setProperties` with `type: 'user'` lets you add or update attributes about **any** user - including anonymous users.
 
-> **Important**: Every new browser/device starts as an anonymous user, tracked via the `fs_uid` first-party cookie (1-year expiry). You can set user properties on anonymous users *before* they ever identify. These properties persist across sessions and transfer when/if the user later identifies via `setIdentity`.
+> **Important**: Every new browser/device starts as an anonymous user, tracked via the `fs_uid` first-party cookie (1-year expiry). You can set user properties on anonymous users _before_ they ever identify. These properties persist across sessions and transfer when/if the user later identifies via `setIdentity`.
 
 Key use cases:
+
 - **Anonymous User Enrichment**: Add attributes before the user logs in (referral source, landing page, visitor type)
 - **Progressive Profiling**: Update properties as you learn more about the user
 - **Subscription/Plan Changes**: Track plan upgrades without re-identifying
@@ -28,10 +29,10 @@ Key use cases:
 
 ### setIdentity vs setProperties
 
-| API | Purpose | When to Use | Works for Anonymous? |
-|-----|---------|-------------|---------------------|
-| `setIdentity` | Link session to a known user ID + optional initial properties | Login, authentication | No (converts anonymous → identified) |
-| `setProperties` (user) | Add/update properties for the current user | **Anytime** - works for anonymous AND identified users | **Yes** ✅ |
+| API                    | Purpose                                                       | When to Use                                            | Works for Anonymous?                 |
+| ---------------------- | ------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------ |
+| `setIdentity`          | Link session to a known user ID + optional initial properties | Login, authentication                                  | No (converts anonymous → identified) |
+| `setProperties` (user) | Add/update properties for the current user                    | **Anytime** - works for anonymous AND identified users | **Yes** ✅                           |
 
 > **Key Distinction**: Use `setIdentity` when you need to **link a session to a known user** (requires a `uid`). Use `setProperties` when you just want to **add or update attributes** about the current user - this works for both identified AND anonymous users.
 
@@ -54,9 +55,9 @@ FS('setProperties', {
   properties: {
     landing_page: '/pricing',
     referral_source: 'google_ads',
-    campaign: 'spring_sale_2024'
-  }
-});
+    campaign: 'spring_sale_2024',
+  },
+})
 
 // ... user browses for a while ...
 
@@ -65,10 +66,10 @@ FS('setIdentity', {
   uid: 'user_abc123',
   properties: {
     displayName: 'Jane Smith',
-    email: 'jane@example.com'
-  }
-});
-// The anonymous properties (landing_page, referral_source, campaign) 
+    email: 'jane@example.com',
+  },
+})
+// The anonymous properties (landing_page, referral_source, campaign)
 // are now attached to the identified user "Jane Smith"
 ```
 
@@ -83,6 +84,7 @@ User upgrades plan → setProperties({ type: 'user', properties: { plan: "enterp
 ```
 
 **For anonymous users** (not yet logged in):
+
 ```javascript
 // User hasn't logged in yet, but we know something about them
 FS('setProperties', {
@@ -90,14 +92,15 @@ FS('setProperties', {
   properties: {
     visitor_type: 'returning',
     referral_source: 'google_ads',
-    landing_page: '/pricing'
-  }
-});
+    landing_page: '/pricing',
+  },
+})
 // These properties will be associated with the anonymous user
 // and will persist if/when they later identify
 ```
 
 ### Property Persistence
+
 - User properties persist across sessions
 - Properties can be updated at any time
 - New properties are added; existing properties are overwritten
@@ -105,10 +108,10 @@ FS('setProperties', {
 
 ### Special Fields
 
-| Field | Behavior |
-|-------|----------|
+| Field         | Behavior                                            |
+| ------------- | --------------------------------------------------- |
 | `displayName` | Shown in session list and user card in Fullstory UI |
-| `email` | Enables email-based search and HTTP API lookups |
+| `email`       | Enables email-based search and HTTP API lookups     |
 
 ---
 
@@ -126,26 +129,26 @@ FS('setProperties', {
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `type` | string | **Yes** | Must be `'user'` for user properties |
-| `properties` | object | **Yes** | Key/value pairs of user data |
-| `schema` | object | No | Explicit type inference for properties |
+| Parameter    | Type   | Required | Description                            |
+| ------------ | ------ | -------- | -------------------------------------- |
+| `type`       | string | **Yes**  | Must be `'user'` for user properties   |
+| `properties` | object | **Yes**  | Key/value pairs of user data           |
+| `schema`     | object | No       | Explicit type inference for properties |
 
 ### Supported Property Types
 
-| Type | Description | Examples |
-|------|-------------|----------|
-| `str` | String value | "premium", "enterprise" |
-| `strs` | Array of strings | ["admin", "beta-tester"] |
-| `int` | Integer | 42, -5, 0 |
-| `ints` | Array of integers | [1, 2, 3] |
-| `real` | Float/decimal | 99.99, -3.14 |
-| `reals` | Array of reals | [10.5, 20.0] |
-| `bool` | Boolean | true, false |
-| `bools` | Array of booleans | [true, false, true] |
-| `date` | ISO8601 date | "2024-01-15T00:00:00Z" |
-| `dates` | Array of dates | ["2024-01-01", "2024-02-01"] |
+| Type    | Description       | Examples                     |
+| ------- | ----------------- | ---------------------------- |
+| `str`   | String value      | "premium", "enterprise"      |
+| `strs`  | Array of strings  | ["admin", "beta-tester"]     |
+| `int`   | Integer           | 42, -5, 0                    |
+| `ints`  | Array of integers | [1, 2, 3]                    |
+| `real`  | Float/decimal     | 99.99, -3.14                 |
+| `reals` | Array of reals    | [10.5, 20.0]                 |
+| `bool`  | Boolean           | true, false                  |
+| `bools` | Array of booleans | [true, false, true]          |
+| `date`  | ISO8601 date      | "2024-01-15T00:00:00Z"       |
+| `dates` | Array of dates    | ["2024-01-01", "2024-02-01"] |
 
 ### Rate Limits
 
@@ -165,14 +168,14 @@ FS('setIdentity', {
   uid: user.id,
   properties: {
     displayName: user.name,
-    email: user.email
-  }
-});
+    email: user.email,
+  },
+})
 
 // Step 2: Enrich with additional data once loaded
 async function loadUserProfile() {
-  const profile = await fetchUserProfile(user.id);
-  
+  const profile = await fetchUserProfile(user.id)
+
   FS('setProperties', {
     type: 'user',
     properties: {
@@ -182,13 +185,14 @@ async function loadUserProfile() {
       role: profile.role,
       department: profile.department,
       signupSource: profile.attribution.source,
-      referralCode: profile.attribution.referralCode
-    }
-  });
+      referralCode: profile.attribution.referralCode,
+    },
+  })
 }
 ```
 
 **Why this is good:**
+
 - ✅ Quick identification on login (doesn't block on profile load)
 - ✅ Rich data added once available
 - ✅ Clean separation of concerns
@@ -200,8 +204,8 @@ async function loadUserProfile() {
 // GOOD: Track subscription changes without re-identifying
 async function handlePlanUpgrade(newPlan) {
   // Process the upgrade
-  await processUpgrade(newPlan);
-  
+  await processUpgrade(newPlan)
+
   // Update user properties to reflect new plan
   FS('setProperties', {
     type: 'user',
@@ -211,27 +215,28 @@ async function handlePlanUpgrade(newPlan) {
       monthlyPrice: newPlan.price,
       billingCycle: newPlan.billingCycle,
       planChangedAt: new Date().toISOString(),
-      previousPlan: getCurrentPlan().name
+      previousPlan: getCurrentPlan().name,
     },
     schema: {
       monthlyPrice: 'real',
-      planChangedAt: 'date'
-    }
-  });
-  
+      planChangedAt: 'date',
+    },
+  })
+
   // Also track as an event for funnel analysis
   FS('trackEvent', {
     name: 'Plan Upgraded',
     properties: {
       fromPlan: getCurrentPlan().name,
       toPlan: newPlan.name,
-      priceDifference: newPlan.price - getCurrentPlan().price
-    }
-  });
+      priceDifference: newPlan.price - getCurrentPlan().price,
+    },
+  })
 }
 ```
 
 **Why this is good:**
+
 - ✅ Updates user properties without re-identification
 - ✅ Tracks both current state (property) and change (event)
 - ✅ Uses schema for proper type handling
@@ -242,7 +247,6 @@ async function handlePlanUpgrade(newPlan) {
 ```javascript
 // GOOD: Build up user profile through onboarding steps
 class OnboardingFlow {
-  
   // Step 1: Basic info collected
   completeBasicInfo(data) {
     FS('setProperties', {
@@ -251,31 +255,31 @@ class OnboardingFlow {
         companyName: data.companyName,
         companySize: data.companySize,
         onboardingStep: 1,
-        onboardingStartedAt: new Date().toISOString()
+        onboardingStartedAt: new Date().toISOString(),
       },
       schema: {
         onboardingStep: 'int',
-        onboardingStartedAt: 'date'
-      }
-    });
+        onboardingStartedAt: 'date',
+      },
+    })
   }
-  
+
   // Step 2: Use case selection
   completeUseCaseSelection(useCases) {
     FS('setProperties', {
       type: 'user',
       properties: {
         primaryUseCase: useCases.primary,
-        secondaryUseCases: useCases.secondary,  // Array of strings
-        onboardingStep: 2
+        secondaryUseCases: useCases.secondary, // Array of strings
+        onboardingStep: 2,
       },
       schema: {
         secondaryUseCases: 'strs',
-        onboardingStep: 'int'
-      }
-    });
+        onboardingStep: 'int',
+      },
+    })
   }
-  
+
   // Step 3: Integration setup
   completeIntegrationSetup(integrations) {
     FS('setProperties', {
@@ -283,16 +287,16 @@ class OnboardingFlow {
       properties: {
         connectedIntegrations: integrations.connected,
         integrationCount: integrations.connected.length,
-        onboardingStep: 3
+        onboardingStep: 3,
       },
       schema: {
         connectedIntegrations: 'strs',
         integrationCount: 'int',
-        onboardingStep: 'int'
-      }
-    });
+        onboardingStep: 'int',
+      },
+    })
   }
-  
+
   // Final step: Mark complete
   completeOnboarding() {
     FS('setProperties', {
@@ -300,19 +304,20 @@ class OnboardingFlow {
       properties: {
         onboardingComplete: true,
         onboardingCompletedAt: new Date().toISOString(),
-        onboardingStep: 4
+        onboardingStep: 4,
       },
       schema: {
         onboardingComplete: 'bool',
         onboardingCompletedAt: 'date',
-        onboardingStep: 'int'
-      }
-    });
+        onboardingStep: 'int',
+      },
+    })
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Builds profile incrementally
 - ✅ Each step adds relevant properties
 - ✅ Tracks progress via onboardingStep
@@ -323,21 +328,20 @@ class OnboardingFlow {
 ```javascript
 // GOOD: Track feature adoption at user level
 class FeatureUsageTracker {
-  
   trackFeatureFirstUse(featureName) {
-    const propertyName = `firstUsed_${featureName}`;
-    
+    const propertyName = `firstUsed_${featureName}`
+
     FS('setProperties', {
       type: 'user',
       properties: {
-        [propertyName]: new Date().toISOString()
+        [propertyName]: new Date().toISOString(),
       },
       schema: {
-        [propertyName]: 'date'
-      }
-    });
+        [propertyName]: 'date',
+      },
+    })
   }
-  
+
   updateFeatureEngagement(features) {
     FS('setProperties', {
       type: 'user',
@@ -346,29 +350,30 @@ class FeatureUsageTracker {
         mostUsedFeature: features.mostUsed,
         featureUsageScore: features.engagementScore,
         lastActiveFeature: features.lastUsed,
-        lastFeatureUseAt: new Date().toISOString()
+        lastFeatureUseAt: new Date().toISOString(),
       },
       schema: {
         featuresUsed: 'strs',
         featureUsageScore: 'int',
-        lastFeatureUseAt: 'date'
-      }
-    });
+        lastFeatureUseAt: 'date',
+      },
+    })
   }
 }
 
 // Usage
-const tracker = new FeatureUsageTracker();
-tracker.trackFeatureFirstUse('advanced_export');
+const tracker = new FeatureUsageTracker()
+tracker.trackFeatureFirstUse('advanced_export')
 tracker.updateFeatureEngagement({
   used: ['dashboard', 'reports', 'advanced_export'],
   mostUsed: 'reports',
   engagementScore: 85,
-  lastUsed: 'advanced_export'
-});
+  lastUsed: 'advanced_export',
+})
 ```
 
 **Why this is good:**
+
 - ✅ Tracks feature adoption dates
 - ✅ Maintains engagement metrics
 - ✅ Enables feature-based segmentation
@@ -379,8 +384,8 @@ tracker.updateFeatureEngagement({
 ```javascript
 // GOOD: Sync key CRM fields to Fullstory
 async function syncCRMData(userId) {
-  const crmData = await fetchFromCRM(userId);
-  
+  const crmData = await fetchFromCRM(userId)
+
   FS('setProperties', {
     type: 'user',
     properties: {
@@ -389,19 +394,19 @@ async function syncCRMData(userId) {
       accountStage: crmData.stage,
       dealValue: crmData.opportunity.value,
       closeDate: crmData.opportunity.expectedClose,
-      
+
       // Health metrics
       healthScore: crmData.health.score,
       churnRisk: crmData.health.churnRisk,
       npsScore: crmData.health.nps,
-      
+
       // Engagement
       lastContactDate: crmData.lastContact,
       meetingsScheduled: crmData.meetings.scheduled,
       supportTicketsOpen: crmData.support.openTickets,
-      
+
       // Sync metadata
-      crmSyncedAt: new Date().toISOString()
+      crmSyncedAt: new Date().toISOString(),
     },
     schema: {
       dealValue: 'real',
@@ -412,13 +417,14 @@ async function syncCRMData(userId) {
       lastContactDate: 'date',
       meetingsScheduled: 'int',
       supportTicketsOpen: 'int',
-      crmSyncedAt: 'date'
-    }
-  });
+      crmSyncedAt: 'date',
+    },
+  })
 }
 ```
 
 **Why this is good:**
+
 - ✅ Bridges CRM and product analytics
 - ✅ Enables sales context in session replay
 - ✅ Supports health-based segmentation
@@ -435,29 +441,31 @@ async function syncCRMData(userId) {
 FS('setProperties', {
   type: 'user',
   properties: {
-    uid: user.id,  // This won't work!
+    uid: user.id, // This won't work!
     displayName: user.name,
-    email: user.email
-  }
-});
+    email: user.email,
+  },
+})
 ```
 
 **Why this is bad:**
+
 - ❌ setProperties doesn't establish identity
 - ❌ uid as a property doesn't link sessions
 - ❌ User remains anonymous
 - ❌ Misunderstanding of API purpose
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use setIdentity for identification
 FS('setIdentity', {
   uid: user.id,
   properties: {
     displayName: user.name,
-    email: user.email
-  }
-});
+    email: user.email,
+  },
+})
 ```
 
 ### Example 2: Calling Before Identification
@@ -470,18 +478,20 @@ function updateUserPreferences(preferences) {
     type: 'user',
     properties: {
       theme: preferences.theme,
-      language: preferences.language
-    }
-  });
+      language: preferences.language,
+    },
+  })
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Properties on anonymous users are session-scoped
 - ❌ Data won't persist across sessions
 - ❌ Can't segment by these properties reliably
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Check identification status first
 function updateUserPreferences(preferences) {
@@ -491,9 +501,9 @@ function updateUserPreferences(preferences) {
       type: 'user',
       properties: {
         theme: preferences.theme,
-        language: preferences.language
-      }
-    });
+        language: preferences.language,
+      },
+    })
   }
   // For anonymous users, consider page properties or just skip
 }
@@ -508,18 +518,20 @@ function handleFormFieldChange(fieldName, value) {
   FS('setProperties', {
     type: 'user',
     properties: {
-      [`form_${fieldName}`]: value
-    }
-  });
+      [`form_${fieldName}`]: value,
+    },
+  })
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Will hit rate limits (30/min, 10/sec)
 - ❌ Wastes API calls on intermediate states
 - ❌ Transient form data isn't good for user properties
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Batch updates on form submission
 function handleFormSubmit(formData) {
@@ -529,15 +541,15 @@ function handleFormSubmit(formData) {
     properties: {
       preferredContact: formData.contactMethod,
       marketingOptIn: formData.optIn,
-      timezone: formData.timezone
-    }
-  });
-  
+      timezone: formData.timezone,
+    },
+  })
+
   // Track the form submission as event
   FS('trackEvent', {
     name: 'Preferences Updated',
-    properties: formData
-  });
+    properties: formData,
+  })
 }
 ```
 
@@ -547,26 +559,28 @@ function handleFormSubmit(formData) {
 // BAD: Missing type parameter
 FS('setProperties', {
   properties: {
-    plan: 'premium'
-  }
+    plan: 'premium',
+  },
   // Missing type: 'user'!
-});
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Missing required `type` parameter
 - ❌ API call will fail or behave unexpectedly
 - ❌ Easy to miss in testing
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Include type parameter
 FS('setProperties', {
-  type: 'user',  // Required!
+  type: 'user', // Required!
   properties: {
-    plan: 'premium'
-  }
-});
+    plan: 'premium',
+  },
+})
 ```
 
 ### Example 5: Type Mismatches
@@ -576,44 +590,46 @@ FS('setProperties', {
 FS('setProperties', {
   type: 'user',
   properties: {
-    accountBalance: '$1,234.56',   // BAD: Formatted currency
-    loginCount: 'forty-two',       // BAD: Written number
-    isPremium: 'yes',              // BAD: String instead of boolean
-    signupDate: 'January 15, 2024' // BAD: Not ISO8601
+    accountBalance: '$1,234.56', // BAD: Formatted currency
+    loginCount: 'forty-two', // BAD: Written number
+    isPremium: 'yes', // BAD: String instead of boolean
+    signupDate: 'January 15, 2024', // BAD: Not ISO8601
   },
   schema: {
     accountBalance: 'real',
     loginCount: 'int',
     isPremium: 'bool',
-    signupDate: 'date'
-  }
-});
+    signupDate: 'date',
+  },
+})
 ```
 
 **Why this is bad:**
+
 - ❌ Values don't match declared types
 - ❌ Parsing will fail
 - ❌ Properties won't be queryable correctly
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Properly formatted values
 FS('setProperties', {
   type: 'user',
   properties: {
     accountBalance: 1234.56,
-    currency: 'USD',  // Separate field for formatting
+    currency: 'USD', // Separate field for formatting
     loginCount: 42,
     isPremium: true,
-    signupDate: '2024-01-15T00:00:00Z'
+    signupDate: '2024-01-15T00:00:00Z',
   },
   schema: {
     accountBalance: 'real',
     loginCount: 'int',
     isPremium: 'bool',
-    signupDate: 'date'
-  }
-});
+    signupDate: 'date',
+  },
+})
 ```
 
 ### Example 6: Overwriting Important Properties
@@ -624,19 +640,21 @@ function updateLastActivity() {
   FS('setProperties', {
     type: 'user',
     properties: {
-      displayName: 'Active User',  // BAD: Overwrites the real name!
-      lastActivityAt: new Date().toISOString()
-    }
-  });
+      displayName: 'Active User', // BAD: Overwrites the real name!
+      lastActivityAt: new Date().toISOString(),
+    },
+  })
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Overwrites displayName with generic value
 - ❌ Loses actual user name in Fullstory UI
 - ❌ Makes sessions hard to identify
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Only update intended properties
 function updateLastActivity() {
@@ -644,13 +662,13 @@ function updateLastActivity() {
     type: 'user',
     properties: {
       lastActivityAt: new Date().toISOString(),
-      isRecentlyActive: true
+      isRecentlyActive: true,
     },
     schema: {
       lastActivityAt: 'date',
-      isRecentlyActive: 'bool'
-    }
-  });
+      isRecentlyActive: 'bool',
+    },
+  })
 }
 ```
 
@@ -664,41 +682,41 @@ function updateLastActivity() {
 // Centralized user property management
 class UserPropertyManager {
   constructor() {
-    this.pendingProperties = {};
-    this.flushTimeout = null;
+    this.pendingProperties = {}
+    this.flushTimeout = null
   }
-  
+
   // Queue properties for batched update
   queue(properties, schema = {}) {
-    Object.assign(this.pendingProperties, properties);
-    
+    Object.assign(this.pendingProperties, properties)
+
     // Debounce to batch rapid updates
-    if (this.flushTimeout) clearTimeout(this.flushTimeout);
-    this.flushTimeout = setTimeout(() => this.flush(), 1000);
+    if (this.flushTimeout) clearTimeout(this.flushTimeout)
+    this.flushTimeout = setTimeout(() => this.flush(), 1000)
   }
-  
+
   // Immediately send properties
   flush() {
-    if (Object.keys(this.pendingProperties).length === 0) return;
-    
+    if (Object.keys(this.pendingProperties).length === 0) return
+
     FS('setProperties', {
       type: 'user',
-      properties: this.pendingProperties
-    });
-    
-    this.pendingProperties = {};
-    this.flushTimeout = null;
+      properties: this.pendingProperties,
+    })
+
+    this.pendingProperties = {}
+    this.flushTimeout = null
   }
-  
+
   // Update specific category of properties
   updateEngagement(data) {
     this.queue({
       lastActiveAt: new Date().toISOString(),
       sessionCount: data.sessionCount,
-      pageViewsTotal: data.pageViews
-    });
+      pageViewsTotal: data.pageViews,
+    })
   }
-  
+
   updateSubscription(plan) {
     // Subscription updates are important - flush immediately
     FS('setProperties', {
@@ -706,9 +724,9 @@ class UserPropertyManager {
       properties: {
         plan: plan.name,
         planTier: plan.tier,
-        planUpdatedAt: new Date().toISOString()
-      }
-    });
+        planUpdatedAt: new Date().toISOString(),
+      },
+    })
   }
 }
 ```
@@ -718,16 +736,16 @@ class UserPropertyManager {
 ```javascript
 // Sync important properties on each page load
 async function syncUserProperties() {
-  const user = await getCurrentUser();
-  if (!user) return;
-  
+  const user = await getCurrentUser()
+  if (!user) return
+
   // Fetch latest data
   const [profile, subscription, usage] = await Promise.all([
     fetchProfile(user.id),
     fetchSubscription(user.id),
-    fetchUsageStats(user.id)
-  ]);
-  
+    fetchUsageStats(user.id),
+  ])
+
   // Sync to Fullstory
   FS('setProperties', {
     type: 'user',
@@ -736,28 +754,28 @@ async function syncUserProperties() {
       displayName: profile.fullName,
       email: profile.email,
       role: profile.role,
-      
+
       // Subscription
       plan: subscription.plan,
       planStatus: subscription.status,
       mrr: subscription.mrr,
-      
+
       // Usage
       lastLoginAt: usage.lastLogin,
       totalLogins: usage.loginCount,
-      daysActive: usage.activeDays
+      daysActive: usage.activeDays,
     },
     schema: {
       mrr: 'real',
       lastLoginAt: 'date',
       totalLogins: 'int',
-      daysActive: 'int'
-    }
-  });
+      daysActive: 'int',
+    },
+  })
 }
 
 // Run on app initialization
-initApp().then(syncUserProperties);
+initApp().then(syncUserProperties)
 ```
 
 ### Pattern 3: Event-Driven Property Updates
@@ -765,45 +783,45 @@ initApp().then(syncUserProperties);
 ```javascript
 // Update properties based on key events
 const eventPropertyMap = {
-  'trial_started': (event) => ({
+  trial_started: (event) => ({
     trialStartedAt: new Date().toISOString(),
     trialPlan: event.plan,
-    isTrialing: true
+    isTrialing: true,
   }),
-  
-  'trial_converted': (event) => ({
+
+  trial_converted: (event) => ({
     trialConvertedAt: new Date().toISOString(),
     isTrialing: false,
     isPaying: true,
-    plan: event.plan
+    plan: event.plan,
   }),
-  
-  'trial_expired': (event) => ({
+
+  trial_expired: (event) => ({
     trialExpiredAt: new Date().toISOString(),
     isTrialing: false,
-    isPaying: false
+    isPaying: false,
   }),
-  
-  'feature_enabled': (event) => ({
+
+  feature_enabled: (event) => ({
     [`feature_${event.feature}_enabled`]: true,
-    [`feature_${event.feature}_enabledAt`]: new Date().toISOString()
-  })
-};
+    [`feature_${event.feature}_enabledAt`]: new Date().toISOString(),
+  }),
+}
 
 function handleBusinessEvent(eventName, eventData) {
   // Track the event
   FS('trackEvent', {
     name: eventName,
-    properties: eventData
-  });
-  
+    properties: eventData,
+  })
+
   // Update user properties if mapping exists
-  const propertyUpdater = eventPropertyMap[eventName];
+  const propertyUpdater = eventPropertyMap[eventName]
   if (propertyUpdater) {
     FS('setProperties', {
       type: 'user',
-      properties: propertyUpdater(eventData)
-    });
+      properties: propertyUpdater(eventData),
+    })
   }
 }
 ```
@@ -820,18 +838,18 @@ FS('setIdentity', {
   uid: user.id,
   properties: {
     displayName: user.name,
-    email: user.email
-  }
-});
+    email: user.email,
+  },
+})
 
 // Later: add more properties
 FS('setProperties', {
   type: 'user',
   properties: {
     company: companyData.name,
-    role: roleData.title
-  }
-});
+    role: roleData.title,
+  },
+})
 ```
 
 ### setProperties (user) vs setProperties (page)
@@ -842,18 +860,18 @@ FS('setProperties', {
   type: 'user',
   properties: {
     plan: 'enterprise',
-    accountAge: 365
-  }
-});
+    accountAge: 365,
+  },
+})
 
 // Page properties: session-scoped, about the current context
 FS('setProperties', {
   type: 'page',
   properties: {
     pageName: 'Dashboard',
-    filters: ['active', 'recent']
-  }
-});
+    filters: ['active', 'recent'],
+  },
+})
 ```
 
 ### setProperties vs trackEvent
@@ -864,9 +882,9 @@ FS('setProperties', {
   type: 'user',
   properties: {
     plan: 'professional',
-    seats: 10
-  }
-});
+    seats: 10,
+  },
+})
 
 // Events: actions/changes (what HAPPENED)
 FS('trackEvent', {
@@ -874,9 +892,9 @@ FS('trackEvent', {
   properties: {
     from: 'starter',
     to: 'professional',
-    seatChange: 5
-  }
-});
+    seatChange: 5,
+  },
+})
 ```
 
 ---
@@ -888,12 +906,14 @@ FS('trackEvent', {
 **Symptom**: User properties don't show in Fullstory
 
 **Common Causes**:
+
 1. ❌ User not identified first
 2. ❌ Missing `type: 'user'` parameter
 3. ❌ Type mismatches in values
 4. ❌ Rate limits exceeded
 
 **Solutions**:
+
 - ✅ Ensure setIdentity called first
 - ✅ Always include `type: 'user'`
 - ✅ Use schema for explicit typing
@@ -904,11 +924,13 @@ FS('trackEvent', {
 **Symptom**: Property values are incorrect or unexpected type
 
 **Common Causes**:
+
 1. ❌ Value format doesn't match schema type
 2. ❌ Formatted strings for numeric values
 3. ❌ Boolean as string ("true" vs true)
 
 **Solutions**:
+
 - ✅ Use clean numeric values
 - ✅ Use actual boolean types
 - ✅ Format dates as ISO8601
@@ -919,11 +941,13 @@ FS('trackEvent', {
 **Symptom**: User's display name changes unexpectedly
 
 **Common Causes**:
+
 1. ❌ Multiple places setting displayName
 2. ❌ Automated scripts overwriting
 3. ❌ Race conditions in property updates
 
 **Solutions**:
+
 - ✅ Set displayName only in identification flow
 - ✅ Audit all setProperties calls
 - ✅ Use dedicated fields for other "name" data
@@ -933,15 +957,18 @@ FS('trackEvent', {
 ## LIMITS AND CONSTRAINTS
 
 ### Property Limits
+
 - Check your Fullstory plan for specific limits
 - Property names: alphanumeric, underscores, hyphens
 - Avoid high-cardinality properties
 
 ### Call Frequency
+
 - **Sustained**: 30 calls per page per minute
 - **Burst**: 10 calls per second
 
 ### Value Requirements
+
 - Strings: Must be valid UTF-8
 - Numbers: Standard JSON number format
 - Dates: ISO8601 format
@@ -989,5 +1016,4 @@ When helping developers implement User Properties:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's User Properties API correctly for web applications.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's User Properties API correctly for web applications._

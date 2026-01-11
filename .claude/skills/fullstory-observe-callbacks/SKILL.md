@@ -24,9 +24,9 @@ Fullstory's Observer API allows developers to register callbacks that react to F
 
 ### Observer Types
 
-| Type | Fires When | Callback Receives |
-|------|------------|-------------------|
-| `'start'` | Fullstory begins capturing | `undefined` |
+| Type        | Fires When                    | Callback Receives |
+| ----------- | ----------------------------- | ----------------- |
+| `'start'`   | Fullstory begins capturing    | `undefined`       |
 | `'session'` | Session URL becomes available | `{ url: string }` |
 
 ### Observer Lifecycle
@@ -39,12 +39,12 @@ FS('observe', {...})  →  Returns Observer  →  Callback fires when event occu
 
 ### Key Behaviors
 
-| Behavior | Description |
-|----------|-------------|
+| Behavior               | Description                                           |
+| ---------------------- | ----------------------------------------------------- |
 | **Immediate callback** | If event already occurred, callback fires immediately |
-| **Multiple observers** | Can register multiple observers for same event |
-| **Disconnect cleanup** | Must disconnect to prevent memory leaks |
-| **Async version** | Use `observeAsync` to wait for registration |
+| **Multiple observers** | Can register multiple observers for same event        |
+| **Disconnect cleanup** | Must disconnect to prevent memory leaks               |
+| **Async version**      | Use `observeAsync` to wait for registration           |
 
 ---
 
@@ -75,21 +75,22 @@ observer.disconnect();
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `type` | string | **Yes** | Event type: `'start'` or `'session'` |
-| `callback` | function | **Yes** | Function called when event occurs |
+| Parameter  | Type     | Required | Description                          |
+| ---------- | -------- | -------- | ------------------------------------ |
+| `type`     | string   | **Yes**  | Event type: `'start'` or `'session'` |
+| `callback` | function | **Yes**  | Function called when event occurs    |
 
 ### Return Value
 
 Observer object with:
+
 - `disconnect()`: Method to stop observing
 
 ### Callback Arguments
 
-| Event Type | Callback Argument |
-|------------|-------------------|
-| `'start'` | `undefined` |
+| Event Type  | Callback Argument                                 |
+| ----------- | ------------------------------------------------- |
+| `'start'`   | `undefined`                                       |
 | `'session'` | `{ url: string }` - Object containing session URL |
 
 ---
@@ -104,39 +105,40 @@ function initializeSessionTracking() {
   const observer = FS('observe', {
     type: 'session',
     callback: (session) => {
-      const sessionUrl = session.url;
-      
+      const sessionUrl = session.url
+
       // Send to support tool (e.g., Intercom, Zendesk)
       if (window.Intercom) {
         window.Intercom('update', {
-          fullstory_url: sessionUrl
-        });
+          fullstory_url: sessionUrl,
+        })
       }
-      
+
       // Send to error tracking (e.g., Sentry, Bugsnag)
       if (window.Sentry) {
-        window.Sentry.setTag('fullstory_url', sessionUrl);
+        window.Sentry.setTag('fullstory_url', sessionUrl)
       }
-      
+
       // Store for later use
-      window.__fullstorySessionUrl = sessionUrl;
-      
-      console.log('Session URL captured:', sessionUrl);
-    }
-  });
-  
+      window.__fullstorySessionUrl = sessionUrl
+
+      console.log('Session URL captured:', sessionUrl)
+    },
+  })
+
   // Return cleanup function
-  return () => observer.disconnect();
+  return () => observer.disconnect()
 }
 
 // Initialize on app load
-const cleanup = initializeSessionTracking();
+const cleanup = initializeSessionTracking()
 
 // On app cleanup (e.g., SPA unmount)
 // cleanup();
 ```
 
 **Why this is good:**
+
 - ✅ Integrates with third-party tools
 - ✅ Stores URL for later access
 - ✅ Returns cleanup function
@@ -146,85 +148,83 @@ const cleanup = initializeSessionTracking();
 
 ```jsx
 // GOOD: React hook for Fullstory session management
-import { useState, useEffect, useCallback } from 'react';
+import {useState, useEffect, useCallback} from 'react'
 
 function useFullstorySession() {
-  const [sessionUrl, setSessionUrl] = useState(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  
+  const [sessionUrl, setSessionUrl] = useState(null)
+  const [isCapturing, setIsCapturing] = useState(false)
+  const [isReady, setIsReady] = useState(false)
+
   useEffect(() => {
     // Check if FS is available
     if (typeof FS === 'undefined') {
-      return;
+      return
     }
-    
-    const observers = [];
-    
+
+    const observers = []
+
     // Listen for capture start
     const startObserver = FS('observe', {
       type: 'start',
       callback: () => {
-        setIsCapturing(true);
-        setIsReady(true);
-      }
-    });
-    observers.push(startObserver);
-    
+        setIsCapturing(true)
+        setIsReady(true)
+      },
+    })
+    observers.push(startObserver)
+
     // Listen for session URL
     const sessionObserver = FS('observe', {
       type: 'session',
       callback: (session) => {
-        setSessionUrl(session.url);
-      }
-    });
-    observers.push(sessionObserver);
-    
+        setSessionUrl(session.url)
+      },
+    })
+    observers.push(sessionObserver)
+
     // Cleanup on unmount
     return () => {
-      observers.forEach(obs => obs.disconnect());
-    };
-  }, []);
-  
+      observers.forEach((obs) => obs.disconnect())
+    }
+  }, [])
+
   const copySessionUrl = useCallback(() => {
     if (sessionUrl) {
-      navigator.clipboard.writeText(sessionUrl);
-      return true;
+      navigator.clipboard.writeText(sessionUrl)
+      return true
     }
-    return false;
-  }, [sessionUrl]);
-  
+    return false
+  }, [sessionUrl])
+
   return {
     sessionUrl,
     isCapturing,
     isReady,
-    copySessionUrl
-  };
+    copySessionUrl,
+  }
 }
 
 // Usage in component
 function SupportButton() {
-  const { sessionUrl, isReady } = useFullstorySession();
-  
+  const {sessionUrl, isReady} = useFullstorySession()
+
   const handleSupportClick = () => {
     openSupportChat({
-      fullstoryUrl: sessionUrl
-    });
-  };
-  
+      fullstoryUrl: sessionUrl,
+    })
+  }
+
   return (
-    <button 
-      onClick={handleSupportClick}
-      disabled={!isReady}
-    >
+    <button onClick={handleSupportClick} disabled={!isReady}>
       Contact Support
       {sessionUrl && ' (Session will be attached)'}
     </button>
-  );
+  )
 }
 ```
 
 **Why this is good:**
+
 - ✅ Proper React lifecycle handling
 - ✅ Cleanup on unmount prevents memory leaks
 - ✅ Exposes useful state (isCapturing, isReady)
@@ -237,91 +237,92 @@ function SupportButton() {
 // GOOD: Wait for Fullstory before initializing dependent features
 class AnalyticsManager {
   constructor() {
-    this.isFullstoryReady = false;
-    this.sessionUrl = null;
-    this.observers = [];
-    this.pendingEvents = [];
+    this.isFullstoryReady = false
+    this.sessionUrl = null
+    this.observers = []
+    this.pendingEvents = []
   }
-  
+
   initialize() {
     if (typeof FS === 'undefined') {
-      console.warn('Fullstory not available');
-      this.flushPendingEvents(); // Send without FS context
-      return;
+      console.warn('Fullstory not available')
+      this.flushPendingEvents() // Send without FS context
+      return
     }
-    
+
     // Wait for Fullstory to start
     const startObserver = FS('observe', {
       type: 'start',
       callback: () => {
-        this.isFullstoryReady = true;
-        this.flushPendingEvents();
-      }
-    });
-    this.observers.push(startObserver);
-    
+        this.isFullstoryReady = true
+        this.flushPendingEvents()
+      },
+    })
+    this.observers.push(startObserver)
+
     // Capture session URL
     const sessionObserver = FS('observe', {
       type: 'session',
       callback: (session) => {
-        this.sessionUrl = session.url;
-        this.updateAnalyticsContext();
-      }
-    });
-    this.observers.push(sessionObserver);
+        this.sessionUrl = session.url
+        this.updateAnalyticsContext()
+      },
+    })
+    this.observers.push(sessionObserver)
   }
-  
+
   track(eventName, properties) {
     const enrichedEvent = {
       ...properties,
       fullstoryUrl: this.sessionUrl,
-      fullstoryReady: this.isFullstoryReady
-    };
-    
+      fullstoryReady: this.isFullstoryReady,
+    }
+
     if (this.isFullstoryReady) {
-      this.sendToAnalytics(eventName, enrichedEvent);
+      this.sendToAnalytics(eventName, enrichedEvent)
     } else {
       // Queue until Fullstory is ready
-      this.pendingEvents.push({ eventName, properties: enrichedEvent });
+      this.pendingEvents.push({eventName, properties: enrichedEvent})
     }
   }
-  
+
   flushPendingEvents() {
-    this.pendingEvents.forEach(event => {
-      this.sendToAnalytics(event.eventName, event.properties);
-    });
-    this.pendingEvents = [];
+    this.pendingEvents.forEach((event) => {
+      this.sendToAnalytics(event.eventName, event.properties)
+    })
+    this.pendingEvents = []
   }
-  
+
   updateAnalyticsContext() {
     // Update context in other analytics tools
     if (window.analytics) {
       window.analytics.identify({
-        fullstoryUrl: this.sessionUrl
-      });
+        fullstoryUrl: this.sessionUrl,
+      })
     }
   }
-  
+
   sendToAnalytics(eventName, properties) {
     // Send to your analytics platform
-    console.log('Analytics:', eventName, properties);
+    console.log('Analytics:', eventName, properties)
   }
-  
+
   cleanup() {
-    this.observers.forEach(obs => obs.disconnect());
-    this.observers = [];
+    this.observers.forEach((obs) => obs.disconnect())
+    this.observers = []
   }
 }
 
 // Usage
-const analytics = new AnalyticsManager();
-analytics.initialize();
+const analytics = new AnalyticsManager()
+analytics.initialize()
 
 // Track events (will be queued if FS not ready)
-analytics.track('Page Viewed', { page: '/home' });
+analytics.track('Page Viewed', {page: '/home'})
 ```
 
 **Why this is good:**
+
 - ✅ Queues events until FS ready
 - ✅ Enriches events with session URL
 - ✅ Handles FS not being available
@@ -338,58 +339,58 @@ async function setupFullstoryIntegration() {
     const startObserver = await FS('observeAsync', {
       type: 'start',
       callback: () => {
-        console.log('Fullstory started capturing');
-        enableSessionReplayFeatures();
-      }
-    });
-    
+        console.log('Fullstory started capturing')
+        enableSessionReplayFeatures()
+      },
+    })
+
     // Set up session observer
     const sessionObserver = await FS('observeAsync', {
       type: 'session',
       callback: (session) => {
-        console.log('Session URL:', session.url);
-        notifyIntegrations(session.url);
-      }
-    });
-    
+        console.log('Session URL:', session.url)
+        notifyIntegrations(session.url)
+      },
+    })
+
     // Return combined cleanup
     return {
       cleanup: () => {
-        startObserver.disconnect();
-        sessionObserver.disconnect();
+        startObserver.disconnect()
+        sessionObserver.disconnect()
       },
-      status: 'success'
-    };
-    
+      status: 'success',
+    }
   } catch (error) {
-    console.warn('Fullstory integration failed:', error);
+    console.warn('Fullstory integration failed:', error)
     return {
       cleanup: () => {},
       status: 'failed',
-      error
-    };
+      error,
+    }
   }
 }
 
 // Usage
-let fsIntegration = null;
+let fsIntegration = null
 
 async function initApp() {
-  fsIntegration = await setupFullstoryIntegration();
-  
+  fsIntegration = await setupFullstoryIntegration()
+
   if (fsIntegration.status === 'success') {
-    showSessionReplayBadge();
+    showSessionReplayBadge()
   }
 }
 
 function cleanupApp() {
   if (fsIntegration) {
-    fsIntegration.cleanup();
+    fsIntegration.cleanup()
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Uses async version for proper error handling
 - ✅ Returns status for conditional UI
 - ✅ Combined cleanup function
@@ -401,92 +402,93 @@ function cleanupApp() {
 // GOOD: Attach session URL to all error reports
 class ErrorReporter {
   constructor() {
-    this.sessionUrl = null;
-    this.observer = null;
+    this.sessionUrl = null
+    this.observer = null
   }
-  
+
   initialize() {
     // Set up session observer
     this.observer = FS('observe', {
       type: 'session',
       callback: (session) => {
-        this.sessionUrl = session.url;
-        
+        this.sessionUrl = session.url
+
         // Update Sentry context
         if (window.Sentry) {
           window.Sentry.setContext('fullstory', {
-            sessionUrl: session.url
-          });
+            sessionUrl: session.url,
+          })
         }
-        
+
         // Update Bugsnag
         if (window.Bugsnag) {
           window.Bugsnag.addMetadata('fullstory', {
-            sessionUrl: session.url
-          });
+            sessionUrl: session.url,
+          })
         }
-      }
-    });
-    
+      },
+    })
+
     // Set up global error handler
     window.addEventListener('error', (event) => {
       this.reportError(event.error, {
         source: 'window.onerror',
         filename: event.filename,
-        lineno: event.lineno
-      });
-    });
-    
+        lineno: event.lineno,
+      })
+    })
+
     window.addEventListener('unhandledrejection', (event) => {
       this.reportError(event.reason, {
-        source: 'unhandledrejection'
-      });
-    });
+        source: 'unhandledrejection',
+      })
+    })
   }
-  
+
   reportError(error, context = {}) {
     const report = {
       error: error?.message || String(error),
       stack: error?.stack,
       fullstoryUrl: this.sessionUrl,
       timestamp: new Date().toISOString(),
-      ...context
-    };
-    
+      ...context,
+    }
+
     // Send to your error service
-    this.sendErrorReport(report);
-    
+    this.sendErrorReport(report)
+
     // Also log to Fullstory
     if (typeof FS !== 'undefined') {
       FS('log', {
         level: 'error',
-        msg: report.error
-      });
+        msg: report.error,
+      })
     }
   }
-  
+
   sendErrorReport(report) {
     // Send to backend
     fetch('/api/errors', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(report)
-    }).catch(console.error);
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(report),
+    }).catch(console.error)
   }
-  
+
   cleanup() {
     if (this.observer) {
-      this.observer.disconnect();
+      this.observer.disconnect()
     }
   }
 }
 
 // Initialize on app start
-const errorReporter = new ErrorReporter();
-errorReporter.initialize();
+const errorReporter = new ErrorReporter()
+errorReporter.initialize()
 ```
 
 **Why this is good:**
+
 - ✅ Integrates with popular error tools
 - ✅ Auto-attaches session URL to all errors
 - ✅ Also logs to Fullstory
@@ -504,47 +506,49 @@ function setupSessionCallback() {
   FS('observe', {
     type: 'session',
     callback: (session) => {
-      console.log('Session:', session.url);
-    }
-  });
+      console.log('Session:', session.url)
+    },
+  })
   // Observer never stored or cleaned up!
 }
 
 // Called multiple times in SPA
-setupSessionCallback();  // Leak
-setupSessionCallback();  // Another leak
-setupSessionCallback();  // More leaks...
+setupSessionCallback() // Leak
+setupSessionCallback() // Another leak
+setupSessionCallback() // More leaks...
 ```
 
 **Why this is bad:**
+
 - ❌ Observer never disconnected
 - ❌ Memory leak in long-running apps
 - ❌ Multiple observers = multiple callbacks
 - ❌ Callbacks pile up on each call
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Store and cleanup observer
-let sessionObserver = null;
+let sessionObserver = null
 
 function setupSessionCallback() {
   // Clean up existing observer first
   if (sessionObserver) {
-    sessionObserver.disconnect();
+    sessionObserver.disconnect()
   }
-  
+
   sessionObserver = FS('observe', {
     type: 'session',
     callback: (session) => {
-      console.log('Session:', session.url);
-    }
-  });
+      console.log('Session:', session.url)
+    },
+  })
 }
 
 function cleanup() {
   if (sessionObserver) {
-    sessionObserver.disconnect();
-    sessionObserver = null;
+    sessionObserver.disconnect()
+    sessionObserver = null
   }
 }
 ```
@@ -554,33 +558,35 @@ function cleanup() {
 ```javascript
 // BAD: Invalid event type
 FS('observe', {
-  type: 'ready',  // BAD: Not a valid type!
-  callback: () => console.log('Ready!')
-});
+  type: 'ready', // BAD: Not a valid type!
+  callback: () => console.log('Ready!'),
+})
 
 FS('observe', {
-  type: 'url',  // BAD: Not a valid type!
-  callback: (url) => console.log(url)
-});
+  type: 'url', // BAD: Not a valid type!
+  callback: (url) => console.log(url),
+})
 ```
 
 **Why this is bad:**
+
 - ❌ 'ready' and 'url' are not valid types
 - ❌ Callback will never fire
 - ❌ No error thrown, silent failure
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use valid event types
 FS('observe', {
-  type: 'start',  // Valid: when capture starts
-  callback: () => console.log('Fullstory started!')
-});
+  type: 'start', // Valid: when capture starts
+  callback: () => console.log('Fullstory started!'),
+})
 
 FS('observe', {
-  type: 'session',  // Valid: when session URL ready
-  callback: (session) => console.log('URL:', session.url)
-});
+  type: 'session', // Valid: when session URL ready
+  callback: (session) => console.log('URL:', session.url),
+})
 ```
 
 ### Example 3: Expecting Callback Value for 'start'
@@ -591,25 +597,27 @@ FS('observe', {
   type: 'start',
   callback: (session) => {
     // BAD: session is undefined for 'start' type!
-    console.log('Session URL:', session.url);  // Error!
-  }
-});
+    console.log('Session URL:', session.url) // Error!
+  },
+})
 ```
 
 **Why this is bad:**
+
 - ❌ 'start' callback receives no arguments
 - ❌ Will throw error accessing .url of undefined
 - ❌ Wrong event type for the use case
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Use 'session' type for URL
 FS('observe', {
-  type: 'session',  // Correct type for getting URL
+  type: 'session', // Correct type for getting URL
   callback: (session) => {
-    console.log('Session URL:', session.url);  // Works!
-  }
-});
+    console.log('Session URL:', session.url) // Works!
+  },
+})
 ```
 
 ### Example 4: Blocking on Observer
@@ -617,62 +625,64 @@ FS('observe', {
 ```javascript
 // BAD: Blocking app initialization on observer
 async function initApp() {
-  let sessionUrl = null;
-  
+  let sessionUrl = null
+
   // This will never resolve because observe doesn't return a promise
   // that waits for the callback!
   await new Promise((resolve) => {
     FS('observe', {
       type: 'session',
       callback: (session) => {
-        sessionUrl = session.url;
-        resolve();
-      }
-    });
-  });
-  
+        sessionUrl = session.url
+        resolve()
+      },
+    })
+  })
+
   // If Fullstory is blocked, this never runs
-  startApp(sessionUrl);
+  startApp(sessionUrl)
 }
 ```
 
 **Why this is bad:**
+
 - ❌ If FS blocked, promise never resolves
 - ❌ App initialization hangs forever
 - ❌ Observer registration is sync, callback is async
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Non-blocking with timeout
 async function initApp() {
-  let sessionUrl = null;
-  
+  let sessionUrl = null
+
   // Set up observer but don't block
   const sessionPromise = new Promise((resolve) => {
     if (typeof FS === 'undefined') {
-      resolve(null);
-      return;
+      resolve(null)
+      return
     }
-    
+
     FS('observe', {
       type: 'session',
       callback: (session) => {
-        sessionUrl = session.url;
-        resolve(session.url);
-      }
-    });
-    
+        sessionUrl = session.url
+        resolve(session.url)
+      },
+    })
+
     // Timeout after 5 seconds
-    setTimeout(() => resolve(null), 5000);
-  });
-  
+    setTimeout(() => resolve(null), 5000)
+  })
+
   // Start app immediately
-  startApp(null);
-  
+  startApp(null)
+
   // Update with session URL when available
-  sessionPromise.then(url => {
-    if (url) updateAppWithSessionUrl(url);
-  });
+  sessionPromise.then((url) => {
+    if (url) updateAppWithSessionUrl(url)
+  })
 }
 ```
 
@@ -693,11 +703,13 @@ async function initApp() {
 ```
 
 **Why this is bad:**
+
 - ❌ FS is not defined when observer is registered
 - ❌ Will throw ReferenceError
 - ❌ Script order matters
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Check FS exists first, or use after snippet
 <script src="fullstory-snippet.js"></script>
@@ -730,51 +742,51 @@ document.addEventListener('DOMContentLoaded', () => {
 // Centralized observer management
 class FullstoryObserverManager {
   constructor() {
-    this.observers = new Map();
+    this.observers = new Map()
   }
-  
+
   register(name, type, callback) {
     // Disconnect existing observer with same name
     if (this.observers.has(name)) {
-      this.observers.get(name).disconnect();
+      this.observers.get(name).disconnect()
     }
-    
+
     if (typeof FS === 'undefined') {
-      console.warn(`Cannot register observer '${name}': FS not available`);
-      return false;
+      console.warn(`Cannot register observer '${name}': FS not available`)
+      return false
     }
-    
-    const observer = FS('observe', { type, callback });
-    this.observers.set(name, observer);
-    return true;
+
+    const observer = FS('observe', {type, callback})
+    this.observers.set(name, observer)
+    return true
   }
-  
+
   unregister(name) {
     if (this.observers.has(name)) {
-      this.observers.get(name).disconnect();
-      this.observers.delete(name);
+      this.observers.get(name).disconnect()
+      this.observers.delete(name)
     }
   }
-  
+
   unregisterAll() {
-    this.observers.forEach(obs => obs.disconnect());
-    this.observers.clear();
+    this.observers.forEach((obs) => obs.disconnect())
+    this.observers.clear()
   }
 }
 
 // Usage
-const fsObservers = new FullstoryObserverManager();
+const fsObservers = new FullstoryObserverManager()
 
 fsObservers.register('session', 'session', (session) => {
-  console.log('Session URL:', session.url);
-});
+  console.log('Session URL:', session.url)
+})
 
 fsObservers.register('start', 'start', () => {
-  console.log('Fullstory started');
-});
+  console.log('Fullstory started')
+})
 
 // Cleanup
-fsObservers.unregisterAll();
+fsObservers.unregisterAll()
 ```
 
 ### Pattern 2: Vue Composable
@@ -787,10 +799,10 @@ export function useFullstorySession() {
   const sessionUrl = ref(null);
   const isCapturing = ref(false);
   const observers = [];
-  
+
   onMounted(() => {
     if (typeof FS === 'undefined') return;
-    
+
     observers.push(
       FS('observe', {
         type: 'start',
@@ -799,7 +811,7 @@ export function useFullstorySession() {
         }
       })
     );
-    
+
     observers.push(
       FS('observe', {
         type: 'session',
@@ -809,11 +821,11 @@ export function useFullstorySession() {
       })
     );
   });
-  
+
   onUnmounted(() => {
     observers.forEach(obs => obs.disconnect());
   });
-  
+
   return {
     sessionUrl,
     isCapturing
@@ -845,82 +857,82 @@ class FullstoryEventEmitter {
   constructor() {
     this.listeners = {
       start: [],
-      session: []
-    };
+      session: [],
+    }
     this.state = {
       started: false,
-      sessionUrl: null
-    };
-    this.observers = [];
-    
-    this.initialize();
+      sessionUrl: null,
+    }
+    this.observers = []
+
+    this.initialize()
   }
-  
+
   initialize() {
-    if (typeof FS === 'undefined') return;
-    
+    if (typeof FS === 'undefined') return
+
     this.observers.push(
       FS('observe', {
         type: 'start',
         callback: () => {
-          this.state.started = true;
-          this.emit('start');
-        }
-      })
-    );
-    
+          this.state.started = true
+          this.emit('start')
+        },
+      }),
+    )
+
     this.observers.push(
       FS('observe', {
         type: 'session',
         callback: (session) => {
-          this.state.sessionUrl = session.url;
-          this.emit('session', session);
-        }
-      })
-    );
+          this.state.sessionUrl = session.url
+          this.emit('session', session)
+        },
+      }),
+    )
   }
-  
+
   on(event, callback) {
-    this.listeners[event]?.push(callback);
-    
+    this.listeners[event]?.push(callback)
+
     // If event already occurred, call immediately
     if (event === 'start' && this.state.started) {
-      callback();
+      callback()
     }
     if (event === 'session' && this.state.sessionUrl) {
-      callback({ url: this.state.sessionUrl });
+      callback({url: this.state.sessionUrl})
     }
-    
-    return () => this.off(event, callback);
+
+    return () => this.off(event, callback)
   }
-  
+
   off(event, callback) {
-    const idx = this.listeners[event]?.indexOf(callback);
+    const idx = this.listeners[event]?.indexOf(callback)
     if (idx > -1) {
-      this.listeners[event].splice(idx, 1);
+      this.listeners[event].splice(idx, 1)
     }
   }
-  
+
   emit(event, data) {
-    this.listeners[event]?.forEach(cb => cb(data));
+    this.listeners[event]?.forEach((cb) => cb(data))
   }
-  
+
   destroy() {
-    this.observers.forEach(obs => obs.disconnect());
-    this.listeners = { start: [], session: [] };
+    this.observers.forEach((obs) => obs.disconnect())
+    this.listeners = {start: [], session: []}
   }
 }
 
 // Global instance
-const fsEvents = new FullstoryEventEmitter();
+const fsEvents = new FullstoryEventEmitter()
 
 // Usage
 const unsubscribe = fsEvents.on('session', (session) => {
-  console.log('Session URL:', session.url);
-});
+  console.log('Session URL:', session.url)
+})
 
 // Later
-unsubscribe();
+unsubscribe()
 ```
 
 ---
@@ -932,11 +944,13 @@ unsubscribe();
 **Symptom**: Observer registered but callback never called
 
 **Common Causes**:
+
 1. ❌ Fullstory not loaded or blocked
 2. ❌ Wrong event type
 3. ❌ Fullstory not capturing (e.g., excluded page)
 
 **Solutions**:
+
 - ✅ Verify FS is defined
 - ✅ Check event type is 'start' or 'session'
 - ✅ Check Fullstory console for errors
@@ -946,11 +960,13 @@ unsubscribe();
 **Symptom**: Callback fires multiple times unexpectedly
 
 **Common Causes**:
+
 1. ❌ Multiple observers registered
 2. ❌ Observer not cleaned up in SPA
 3. ❌ Component re-mounts without cleanup
 
 **Solutions**:
+
 - ✅ Store and reuse observer reference
 - ✅ Clean up on component unmount
 - ✅ Check for existing observer before registering
@@ -960,11 +976,13 @@ unsubscribe();
 **Symptom**: Memory usage grows over time
 
 **Common Causes**:
+
 1. ❌ Observers never disconnected
 2. ❌ New observers on each navigation
 3. ❌ Missing cleanup in React/Vue
 
 **Solutions**:
+
 - ✅ Always call disconnect()
 - ✅ Use useEffect cleanup in React
 - ✅ Use onUnmounted in Vue
@@ -1010,5 +1028,4 @@ When helping developers with Observer API:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's Observer/Callback API correctly for web applications.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's Observer/Callback API correctly for web applications._

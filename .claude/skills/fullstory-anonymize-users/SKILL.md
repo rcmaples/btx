@@ -50,14 +50,14 @@ When you call `FS('setIdentity', { anonymous: true })`, the current session ends
 
 ### When to Anonymize
 
-| Scenario | Should Anonymize? | Reason |
-|----------|-------------------|--------|
-| User logs out | ✅ Yes | Prevents session attribution to wrong user |
-| User switches accounts | ✅ Yes | Clean slate before new identification |
-| User requests data deletion | ❓ Consider | Part of broader privacy implementation |
-| User clears browser data | ❌ No | Fullstory handles this automatically |
-| Page navigation | ❌ No | Identity persists across pages |
-| Session timeout | ❓ Depends | Based on your security requirements |
+| Scenario                    | Should Anonymize? | Reason                                     |
+| --------------------------- | ----------------- | ------------------------------------------ |
+| User logs out               | ✅ Yes            | Prevents session attribution to wrong user |
+| User switches accounts      | ✅ Yes            | Clean slate before new identification      |
+| User requests data deletion | ❓ Consider       | Part of broader privacy implementation     |
+| User clears browser data    | ❌ No             | Fullstory handles this automatically       |
+| Page navigation             | ❌ No             | Identity persists across pages             |
+| Session timeout             | ❓ Depends        | Based on your security requirements        |
 
 ---
 
@@ -66,14 +66,14 @@ When you call `FS('setIdentity', { anonymous: true })`, the current session ends
 ### Basic Syntax
 
 ```javascript
-FS('setIdentity', { anonymous: true });
+FS('setIdentity', {anonymous: true})
 ```
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `anonymous` | boolean | **Yes** | Must be `true` to anonymize the user |
+| Parameter   | Type    | Required | Description                          |
+| ----------- | ------- | -------- | ------------------------------------ |
+| `anonymous` | boolean | **Yes**  | Must be `true` to anonymize the user |
 
 ### Rate Limits
 
@@ -83,7 +83,7 @@ FS('setIdentity', { anonymous: true });
 ### Async Version
 
 ```javascript
-await FS('setIdentityAsync', { anonymous: true });
+await FS('setIdentityAsync', {anonymous: true})
 ```
 
 ---
@@ -97,27 +97,28 @@ await FS('setIdentityAsync', { anonymous: true });
 async function handleLogout() {
   try {
     // 1. Call your backend logout endpoint
-    await fetch('/api/auth/logout', { method: 'POST' });
-    
+    await fetch('/api/auth/logout', {method: 'POST'})
+
     // 2. Clear local authentication state
-    clearAuthTokens();
-    clearUserState();
-    
+    clearAuthTokens()
+    clearUserState()
+
     // 3. Anonymize in Fullstory BEFORE redirecting
-    FS('setIdentity', { anonymous: true });
-    
+    FS('setIdentity', {anonymous: true})
+
     // 4. Redirect to login page
-    window.location.href = '/login';
+    window.location.href = '/login'
   } catch (error) {
-    console.error('Logout failed:', error);
+    console.error('Logout failed:', error)
     // Still anonymize even if backend fails
-    FS('setIdentity', { anonymous: true });
-    window.location.href = '/login';
+    FS('setIdentity', {anonymous: true})
+    window.location.href = '/login'
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Anonymizes before redirect
 - ✅ Handles errors gracefully
 - ✅ Clears local state before anonymizing
@@ -127,45 +128,46 @@ async function handleLogout() {
 
 ```jsx
 // GOOD: React hook pattern for logout with Fullstory
-import { useCallback } from 'react';
-import { useAuth } from './auth-context';
-import { useNavigate } from 'react-router-dom';
+import {useCallback} from 'react'
+import {useAuth} from './auth-context'
+import {useNavigate} from 'react-router-dom'
 
 function useLogout() {
-  const { clearAuth } = useAuth();
-  const navigate = useNavigate();
-  
+  const {clearAuth} = useAuth()
+  const navigate = useNavigate()
+
   const logout = useCallback(async () => {
     // Track the logout action before anonymizing
     FS('trackEvent', {
       name: 'User Logged Out',
       properties: {
         logoutMethod: 'manual',
-        sessionDuration: getSessionDuration()
-      }
-    });
-    
+        sessionDuration: getSessionDuration(),
+      },
+    })
+
     // Clear application auth state
-    await clearAuth();
-    
+    await clearAuth()
+
     // Anonymize the Fullstory session
-    FS('setIdentity', { anonymous: true });
-    
+    FS('setIdentity', {anonymous: true})
+
     // Navigate to home/login
-    navigate('/login');
-  }, [clearAuth, navigate]);
-  
-  return logout;
+    navigate('/login')
+  }, [clearAuth, navigate])
+
+  return logout
 }
 
 // Usage
 function LogoutButton() {
-  const logout = useLogout();
-  return <button onClick={logout}>Sign Out</button>;
+  const logout = useLogout()
+  return <button onClick={logout}>Sign Out</button>
 }
 ```
 
 **Why this is good:**
+
 - ✅ Tracks logout event before anonymizing (preserves attribution)
 - ✅ Integrated with React ecosystem
 - ✅ Reusable across components
@@ -176,38 +178,39 @@ function LogoutButton() {
 ```javascript
 // GOOD: Clean account switching with proper session boundaries
 async function switchAccount(newAccountId) {
-  const newUser = await fetchAccountDetails(newAccountId);
-  
+  const newUser = await fetchAccountDetails(newAccountId)
+
   // Track the switch event under current user
   FS('trackEvent', {
     name: 'Account Switch Initiated',
     properties: {
-      targetAccountId: newAccountId
-    }
-  });
-  
+      targetAccountId: newAccountId,
+    },
+  })
+
   // Step 1: Anonymize current session
-  FS('setIdentity', { anonymous: true });
-  
+  FS('setIdentity', {anonymous: true})
+
   // Step 2: Set up new account context
-  await setupAccountContext(newUser);
-  
+  await setupAccountContext(newUser)
+
   // Step 3: Identify as new user
   FS('setIdentity', {
     uid: newUser.id,
     properties: {
       displayName: newUser.name,
       email: newUser.email,
-      accountType: newUser.type
-    }
-  });
-  
+      accountType: newUser.type,
+    },
+  })
+
   // Refresh UI
-  window.location.reload();
+  window.location.reload()
 }
 ```
 
 **Why this is good:**
+
 - ✅ Tracks event before identity change
 - ✅ Cleanly separates sessions between accounts
 - ✅ No data contamination between accounts
@@ -219,47 +222,48 @@ async function switchAccount(newAccountId) {
 // GOOD: Handling session timeout with Fullstory
 class SessionManager {
   constructor() {
-    this.timeoutDuration = 30 * 60 * 1000; // 30 minutes
-    this.timeoutId = null;
-    this.lastActivity = Date.now();
+    this.timeoutDuration = 30 * 60 * 1000 // 30 minutes
+    this.timeoutId = null
+    this.lastActivity = Date.now()
   }
-  
+
   startTimeout() {
-    this.resetTimeout();
-    document.addEventListener('click', () => this.resetTimeout());
-    document.addEventListener('keypress', () => this.resetTimeout());
+    this.resetTimeout()
+    document.addEventListener('click', () => this.resetTimeout())
+    document.addEventListener('keypress', () => this.resetTimeout())
   }
-  
+
   resetTimeout() {
-    this.lastActivity = Date.now();
-    if (this.timeoutId) clearTimeout(this.timeoutId);
-    
+    this.lastActivity = Date.now()
+    if (this.timeoutId) clearTimeout(this.timeoutId)
+
     this.timeoutId = setTimeout(() => {
-      this.handleSessionTimeout();
-    }, this.timeoutDuration);
+      this.handleSessionTimeout()
+    }, this.timeoutDuration)
   }
-  
+
   async handleSessionTimeout() {
     // Track timeout event while still identified
     FS('trackEvent', {
       name: 'Session Timeout',
       properties: {
         inactivityDuration: Date.now() - this.lastActivity,
-        lastPage: window.location.pathname
-      }
-    });
-    
+        lastPage: window.location.pathname,
+      },
+    })
+
     // Anonymize the session
-    FS('setIdentity', { anonymous: true });
-    
+    FS('setIdentity', {anonymous: true})
+
     // Clear auth and redirect
-    clearAuthState();
-    showTimeoutModal();
+    clearAuthState()
+    showTimeoutModal()
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Tracks timeout before anonymizing
 - ✅ Captures useful debugging info
 - ✅ Clean session boundary on timeout
@@ -271,56 +275,57 @@ class SessionManager {
 // GOOD: "Incognito mode" toggle for privacy-conscious users
 class PrivacyManager {
   constructor() {
-    this.isIncognitoMode = false;
-    this.originalUserId = null;
+    this.isIncognitoMode = false
+    this.originalUserId = null
   }
-  
+
   async enableIncognitoMode(currentUserId) {
     // Store original user ID for potential re-identification
-    this.originalUserId = currentUserId;
-    this.isIncognitoMode = true;
-    
+    this.originalUserId = currentUserId
+    this.isIncognitoMode = true
+
     // Track before anonymizing
     FS('trackEvent', {
       name: 'Incognito Mode Enabled',
-      properties: {}
-    });
-    
+      properties: {},
+    })
+
     // Anonymize - activity won't be linked to user
-    FS('setIdentity', { anonymous: true });
-    
+    FS('setIdentity', {anonymous: true})
+
     // Update UI
-    showIncognitoIndicator();
+    showIncognitoIndicator()
   }
-  
+
   async disableIncognitoMode() {
-    if (!this.originalUserId) return;
-    
-    this.isIncognitoMode = false;
-    
+    if (!this.originalUserId) return
+
+    this.isIncognitoMode = false
+
     // Re-identify user
-    const user = await getCurrentUser();
+    const user = await getCurrentUser()
     FS('setIdentity', {
       uid: user.id,
       properties: {
         displayName: user.name,
-        email: user.email
-      }
-    });
-    
+        email: user.email,
+      },
+    })
+
     // Track re-enablement
     FS('trackEvent', {
       name: 'Incognito Mode Disabled',
-      properties: {}
-    });
-    
-    hideIncognitoIndicator();
-    this.originalUserId = null;
+      properties: {},
+    })
+
+    hideIncognitoIndicator()
+    this.originalUserId = null
   }
 }
 ```
 
 **Why this is good:**
+
 - ✅ Gives users control over tracking
 - ✅ Maintains ability to re-identify
 - ✅ Clear user feedback
@@ -335,30 +340,32 @@ class PrivacyManager {
 ```javascript
 // BAD: No Fullstory anonymization on logout
 function handleLogout() {
-  clearAuthTokens();
-  clearUserState();
-  window.location.href = '/login';
+  clearAuthTokens()
+  clearUserState()
+  window.location.href = '/login'
   // Missing FS('setIdentity', { anonymous: true })!
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Next user's activity may be attributed to previous user
 - ❌ Session continues under wrong identity
 - ❌ Data integrity issues in analytics
 - ❌ Privacy concern if sharing device
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Include Fullstory anonymization
 function handleLogout() {
-  clearAuthTokens();
-  clearUserState();
-  
+  clearAuthTokens()
+  clearUserState()
+
   // Anonymize before redirect
-  FS('setIdentity', { anonymous: true });
-  
-  window.location.href = '/login';
+  FS('setIdentity', {anonymous: true})
+
+  window.location.href = '/login'
 }
 ```
 
@@ -367,27 +374,29 @@ function handleLogout() {
 ```javascript
 // BAD: Anonymizing after navigation starts
 function handleLogout() {
-  window.location.href = '/login';
-  
+  window.location.href = '/login'
+
   // BAD: This may never execute - page is already navigating!
-  FS('setIdentity', { anonymous: true });
+  FS('setIdentity', {anonymous: true})
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Navigation starts before anonymization
 - ❌ FS call may not complete
 - ❌ Session may not properly close
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Anonymize BEFORE navigation
 async function handleLogout() {
   // Anonymize first
-  await FS('setIdentityAsync', { anonymous: true });
-  
+  await FS('setIdentityAsync', {anonymous: true})
+
   // Then navigate
-  window.location.href = '/login';
+  window.location.href = '/login'
 }
 ```
 
@@ -397,26 +406,28 @@ async function handleLogout() {
 // BAD: Calling anonymize multiple times
 function handleLogout() {
   // Excessive calls
-  FS('setIdentity', { anonymous: true });
-  FS('setIdentity', { anonymous: true });
-  FS('setIdentity', { anonymous: true });
-  
-  window.location.href = '/login';
+  FS('setIdentity', {anonymous: true})
+  FS('setIdentity', {anonymous: true})
+  FS('setIdentity', {anonymous: true})
+
+  window.location.href = '/login'
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Wastes API call quota
 - ❌ Creates unnecessary session splits
 - ❌ May hit rate limits
 - ❌ No benefit from multiple calls
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Single anonymization call
 function handleLogout() {
-  FS('setIdentity', { anonymous: true });
-  window.location.href = '/login';
+  FS('setIdentity', {anonymous: true})
+  window.location.href = '/login'
 }
 ```
 
@@ -424,22 +435,24 @@ function handleLogout() {
 
 ```javascript
 // BAD: Wrong way to anonymize
-FS('setIdentity', { uid: null });           // BAD: uid shouldn't be null
-FS('setIdentity', { uid: 'anonymous' });    // BAD: This identifies as user "anonymous"!
-FS('setIdentity', { uid: '' });             // BAD: Empty string uid
-FS('setIdentity', {});                      // BAD: Missing required parameters
+FS('setIdentity', {uid: null}) // BAD: uid shouldn't be null
+FS('setIdentity', {uid: 'anonymous'}) // BAD: This identifies as user "anonymous"!
+FS('setIdentity', {uid: ''}) // BAD: Empty string uid
+FS('setIdentity', {}) // BAD: Missing required parameters
 ```
 
 **Why this is bad:**
+
 - ❌ uid: null may cause errors
 - ❌ uid: 'anonymous' creates an identified user named "anonymous"
 - ❌ Empty string uid is invalid
 - ❌ Empty object doesn't anonymize
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Proper anonymization syntax
-FS('setIdentity', { anonymous: true });
+FS('setIdentity', {anonymous: true})
 ```
 
 ### Example 5: Anonymizing Without Tracking Important Events
@@ -448,17 +461,19 @@ FS('setIdentity', { anonymous: true });
 // BAD: Missing opportunity to track logout event
 function handleLogout() {
   // Just anonymizing without capturing useful data
-  FS('setIdentity', { anonymous: true });
-  window.location.href = '/login';
+  FS('setIdentity', {anonymous: true})
+  window.location.href = '/login'
 }
 ```
 
 **Why this is bad:**
+
 - ❌ No record of intentional logout vs session timeout
 - ❌ Can't analyze logout patterns
 - ❌ Loses attribution for the logout event itself
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Track event before anonymizing
 function handleLogout() {
@@ -467,13 +482,13 @@ function handleLogout() {
     name: 'User Logged Out',
     properties: {
       logoutMethod: 'user_initiated',
-      pageAtLogout: window.location.pathname
-    }
-  });
-  
+      pageAtLogout: window.location.pathname,
+    },
+  })
+
   // Then anonymize
-  FS('setIdentity', { anonymous: true });
-  window.location.href = '/login';
+  FS('setIdentity', {anonymous: true})
+  window.location.href = '/login'
 }
 ```
 
@@ -483,18 +498,20 @@ function handleLogout() {
 // BAD: Using anonymization to "hide" errors
 function handleError(error) {
   // Don't use anonymization to hide error attribution!
-  FS('setIdentity', { anonymous: true });
-  console.error(error);
+  FS('setIdentity', {anonymous: true})
+  console.error(error)
 }
 ```
 
 **Why this is bad:**
+
 - ❌ Loses error attribution to user for debugging
 - ❌ Makes it harder to help affected users
 - ❌ Misuse of anonymization API
 - ❌ Creates confusing session boundaries
 
 **CORRECTED VERSION:**
+
 ```javascript
 // GOOD: Log errors while identified, only anonymize on logout
 function handleError(error) {
@@ -504,12 +521,12 @@ function handleError(error) {
     properties: {
       errorMessage: error.message,
       errorCode: error.code,
-      page: window.location.pathname
-    }
-  });
-  
+      page: window.location.pathname,
+    },
+  })
+
   // Show error UI without anonymizing
-  showErrorMessage(error);
+  showErrorMessage(error)
 }
 ```
 
@@ -523,48 +540,44 @@ function handleError(error) {
 // Centralized logout service
 class LogoutService {
   static async logout(options = {}) {
-    const { 
-      trackEvent = true,
-      redirectUrl = '/login',
-      reason = 'user_initiated'
-    } = options;
-    
+    const {trackEvent = true, redirectUrl = '/login', reason = 'user_initiated'} = options
+
     // Track logout if requested
     if (trackEvent) {
       FS('trackEvent', {
         name: 'User Logged Out',
         properties: {
           reason: reason,
-          sessionDuration: getSessionDuration()
-        }
-      });
+          sessionDuration: getSessionDuration(),
+        },
+      })
     }
-    
+
     // Backend logout
     try {
-      await fetch('/api/logout', { method: 'POST' });
+      await fetch('/api/logout', {method: 'POST'})
     } catch (e) {
-      console.warn('Backend logout failed:', e);
+      console.warn('Backend logout failed:', e)
     }
-    
+
     // Clear client state
-    clearAuthTokens();
-    clearUserState();
-    clearLocalStorage();
-    
+    clearAuthTokens()
+    clearUserState()
+    clearLocalStorage()
+
     // Anonymize Fullstory
-    FS('setIdentity', { anonymous: true });
-    
+    FS('setIdentity', {anonymous: true})
+
     // Redirect
     if (redirectUrl) {
-      window.location.href = redirectUrl;
+      window.location.href = redirectUrl
     }
   }
 }
 
 // Usage
-await LogoutService.logout();
-await LogoutService.logout({ reason: 'session_timeout', redirectUrl: '/timeout' });
+await LogoutService.logout()
+await LogoutService.logout({reason: 'session_timeout', redirectUrl: '/timeout'})
 ```
 
 ### Pattern 2: Multi-Tenant Application
@@ -573,23 +586,23 @@ await LogoutService.logout({ reason: 'session_timeout', redirectUrl: '/timeout' 
 // For apps with workspace/tenant switching
 class TenantManager {
   async switchTenant(newTenantId) {
-    const currentUser = getCurrentUser();
-    
+    const currentUser = getCurrentUser()
+
     // Track switch under current context
     FS('trackEvent', {
       name: 'Tenant Switch',
       properties: {
         fromTenant: currentUser.tenantId,
-        toTenant: newTenantId
-      }
-    });
-    
+        toTenant: newTenantId,
+      },
+    })
+
     // Start fresh session for new tenant context
-    FS('setIdentity', { anonymous: true });
-    
+    FS('setIdentity', {anonymous: true})
+
     // Update tenant context
-    await loadTenantContext(newTenantId);
-    
+    await loadTenantContext(newTenantId)
+
     // Re-identify with new tenant context
     FS('setIdentity', {
       uid: currentUser.id,
@@ -597,9 +610,9 @@ class TenantManager {
         displayName: currentUser.name,
         email: currentUser.email,
         tenantId: newTenantId,
-        tenantName: await getTenantName(newTenantId)
-      }
-    });
+        tenantName: await getTenantName(newTenantId),
+      },
+    })
   }
 }
 ```
@@ -609,35 +622,35 @@ class TenantManager {
 ```javascript
 // For shared devices like kiosks
 class KioskMode {
-  sessionTimeout = 5 * 60 * 1000; // 5 minutes
-  
+  sessionTimeout = 5 * 60 * 1000 // 5 minutes
+
   async startSession(user) {
     FS('setIdentity', {
       uid: user.id,
       properties: {
         displayName: user.name,
         deviceMode: 'kiosk',
-        locationId: getKioskLocation()
-      }
-    });
-    
+        locationId: getKioskLocation(),
+      },
+    })
+
     // Auto-logout after timeout
-    setTimeout(() => this.endSession(), this.sessionTimeout);
+    setTimeout(() => this.endSession(), this.sessionTimeout)
   }
-  
+
   async endSession() {
     FS('trackEvent', {
       name: 'Kiosk Session Ended',
       properties: {
         endReason: 'timeout',
-        location: getKioskLocation()
-      }
-    });
-    
-    FS('setIdentity', { anonymous: true });
-    
+        location: getKioskLocation(),
+      },
+    })
+
+    FS('setIdentity', {anonymous: true})
+
     // Reset to welcome screen
-    showWelcomeScreen();
+    showWelcomeScreen()
   }
 }
 ```
@@ -652,25 +665,26 @@ class KioskMode {
 // setProperties updates user info without changing identity
 FS('setProperties', {
   type: 'user',
-  properties: { lastActiveAt: new Date().toISOString() }
-});
+  properties: {lastActiveAt: new Date().toISOString()},
+})
 
 // anonymous: true ends the session entirely
-FS('setIdentity', { anonymous: true });  // New session starts
+FS('setIdentity', {anonymous: true}) // New session starts
 ```
 
 ### Anonymize + Re-identify Flow
 
 ```javascript
 // Common pattern: switch users
-FS('setIdentity', { anonymous: true });  // End session 1
+FS('setIdentity', {anonymous: true}) // End session 1
 
 // Some time passes, new user logs in
 
-FS('setIdentity', {                       // Start session 2
+FS('setIdentity', {
+  // Start session 2
   uid: newUser.id,
-  properties: { displayName: newUser.name }
-});
+  properties: {displayName: newUser.name},
+})
 ```
 
 ---
@@ -682,11 +696,13 @@ FS('setIdentity', {                       // Start session 2
 **Symptom**: New user activity appears under old user
 
 **Common Causes**:
+
 1. ❌ Anonymize called after page navigation starts
 2. ❌ Anonymize never called (missing from logout flow)
 3. ❌ Using wrong syntax (uid: null instead of anonymous: true)
 
 **Solutions**:
+
 - ✅ Use async version and await completion
 - ✅ Audit all logout paths to ensure anonymization
 - ✅ Use `{ anonymous: true }` syntax
@@ -696,11 +712,13 @@ FS('setIdentity', {                       // Start session 2
 **Symptom**: User has many short, fragmented sessions
 
 **Common Causes**:
+
 1. ❌ Calling anonymize on every page load
 2. ❌ Calling anonymize on errors
 3. ❌ Multiple anonymize calls in single flow
 
 **Solutions**:
+
 - ✅ Only anonymize on actual logout/switch events
 - ✅ Audit code for unintended anonymize calls
 - ✅ Use single anonymize call per logout flow
@@ -710,11 +728,13 @@ FS('setIdentity', {                       // Start session 2
 ## LIMITS AND CONSTRAINTS
 
 ### Call Frequency
+
 - **Sustained**: 30 calls per page per minute
 - **Burst**: 10 calls per second
 - Single call per logout is sufficient
 
 ### Session Behavior
+
 - Anonymization creates a new session immediately
 - Previous session data remains intact and attributed
 - Subsequent activity is anonymous until next identification
@@ -760,5 +780,4 @@ When helping developers implement User Anonymization:
 
 ---
 
-*This skill document was created to help Agent understand and guide developers in implementing Fullstory's User Anonymization API correctly for web applications.*
-
+_This skill document was created to help Agent understand and guide developers in implementing Fullstory's User Anonymization API correctly for web applications._
