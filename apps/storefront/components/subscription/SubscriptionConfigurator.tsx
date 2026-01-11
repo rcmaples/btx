@@ -90,8 +90,8 @@ export function SubscriptionConfigurator({
           <div className="p-md bg-background-alt border border-border-light mb-lg">
             <div className="flex justify-between mb-sm">
               <span className="text-sm text-text-muted">Product:</span>
-              <span className="text-sm font-medium">
-                {product.name} ({selectedPurchaseOption.sizeName} • {selectedPurchaseOption.grind})
+              <span className="text-sm text-text">
+                {product.name} | {selectedPurchaseOption.sizeName} | {selectedPurchaseOption.grind}
               </span>
             </div>
             <div className="flex justify-between mb-sm">

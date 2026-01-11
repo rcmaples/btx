@@ -88,7 +88,7 @@ export function CartSummary({
         </div>
       )}
 
-      <div className="flex justify-between items-center py-md mt-md border-t-2 border-border">
+      <div className="flex justify-between items-center py-md mt-md">
         <span className="text-lg font-bold">Total</span>
         <span className="text-2xl font-bold font-mono">${formattedTotal}</span>
       </div>

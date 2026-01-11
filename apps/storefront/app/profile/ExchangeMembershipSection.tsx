@@ -44,47 +44,51 @@ export function ExchangeMembershipSection({isExchangeMember, exchangeEnrolledAt}
   }
 
   return (
-    <section className="bg-background-secondary border-2 border-border p-xl">
-      <h2 className="text-xl font-bold mb-lg">Exchange Membership</h2>
+    <section className="px-lg py-md md:py-lg">
+      <h2 className="text-base font-bold uppercase tracking-wider text-text mb-sm">
+        Exchange Membership
+      </h2>
 
       {error && (
-        <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
+        <div
+          className="p-sm bg-red-50 dark:bg-red-950/30 border border-error text-error mb-md text-sm"
+          role="alert"
+        >
           {error}
         </div>
       )}
 
       {isExchangeMember ? (
-        <div className="space-y-md">
-          <div>
-            <p className="text-success font-medium">Active Member</p>
+        <div className="space-y-xs">
+          <div className="flex items-baseline gap-sm flex-wrap">
+            <p className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">Active Member</p>
             {exchangeEnrolledAt && (
               <p className="text-text-secondary text-sm">
-                Member since {new Date(exchangeEnrolledAt).toLocaleDateString()}
+                since {new Date(exchangeEnrolledAt).toLocaleDateString()}
               </p>
             )}
           </div>
-          <p className="text-text-secondary text-sm">
-            As an Exchange member, you enjoy free shipping on all orders and access to exclusive
-            products.
+          <p className="text-text-secondary text-xs italic pb-md">
+            Includes free shipping on all orders and access to exclusive products.
           </p>
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-lg py-sm border-2 border-error text-error font-semibold transition-colors hover:bg-error hover:text-background disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-xs px-md py-xs text-xs border border-error text-error font-semibold transition-colors hover:bg-error hover:text-background disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Processing...' : 'Cancel Membership'}
           </button>
         </div>
       ) : (
-        <div className="space-y-md">
-          <p className="text-text-secondary">Not an Exchange member</p>
-          <p className="text-text-secondary text-sm">
-            Join the Exchange to get free shipping on all orders and access to exclusive products.
+        <div className="space-y-xs">
+          <p className="text-text-secondary text-sm">Not a member</p>
+          <p className="text-text-secondary text-xs">
+            Join to get free shipping and access to exclusive products.
           </p>
           <button
             onClick={handleEnroll}
             disabled={isLoading}
-            className="px-lg py-sm bg-primary text-background border-2 border-primary font-semibold transition-colors hover:bg-primary-dark hover:border-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-xs px-md py-xs text-xs bg-primary text-background border border-primary font-semibold transition-colors hover:bg-primary-dark hover:border-primary-dark disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Processing...' : 'Join the Exchange'}
           </button>

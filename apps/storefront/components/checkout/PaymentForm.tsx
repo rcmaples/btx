@@ -6,7 +6,7 @@ export function PaymentForm() {
       <h2 className="text-xl font-bold">Payment Information</h2>
 
       {/* Test Mode Banner */}
-      <div className="p-md bg-yellow-50 border-2 border-warning">
+      <div className="p-md bg-yellow-50 dark:bg-yellow-950/30 border-2 border-warning">
         <p className="font-bold text-warning mb-xs">Test Mode Payment</p>
         <p className="text-sm text-text-secondary">
           This is a test transaction. No real payment will be processed. The following test card
@@ -15,9 +15,7 @@ export function PaymentForm() {
       </div>
 
       {/* Test Card Display */}
-      <div className="p-lg border-2 border-border bg-background-secondary">
-        <h3 className="font-bold mb-md">Test Card Details</h3>
-
+      <div className="bg-background-secondary">
         <div className="space-y-md">
           {/* Card Number */}
           <div>
@@ -31,7 +29,7 @@ export function PaymentForm() {
           </div>
 
           {/* Expiration and CVV */}
-          <div className="grid grid-cols-2 gap-md">
+          <div className="grid grid-cols-1 gap-md md:grid-cols-2">
             <div>
               <label className="block text-sm font-bold mb-xs text-text-secondary">
                 Expiration

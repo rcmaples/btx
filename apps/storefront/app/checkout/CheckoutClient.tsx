@@ -1,5 +1,6 @@
 'use client'
 
+import {useRouter, useSearchParams} from 'next/navigation'
 import {useEffect, useMemo, useState} from 'react'
 
 import {CheckoutSuccess} from '@/components/checkout/CheckoutSuccess'
@@ -7,7 +8,7 @@ import {OrderSummary} from '@/components/checkout/OrderSummary'
 import {PaymentForm} from '@/components/checkout/PaymentForm'
 import {ShippingAddressForm} from '@/components/checkout/ShippingAddressForm'
 import {usePageProperties} from '@/lib/fullstory/hooks'
-import {centsToReal, trackOrderCompleted} from '@/lib/fullstory/utils'
+import {centsToReal, trackCheckoutFormSubmitted, trackOrderCompleted} from '@/lib/fullstory/utils'
 import {useCart} from '@/lib/hooks/useCart'
 import type {ShippingAddress} from '@/lib/types/checkout'
 
@@ -34,11 +35,24 @@ interface CheckoutClientProps {
 }
 
 export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const {cart, clearCart, mounted} = useCart()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successOrderNumber, setSuccessOrderNumber] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+
+  // Check if we're on the confirmation page via URL
+  const isConfirmed = searchParams.get('confirmed') === 'true'
+  const orderFromUrl = searchParams.get('order')
+
+  // Redirect if confirmed=true but no order number in URL or state
+  useEffect(() => {
+    if (isConfirmed && !orderFromUrl && !successOrderNumber) {
+      router.replace('/')
+    }
+  }, [isConfirmed, orderFromUrl, successOrderNumber, router])
 
   // Calculate shipping cost
   const shippingCost = useMemo(() => {
@@ -52,9 +66,12 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
 
   // Set page-level checkout context (proper data scoping)
   // Cart context is available for all analytics queries on this page view
+  // Note: pageName can only be set ONCE per URL in FullStory, so we use URL params
+  // to differentiate checkout from confirmation (triggers page property reset)
+  const showConfirmation = successOrderNumber || isConfirmed
   const pageProperties = useMemo(
     () => ({
-      pageName: successOrderNumber ? 'Order Confirmation' : 'Checkout',
+      pageName: showConfirmation ? 'Order Confirmation' : 'Checkout',
       cartValue: centsToReal(cart.total),
       itemCount: cart.lineItems.reduce((sum, item) => sum + item.quantity, 0),
       hasPromotion: cart.appliedPromotion !== null,
@@ -62,7 +79,7 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
       shippingCost: centsToReal(shippingCost),
       isMember: initialProfile?.isExchangeMember ?? false,
     }),
-    [successOrderNumber, cart, shippingCost, initialProfile],
+    [showConfirmation, cart, shippingCost, initialProfile],
   )
   usePageProperties(pageProperties)
 
@@ -156,6 +173,14 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
       return
     }
 
+    // Track form submission BEFORE server call to signal intentional submission
+    // This prevents FullStory from marking the form as abandoned when it disappears
+    trackCheckoutFormSubmitted({
+      checkout_step: 'order_placement',
+      has_guest_email: !initialUser,
+      shipping_country: shippingAddress.country,
+    })
+
     setIsSubmitting(true)
 
     try {
@@ -182,6 +207,8 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
         clearCart()
         // Show success message
         setSuccessOrderNumber(result.orderNumber)
+        // Update URL to trigger new page in FullStory (pageName can only be set once per URL)
+        router.replace(`/checkout?confirmed=true&order=${result.orderNumber}`)
       } else {
         setError(result.error || 'Failed to create order')
       }
@@ -193,11 +220,12 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
     }
   }
 
-  // Show success state
-  if (successOrderNumber) {
+  // Show success state (from state or URL)
+  if (showConfirmation) {
+    const displayOrderNumber = successOrderNumber || orderFromUrl || ''
     return (
       <div className="container mx-auto px-md py-xl max-w-4xl">
-        <CheckoutSuccess orderNumber={successOrderNumber} />
+        <CheckoutSuccess orderNumber={displayOrderNumber} />
       </div>
     )
   }
@@ -205,16 +233,16 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
   // Show loading if not mounted (prevent hydration issues)
   if (!mounted) {
     return (
-      <div className="container mx-auto px-md py-xl">
-        <h1 className="text-4xl font-black tracking-tighter mb-xl">Checkout</h1>
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-black tracking-tighter">Checkout</h1>
         <p className="text-text-secondary">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-md py-xl">
-      <h1 className="text-4xl font-black tracking-tighter mb-xl">Checkout</h1>
+    <div className="container mx-auto">
+      <h1 className="text-3xl font-black tracking-tighter">Checkout</h1>
 
       {error && (
         <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">

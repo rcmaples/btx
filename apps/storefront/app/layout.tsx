@@ -1,6 +1,7 @@
 import './globals.css'
 
 import {ClerkProvider} from '@clerk/nextjs'
+import {Analytics} from '@vercel/analytics/next'
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata} from 'next'
 import {Inter} from 'next/font/google'
@@ -78,6 +79,7 @@ export default function RootLayout({children}: {children: ReactNode}) {
               <Footer />
             </ThemeProvider>
           </QueryProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

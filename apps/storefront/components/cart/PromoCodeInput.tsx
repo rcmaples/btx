@@ -74,7 +74,7 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
             onChange={(e) => setCode(e.target.value)}
             data-fs-element="promo-code-input"
             placeholder="Enter code"
-            className="flex-1 p-sm text-base border border-border bg-background text-text font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-60 placeholder:normal-case placeholder:tracking-normal"
+            className="flex-1 min-w-0 p-sm text-base border border-border bg-background text-text font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:bg-disabled disabled:cursor-not-allowed disabled:opacity-60 placeholder:normal-case placeholder:tracking-normal"
             disabled={isDisabled}
             aria-label="Promo code"
             aria-describedby={error ? 'promo-error' : undefined}
@@ -82,7 +82,7 @@ export function PromoCodeInput({onApply, appliedPromotion, disabled = false}: Pr
           <button
             type="submit"
             disabled={isDisabled || !code.trim()}
-            className="px-lg py-sm text-base font-bold bg-primary text-background border-none cursor-pointer whitespace-nowrap transition-opacity duration-200 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="px-md py-sm md:px-lg text-base font-bold bg-primary text-background border-none cursor-pointer whitespace-nowrap transition-opacity duration-200 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             aria-label="Apply promo code"
           >
             {isApplying ? 'Applying...' : 'Apply'}
