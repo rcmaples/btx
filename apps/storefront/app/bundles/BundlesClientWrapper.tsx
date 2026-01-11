@@ -1,6 +1,7 @@
 'use client'
 
 import {BundleCard} from '@/components/bundle/BundleCard'
+import {Button} from '@/components/ui'
 import {useBundles} from '@/lib/hooks/useBundles'
 import {useMembership} from '@/lib/hooks/useMembership'
 
@@ -39,12 +40,7 @@ export function BundlesClientWrapper() {
             <p className="text-text-muted mb-lg">
               {error instanceof Error ? error.message : 'An error occurred'}
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-primary text-background px-lg py-sm border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast"
-            >
-              Retry
-            </button>
+            <Button onClick={() => window.location.reload()}>Retry</Button>
           </div>
         )}
 

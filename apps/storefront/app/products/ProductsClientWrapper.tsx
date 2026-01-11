@@ -5,6 +5,7 @@ import {useEffect, useState} from 'react'
 
 import {ProductCard} from '@/components/product/ProductCard'
 import {ProductFilters} from '@/components/product/ProductFilters'
+import {Button} from '@/components/ui'
 import {usePageName} from '@/lib/fullstory/hooks'
 import {trackProductsFiltered} from '@/lib/fullstory/utils'
 import {useMembership} from '@/lib/hooks/useMembership'
@@ -46,7 +47,13 @@ export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperPro
 
   const handleFilterChange = (newFilters: Filters) => {
     // Track which filter changed
-    const filterKeys = ['roastLevel', 'origin', 'processMethod', 'bestFor', 'exclusiveOnly'] as const
+    const filterKeys = [
+      'roastLevel',
+      'origin',
+      'processMethod',
+      'bestFor',
+      'exclusiveOnly',
+    ] as const
     for (const key of filterKeys) {
       if (newFilters[key] !== filters[key] && newFilters[key]) {
         trackProductsFiltered({
@@ -94,12 +101,7 @@ export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperPro
               <p className="text-text-muted mb-lg">
                 {error instanceof Error ? error.message : 'An error occurred'}
               </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="bg-primary text-background px-lg py-sm border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast"
-              >
-                Retry
-              </button>
+              <Button onClick={() => window.location.reload()}>Retry</Button>
             </div>
           )}
 
@@ -109,12 +111,7 @@ export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperPro
               <p className="text-text-muted mb-lg">
                 Try adjusting your filters to see more results
               </p>
-              <button
-                onClick={() => setFilters({})}
-                className="bg-primary text-background px-lg py-sm border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-fast"
-              >
-                Clear all filters
-              </button>
+              <Button onClick={() => setFilters({})}>Clear all filters</Button>
             </div>
           )}
 
@@ -127,8 +124,13 @@ export function ProductsClientWrapper({initialFilters}: ProductsClientWrapperPro
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
-                {displayProducts.map((product) => (
-                  <ProductCard key={product._id} product={product} />
+                {displayProducts.map((product, index) => (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                    index={index}
+                    listName="product-grid"
+                  />
                 ))}
               </div>
             </>
