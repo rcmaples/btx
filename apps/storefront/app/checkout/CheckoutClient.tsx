@@ -233,16 +233,16 @@ export function CheckoutClient({initialUser, initialProfile}: CheckoutClientProp
   // Show loading if not mounted (prevent hydration issues)
   if (!mounted) {
     return (
-      <div className="container mx-auto px-md py-xl">
-        <h1 className="text-4xl font-black tracking-tighter mb-xl">Checkout</h1>
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-black tracking-tighter">Checkout</h1>
         <p className="text-text-secondary">Loading...</p>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-md py-xl">
-      <h1 className="text-4xl font-black tracking-tighter mb-xl">Checkout</h1>
+    <div className="container mx-auto">
+      <h1 className="text-3xl font-black tracking-tighter">Checkout</h1>
 
       {error && (
         <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">

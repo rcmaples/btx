@@ -65,8 +65,8 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-md py-xl">
-      <h1 className="text-4xl font-black tracking-tighter mb-xl">Shopping Cart</h1>
+    <div className="container mx-auto">
+      <h2 className="text-3xl font-black tracking-tighter mb-md">Shopping Cart</h2>
 
       {error && (
         <div className="p-md bg-red-50 border border-error text-error mb-lg" role="alert">
@@ -76,7 +76,7 @@ export default function CartPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-xl">
         {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-md">
+        <div className="lg:col-span-2 space-y-md border-border border-t-2 pt-sm">
           {cart.lineItems.map((item) => (
             <CartLineItem
               key={item.id}
@@ -87,7 +87,7 @@ export default function CartPage() {
           ))}
 
           {/* Promo Code Section */}
-          <div className="mt-lg pt-lg border-t-2 border-border">
+          <div className="mt-lg border-border">
             <PromoCodeInput
               onApply={async (code) => {
                 await applyPromoCode(code)

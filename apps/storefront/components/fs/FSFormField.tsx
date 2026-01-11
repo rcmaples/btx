@@ -34,7 +34,8 @@ export function FSFormField({
 
   return (
     <div>
-      <label htmlFor={fieldId} className="block text-sm font-medium text-text mb-xs">
+      {/* <label htmlFor={fieldId} className="block text-sm font-medium text-text mb-xs"> */}
+      <label htmlFor={fieldId} className="block text-sm font-bold mb-xs text-text">
         {label}{' '}
         {optional ? (
           <span className="text-text-secondary">(optional)</span>
