@@ -1,4 +1,4 @@
-import type {ContentCatalog, SessionPersona, UserAgent} from './types.js'
+import type {ContentCatalog, GeoLocation, SessionPersona, UserAgent} from './types.js'
 
 export const BASE_URL = 'https://batchtheory.exchange'
 
@@ -175,6 +175,306 @@ export const VIEWPORTS = {
   desktop: {width: 1920, height: 1080},
   laptop: {width: 1366, height: 768},
 }
+
+// City geolocation data for browser context emulation.
+// spoofedIp is a representative publicly-routable ISP IP for the city/country,
+// injected as X-Forwarded-For on all browser requests (including FullStory beacons)
+// so that FullStory's IP-based geolocation resolves to the correct region.
+export const GEOLOCATIONS: GeoLocation[] = [
+  // North America
+  {
+    city: 'Atlanta, GA',
+    latitude: 33.749,
+    longitude: -84.388,
+    timezone: 'America/New_York',
+    spoofedIp: '74.125.71.1',
+  },
+  {
+    city: 'Boston, MA',
+    latitude: 42.361,
+    longitude: -71.057,
+    timezone: 'America/New_York',
+    spoofedIp: '66.228.49.1',
+  },
+  {
+    city: 'New York, NY',
+    latitude: 40.713,
+    longitude: -74.006,
+    timezone: 'America/New_York',
+    spoofedIp: '72.229.28.185',
+  },
+  {
+    city: 'Dallas, TX',
+    latitude: 32.776,
+    longitude: -96.797,
+    timezone: 'America/Chicago',
+    spoofedIp: '99.167.147.1',
+  },
+  {
+    city: 'San Francisco, CA',
+    latitude: 37.774,
+    longitude: -122.419,
+    timezone: 'America/Los_Angeles',
+    spoofedIp: '76.102.97.1',
+  },
+  {
+    city: 'Seattle, WA',
+    latitude: 47.606,
+    longitude: -122.332,
+    timezone: 'America/Los_Angeles',
+    spoofedIp: '73.239.120.1',
+  },
+  {
+    city: 'Portland, OR',
+    latitude: 45.523,
+    longitude: -122.676,
+    timezone: 'America/Los_Angeles',
+    spoofedIp: '73.34.15.1',
+  },
+  {
+    city: 'Chicago, IL',
+    latitude: 41.878,
+    longitude: -87.63,
+    timezone: 'America/Chicago',
+    spoofedIp: '98.231.198.1',
+  },
+  {
+    city: 'Honolulu, HI',
+    latitude: 21.307,
+    longitude: -157.858,
+    timezone: 'Pacific/Honolulu',
+    spoofedIp: '66.90.115.1',
+  },
+  {
+    city: 'Hershey, PA',
+    latitude: 40.286,
+    longitude: -76.65,
+    timezone: 'America/New_York',
+    spoofedIp: '71.182.195.1',
+  },
+  // Europe
+  {
+    city: 'Paris, France',
+    latitude: 48.857,
+    longitude: 2.347,
+    timezone: 'Europe/Paris',
+    spoofedIp: '90.63.212.1',
+  },
+  {
+    city: 'London, UK',
+    latitude: 51.507,
+    longitude: -0.128,
+    timezone: 'Europe/London',
+    spoofedIp: '86.19.209.1',
+  },
+  {
+    city: 'Glasgow, Scotland',
+    latitude: 55.864,
+    longitude: -4.252,
+    timezone: 'Europe/London',
+    spoofedIp: '86.150.64.1',
+  },
+  {
+    city: 'Galway, Ireland',
+    latitude: 53.274,
+    longitude: -9.049,
+    timezone: 'Europe/Dublin',
+    spoofedIp: '87.44.10.1',
+  },
+  {
+    city: 'Madrid, Spain',
+    latitude: 40.416,
+    longitude: -3.703,
+    timezone: 'Europe/Madrid',
+    spoofedIp: '80.58.61.1',
+  },
+  {
+    city: 'Berlin, Germany',
+    latitude: 52.52,
+    longitude: 13.405,
+    timezone: 'Europe/Berlin',
+    spoofedIp: '84.44.176.1',
+  },
+  {
+    city: 'Munich, Germany',
+    latitude: 48.137,
+    longitude: 11.576,
+    timezone: 'Europe/Berlin',
+    spoofedIp: '84.44.200.1',
+  },
+  {
+    city: 'Lisbon, Portugal',
+    latitude: 38.717,
+    longitude: -9.139,
+    timezone: 'Europe/Lisbon',
+    spoofedIp: '94.63.10.1',
+  },
+  {
+    city: 'Rome, Italy',
+    latitude: 41.902,
+    longitude: 12.496,
+    timezone: 'Europe/Rome',
+    spoofedIp: '79.2.15.1',
+  },
+  // Latin America
+  {
+    city: 'Mexico City, Mexico',
+    latitude: 19.433,
+    longitude: -99.133,
+    timezone: 'America/Mexico_City',
+    spoofedIp: '187.188.1.1',
+  },
+  {
+    city: 'Rio de Janeiro, Brazil',
+    latitude: -22.907,
+    longitude: -43.173,
+    timezone: 'America/Sao_Paulo',
+    spoofedIp: '187.20.10.1',
+  },
+  {
+    city: 'San Jose, Costa Rica',
+    latitude: 9.934,
+    longitude: -84.088,
+    timezone: 'America/Costa_Rica',
+    spoofedIp: '190.7.15.1',
+  },
+  {
+    city: 'Sao Paulo, Brazil',
+    latitude: -23.549,
+    longitude: -46.633,
+    timezone: 'America/Sao_Paulo',
+    spoofedIp: '177.72.1.1',
+  },
+  {
+    city: 'Buenos Aires, Argentina',
+    latitude: -34.604,
+    longitude: -58.382,
+    timezone: 'America/Argentina/Buenos_Aires',
+    spoofedIp: '190.194.1.1',
+  },
+  // Africa & Middle East
+  {
+    city: 'Cairo, Egypt',
+    latitude: 30.045,
+    longitude: 31.236,
+    timezone: 'Africa/Cairo',
+    spoofedIp: '197.32.1.1',
+  },
+  {
+    city: 'Tel Aviv, Israel',
+    latitude: 32.087,
+    longitude: 34.79,
+    timezone: 'Asia/Jerusalem',
+    spoofedIp: '84.94.18.1',
+  },
+  {
+    city: 'Lagos, Nigeria',
+    latitude: 6.524,
+    longitude: 3.379,
+    timezone: 'Africa/Lagos',
+    spoofedIp: '197.255.0.1',
+  },
+  {
+    city: 'Johannesburg, South Africa',
+    latitude: -26.195,
+    longitude: 28.034,
+    timezone: 'Africa/Johannesburg',
+    spoofedIp: '196.14.1.1',
+  },
+  {
+    city: 'Nairobi, Kenya',
+    latitude: -1.286,
+    longitude: 36.818,
+    timezone: 'Africa/Nairobi',
+    spoofedIp: '197.136.1.1',
+  },
+  // Oceania
+  {
+    city: 'Auckland, New Zealand',
+    latitude: -36.848,
+    longitude: 174.763,
+    timezone: 'Pacific/Auckland',
+    spoofedIp: '122.61.1.1',
+  },
+  {
+    city: 'Christchurch, New Zealand',
+    latitude: -43.533,
+    longitude: 172.637,
+    timezone: 'Pacific/Auckland',
+    spoofedIp: '125.236.1.1',
+  },
+  {
+    city: 'Sydney, Australia',
+    latitude: -33.869,
+    longitude: 151.209,
+    timezone: 'Australia/Sydney',
+    spoofedIp: '121.222.1.1',
+  },
+  {
+    city: 'Melbourne, Australia',
+    latitude: -37.814,
+    longitude: 144.963,
+    timezone: 'Australia/Melbourne',
+    spoofedIp: '203.206.1.1',
+  },
+  {
+    city: 'Brisbane, Australia',
+    latitude: -27.468,
+    longitude: 153.028,
+    timezone: 'Australia/Brisbane',
+    spoofedIp: '58.162.1.1',
+  },
+  {
+    city: 'Perth, Australia',
+    latitude: -31.954,
+    longitude: 115.861,
+    timezone: 'Australia/Perth',
+    spoofedIp: '59.167.1.1',
+  },
+  {
+    city: 'Adelaide, Australia',
+    latitude: -34.928,
+    longitude: 138.601,
+    timezone: 'Australia/Adelaide',
+    spoofedIp: '60.240.1.1',
+  },
+  // Asia
+  {
+    city: 'Tokyo, Japan',
+    latitude: 35.69,
+    longitude: 139.692,
+    timezone: 'Asia/Tokyo',
+    spoofedIp: '126.0.1.1',
+  },
+  {
+    city: 'Yokohama, Japan',
+    latitude: 35.444,
+    longitude: 139.638,
+    timezone: 'Asia/Tokyo',
+    spoofedIp: '126.96.1.1',
+  },
+  {
+    city: 'Kyoto, Japan',
+    latitude: 35.012,
+    longitude: 135.768,
+    timezone: 'Asia/Tokyo',
+    spoofedIp: '126.64.1.1',
+  },
+  {
+    city: 'Manila, Philippines',
+    latitude: 14.599,
+    longitude: 120.984,
+    timezone: 'Asia/Manila',
+    spoofedIp: '112.198.1.1',
+  },
+  {
+    city: 'Singapore',
+    latitude: 1.352,
+    longitude: 103.82,
+    timezone: 'Asia/Singapore',
+    spoofedIp: '116.86.1.1',
+  },
+]
 
 // Timing configuration for realistic behavior
 export const TIMING = {

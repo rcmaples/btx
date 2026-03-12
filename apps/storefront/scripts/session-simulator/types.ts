@@ -1,3 +1,11 @@
+export interface GeoLocation {
+  city: string
+  latitude: number
+  longitude: number
+  timezone: string
+  spoofedIp: string // Representative ISP IP for this city/country, injected as X-Forwarded-For
+}
+
 export interface UserAgent {
   name: string
   value: string
@@ -43,6 +51,7 @@ export interface SessionResult {
   userId: string
   userAgent: string
   persona: PersonaType
+  city: string
   entryPoint: string
   fullStoryUrl: string | null
   authenticated: boolean
