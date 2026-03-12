@@ -7,9 +7,17 @@ import {type Browser, type BrowserContext, chromium} from 'playwright'
 import {captureFullStoryUrl, randomPick, waitForPageReady} from './behaviors.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-import {CONTENT_CATALOG, SESSION_PERSONAS, TEST_ACCOUNTS, USER_AGENTS, VIEWPORTS} from './config.js'
+import {
+  CONTENT_CATALOG,
+  GEOLOCATIONS,
+  SESSION_PERSONAS,
+  TEST_ACCOUNTS,
+  USER_AGENTS,
+  VIEWPORTS,
+} from './config.js'
 import {executePersona} from './personas.js'
 import type {
+  GeoLocation,
   SessionPersona,
   SessionResult,
   SimulatorOptions,
@@ -110,12 +118,13 @@ function determineEntryPoint(persona: SessionPersona): string {
 }
 
 /**
- * Create a browser context with unique identity
+ * Create a browser context with unique identity and geolocation
  */
 async function createSessionContext(
   browser: Browser,
   userAgent: UserAgent,
   userId: string,
+  geoLocation: GeoLocation,
 ): Promise<BrowserContext> {
   const viewport = randomPick([VIEWPORTS.desktop, VIEWPORTS.laptop])
 
@@ -123,14 +132,18 @@ async function createSessionContext(
     userAgent: userAgent.value,
     viewport,
     locale: 'en-US',
-    timezoneId: randomPick([
-      'America/New_York',
-      'America/Chicago',
-      'America/Denver',
-      'America/Los_Angeles',
-    ]),
+    timezoneId: geoLocation.timezone,
+    geolocation: {latitude: geoLocation.latitude, longitude: geoLocation.longitude},
+    permissions: ['geolocation'],
     // Generate unique storage state for each user
     storageState: undefined, // Fresh state for each session
+    // Inject a representative IP from the target city/country as X-Forwarded-For on all
+    // outgoing requests (including FullStory recording beacons to rs.fullstory.com) so
+    // that FullStory's IP-based geolocation resolves to the simulated region rather than
+    // the real IP of the machine running the simulator.
+    extraHTTPHeaders: {
+      'X-Forwarded-For': geoLocation.spoofedIp,
+    },
   })
 
   // Set a unique cookie to help FullStory distinguish users
@@ -159,6 +172,7 @@ async function runSession(
   browser: Browser,
   sessionNumber: number,
   options: SimulatorOptions,
+  userCityMap: Map<string, GeoLocation>,
 ): Promise<SessionResult> {
   const startTime = Date.now()
 
@@ -168,9 +182,16 @@ async function runSession(
   const userIdentity = generateUserIdentity(sessionNumber, persona.requiresAuth)
   const entryPoint = determineEntryPoint(persona)
 
-  process.stdout.write(`Session #${sessionNumber} [${persona.type}]...`)
+  // Assign or retrieve geolocation for this user (persistent across sessions for same user)
+  let geoLocation = userCityMap.get(userIdentity.id)
+  if (!geoLocation) {
+    geoLocation = randomPick(GEOLOCATIONS)
+    userCityMap.set(userIdentity.id, geoLocation)
+  }
 
-  const context = await createSessionContext(browser, userAgent, userIdentity.id)
+  process.stdout.write(`Session #${sessionNumber} [${persona.type}] [${geoLocation.city}]...`)
+
+  const context = await createSessionContext(browser, userAgent, userIdentity.id, geoLocation)
   const page = await context.newPage()
 
   let fullStoryUrl: string | null = null
@@ -213,6 +234,7 @@ async function runSession(
       userId: userIdentity.id,
       userAgent: userAgent.name,
       persona: persona.type,
+      city: geoLocation.city,
       entryPoint,
       fullStoryUrl,
       authenticated: personaResult.authenticated,
@@ -233,6 +255,7 @@ async function runSession(
       userId: userIdentity.id,
       userAgent: userAgent.name,
       persona: persona.type,
+      city: geoLocation.city,
       entryPoint,
       fullStoryUrl: null,
       authenticated: false,
@@ -261,11 +284,14 @@ export async function runSimulator(options: SimulatorOptions): Promise<SessionRe
     slowMo: options.slowMo,
   })
 
+  // Tracks city assignment per user so repeat users retain their city
+  const userCityMap = new Map<string, GeoLocation>()
+
   const results: SessionResult[] = []
 
   try {
     for (let i = 1; i <= options.totalSessions; i++) {
-      const result = await runSession(browser, i, options)
+      const result = await runSession(browser, i, options, userCityMap)
       results.push(result)
 
       // Delay between sessions if specified
@@ -329,6 +355,16 @@ function printSummary(results: SessionResult[]): void {
     console.log(`  ${ua}: ${count}`)
   }
 
+  // City breakdown
+  console.log(`\nCity Distribution:`)
+  const cityCounts: Record<string, number> = {}
+  for (const result of results) {
+    cityCounts[result.city] = (cityCounts[result.city] || 0) + 1
+  }
+  for (const [city, count] of Object.entries(cityCounts).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${city}: ${count}`)
+  }
+
   // Print FullStory URLs
   if (withFullStory.length > 0) {
     console.log(`\nFullStory Session URLs:`)
@@ -389,6 +425,7 @@ function writeResultsToFile(results: SessionResult[], options: SimulatorOptions)
       userId: r.userId,
       userAgent: r.userAgent,
       persona: r.persona,
+      city: r.city,
       entryPoint: r.entryPoint,
       fullStoryUrl: r.fullStoryUrl,
       authenticated: r.authenticated,
